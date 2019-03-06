@@ -1,8 +1,24 @@
-//testAdd 测试从 c 调用 asm<br>
-//编译说明，centos下按照elf 32位（汇编用的32位写法，不能按照64位编译），编译出来都是 elf 可执行文件
+boot-hello 是一个引导程序，nasm语法纯汇编编写，引导程序最终编译成 bin 二进制格式，并非 elf 格式
+<br>
+引导程序代码初始需要增加 org 0x7c00 伪指令，是因为cpu上电后，在执行完 bios 指令之后，
+<br>
+会把在 bios 里设置的第一启动盘，第一个分区的 512 字节数据作为引导程序，加载到内存 0x7c00 处执行。
+<br>
+但引导程序在使用 nasm 编译的时候，编译器默认计算的虚拟地址基地址是 0x0000，这样代码中和取地址相关的汇编指令，地址偏移都是依据 0x0000 来计算的，
+<br>
+等到代码实际被加载到内存中之后，这个地址已经不对了，读取数据会发生错误
+<br>
 
 <code>
-nasm -f elf32 testAdd-s.asm -o testAdd-s.o
-<br>
-gcc -m32 testAdd-c.c testAdd-s.o -o testAdd.out
+nasm -f bin boot-hello.asm -o boot-hello.bin
 </code>
+<br>
+<code>
+dd if=boot-hello.bin of=a.img bs=512 count=1 conv=notrunc	
+</code>
+<br>
+<code>
+bochs -f bochsrc.txt	
+</code>
+<br>
+
