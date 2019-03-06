@@ -4,7 +4,9 @@ testAdd 测试从 c 调用 asm<br>
 
 <code>
 nasm -f elf32 testAdd-s.asm -o testAdd-s.o
+</code>
 <br>
+<code>
 gcc -m32 testAdd-c.c testAdd-s.o -o testAdd.out
 </code>
 
@@ -14,6 +16,8 @@ testSub 测试从 asm 调用 c<br>
 
 <code>
 nasm -f elf32 testSub-s.asm -o testSub-s.o
+</code>
 <br>
+<code>
 gcc -m32 testSub-c.c testSub-s.o -o testSub.out
 </code>
