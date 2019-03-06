@@ -1,0 +1,49 @@
+
+//没添加 org 0x7c00，会影响 mov si, 0x0027 的地址计算
+
+00007c00: (                    ): jmp .+1                   ; eb01
+00007c02: (                    ): nop                       ; 90
+00007c03: (                    ): mov ax, 0x0000            ; b80000
+00007c06: (                    ): mov ss, ax                ; 8ed0
+00007c08: (                    ): mov sp, 0x7c00            ; bc007c
+00007c0b: (                    ): mov ds, ax                ; 8ed8
+00007c0d: (                    ): mov es, ax                ; 8ec0
+00007c0f: (                    ): mov si, 0x0027            ; be2700
+00007c12: (                    ): mov al, byte ptr ds:[si]  ; 8a04
+00007c14: (                    ): add si, 0x0001            ; 83c601
+00007c17: (                    ): cmp al, 0x00              ; 3c00
+00007c19: (                    ): jz .+9                    ; 7409
+00007c1b: (                    ): mov ah, 0x0e              ; b40e
+00007c1d: (                    ): mov bx, 0x000f            ; bb0f00
+00007c20: (                    ): int 0x10                  ; cd10
+00007c22: (                    ): jmp .-18                  ; ebee
+00007c24: (                    ): hlt                       ; f4
+00007c25: (                    ): jmp .-3                   ; ebfd
+00007c27: (                    ): or cl, byte ptr ss:[bp+si] ; 0a0a
+00007c29: (                    ): push 0x6c65               ; 68656c
+00007c2c: (                    ): insb byte ptr es:[di], dx ; 6c
+00007c2d: (                    ): outsw dx, word ptr ds:[si] ; 6f
+00007c2e: (                    ): and byte ptr ds:[bx+111], dh ; 20776f
+00007c31: (                    ): jb .+108                  ; 726c
+
+//添加了 org 0x7c00，mov si, 0x7c27 主要是会影响代码中获取数据时，使用的地址发生错误，编译器编译程序是缺省认为基地址是 0000
+
+00007c00: (                    ): jmp .+1                   ; eb01
+00007c02: (                    ): nop                       ; 90
+00007c03: (                    ): mov ax, 0x0000            ; b80000
+00007c06: (                    ): mov ss, ax                ; 8ed0
+00007c08: (                    ): mov sp, 0x7c00            ; bc007c
+00007c0b: (                    ): mov ds, ax                ; 8ed8
+00007c0d: (                    ): mov es, ax                ; 8ec0
+00007c0f: (                    ): mov si, 0x7c27            ; be277c
+00007c12: (                    ): mov al, byte ptr ds:[si]  ; 8a04
+00007c14: (                    ): add si, 0x0001            ; 83c601
+00007c17: (                    ): cmp al, 0x00              ; 3c00
+00007c19: (                    ): jz .+9                    ; 7409
+00007c1b: (                    ): mov ah, 0x0e              ; b40e
+00007c1d: (                    ): mov bx, 0x000f            ; bb0f00
+00007c20: (                    ): int 0x10                  ; cd10
+00007c22: (                    ): jmp .-18                  ; ebee
+00007c24: (                    ): hlt                       ; f4
+00007c25: (                    ): jmp .-3                   ; ebfd
+00007c27: (                    ): or cl, byte ptr ss:[bp+si] ; 0a0a
