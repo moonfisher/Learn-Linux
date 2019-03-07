@@ -1,5 +1,6 @@
 [BITS 16]
-; 打印16进制数，使用dx传参
+
+; 打印16进制数，使用 dx 传参
 print_hex:
 	pusha
 	mov cx, 4			; 清零
@@ -27,7 +28,7 @@ print_hex:
 		popa
 		ret
 
-; 打印字符串，使用bx传参，bx为字符串地址
+; 打印字符串，使用 bx 传参，bx为字符串地址
 print_string:
 	pusha
 	mov ah, 0xe

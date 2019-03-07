@@ -7,11 +7,11 @@ main:
 	mov sp, bp
 
 	mov dx, 0x2333
-	call print_hex		; 打印0x2333
+	call print_hex			; 打印0x2333
 	mov bx, REAL_HELLO
-	call print_string	; 打印HELLO
+	call print_string		; 打印HELLO
 
-	call load_kernel
+	call load_kernel		; 从磁盘读取操作系统数据到内存
 
 	call switch_to_pm		; 切换到32位保护模式
 	jmp $
@@ -25,8 +25,8 @@ main:
 %include "switch_to_pm.asm"
 
 ; 全局变量
-REAL_HELLO: db "Hello World! From Netcan OS, Started in 16 bit Real Mode", 0xa, 0xd, 0
-PROT_HELLO: db "Hello World! From Netcan OS, Successfully landed in 32 bit Protected Mode", 0
+REAL_HELLO: db "Hello World! From OS, Started in 16 bit Real Mode", 0xa, 0xd, 0
+PROT_HELLO: db "Hello World! From OS, Successfully landed in 32 bit Protected Mode", 0
 BOOT_DRIVE: db 0
 
 ; 填充并设置为启动扇区

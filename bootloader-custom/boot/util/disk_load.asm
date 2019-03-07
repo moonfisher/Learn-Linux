@@ -1,5 +1,6 @@
 [BITS 16]
-; 读取磁盘数据到[ES:BX]，dl指定第几个磁盘，dh指定读取几块扇区
+
+; 读取磁盘数据到[ES:BX]，dl 指定第几个磁盘，dh 指定读取几块扇区，bx 在外面已经设置好了
 disk_load:
     push dx
     mov ah, 0x02    ; 设置BIOS读取扇区程序参数
