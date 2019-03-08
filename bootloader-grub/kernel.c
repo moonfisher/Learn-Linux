@@ -20,8 +20,17 @@ void show_memory_map()
 int kernel_main()
 {
 	print_clear();
-	print_str("memory map is below\n");
+	print_str("\r\n");
+	print_hex((uint32_t)(int *)&kernel_main);
+	print_str("\r\n");
+        print_hex((uint32_t)glb_mboot_ptr);
+	print_str("\r\n");
+	print_str("memory map is below\r\n");
 	show_memory_map();
 
 	return 0;
 }
+
+
+
+
