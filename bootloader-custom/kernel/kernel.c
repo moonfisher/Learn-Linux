@@ -1,5 +1,6 @@
 
 #include "kprint.h"
+#include "types.h"
 
 int main()
 {
