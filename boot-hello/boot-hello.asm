@@ -1,3 +1,5 @@
+[bits 16] ;这里是 bits16 不是 bits32，因为 cpu 刚启动的时候是运行在 16 位实模式之下的
+
 org 0x7c00
     jmp entry
     db 0x90

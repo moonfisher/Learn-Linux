@@ -1,0 +1,32 @@
+     1                                  [bits 32]
+     2                                  
+     3                                  org 0x7c00
+     4 00000000 EB01                        jmp entry
+     5 00000002 90                          db 0x90
+     6                                  entry:
+     7 00000003 66B80000                    mov ax, 0
+     8 00000007 8ED0                        mov ss, ax
+     9 00000009 66BC007C                    mov sp, 0x7c00
+    10 0000000D 8ED8                        mov ds, ax
+    11 0000000F 8EC0                        mov es, ax
+    12 00000011 66BE[2D00]                  mov si, msg
+    13                                  putloop:
+    14 00000015 678A04                      mov al, [si]
+    15 00000018 6683C601                    add si, 1
+    16 0000001C 3C00                        cmp al, 0
+    17 0000001E 740A                        je fin
+    18 00000020 B40E                        mov ah, 0x0e
+    19 00000022 66BB0F00                    mov bx, 15
+    20 00000026 CD10                        int 0x10
+    21 00000028 EBEB                        jmp putloop
+    22                                  fin:
+    23 0000002A F4                          hlt
+    24 0000002B EBFD                        jmp fin
+    25                                  msg:
+    26 0000002D 0A0A                        db 0x0a,0x0a
+    27 0000002F 68656C6C6F20776F72-         db "hello world!"
+    27 00000038 6C6421             
+    28 0000003B 0A                          db 0x0a
+    29 0000003C 00                          db 0
+    30 0000003D 00<rept>                    times 510 - ($-$$) db 0
+    31 000001FE 55AA                        dw 0xaa55
