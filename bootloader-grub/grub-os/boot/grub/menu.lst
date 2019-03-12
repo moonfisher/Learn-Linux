@@ -1,0 +1,6 @@
+timeout 2
+
+title	OS 
+	root (fd0)
+	kernel /kernel
+        module /initrd

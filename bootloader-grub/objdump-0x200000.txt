@@ -1,0 +1,1887 @@
+
+kernel：     文件格式 elf32-i386
+
+
+Disassembly of section .text:
+
+00200000 <start-0x10>:
+  200000:	02 b0 ad 1b 00 00    	add    0x1bad(%eax),%dh
+  200006:	00 00                	add    %al,(%eax)
+  200008:	fe 4f 52             	decb   0x52(%edi)
+  20000b:	e4 10                	in     $0x10,%al
+  20000d:	00 20                	add    %ah,(%eax)
+	...
+
+00200010 <start>:
+  200010:	fa                   	cli    
+  200011:	bc 03 80 00 00       	mov    $0x8003,%esp
+  200016:	bd 00 00 00 00       	mov    $0x0,%ebp
+  20001b:	83 e4 f0             	and    $0xfffffff0,%esp
+  20001e:	89 1d 00 a0 20 00    	mov    %ebx,0x20a000
+  200024:	e8 5c 00 00 00       	call   200085 <kernel_main>
+
+00200029 <stop>:
+  200029:	f4                   	hlt    
+  20002a:	eb fd                	jmp    200029 <stop>
+
+0020002c <show_memory_map>:
+  20002c:	55                   	push   %ebp
+  20002d:	89 e5                	mov    %esp,%ebp
+  20002f:	83 ec 28             	sub    $0x28,%esp
+  200032:	a1 00 a0 20 00       	mov    0x20a000,%eax
+  200037:	8b 40 30             	mov    0x30(%eax),%eax
+  20003a:	89 45 f0             	mov    %eax,-0x10(%ebp)
+  20003d:	a1 00 a0 20 00       	mov    0x20a000,%eax
+  200042:	8b 40 2c             	mov    0x2c(%eax),%eax
+  200045:	89 45 ec             	mov    %eax,-0x14(%ebp)
+  200048:	8b 45 f0             	mov    -0x10(%ebp),%eax
+  20004b:	89 45 f4             	mov    %eax,-0xc(%ebp)
+  20004e:	8b 45 f0             	mov    -0x10(%ebp),%eax
+  200051:	89 45 f4             	mov    %eax,-0xc(%ebp)
+  200054:	eb 1e                	jmp    200074 <show_memory_map+0x48>
+  200056:	8b 45 f4             	mov    -0xc(%ebp),%eax
+  200059:	8b 40 04             	mov    0x4(%eax),%eax
+  20005c:	89 04 24             	mov    %eax,(%esp)
+  20005f:	e8 4d 02 00 00       	call   2002b1 <print_hex>
+  200064:	c7 04 24 0a 00 00 00 	movl   $0xa,(%esp)
+  20006b:	e8 37 01 00 00       	call   2001a7 <print_char>
+  200070:	83 45 f4 18          	addl   $0x18,-0xc(%ebp)
+  200074:	8b 45 f4             	mov    -0xc(%ebp),%eax
+  200077:	8b 55 ec             	mov    -0x14(%ebp),%edx
+  20007a:	8b 4d f0             	mov    -0x10(%ebp),%ecx
+  20007d:	01 ca                	add    %ecx,%edx
+  20007f:	39 d0                	cmp    %edx,%eax
+  200081:	72 d3                	jb     200056 <show_memory_map+0x2a>
+  200083:	c9                   	leave  
+  200084:	c3                   	ret    
+
+00200085 <kernel_main>:
+  200085:	55                   	push   %ebp
+  200086:	89 e5                	mov    %esp,%ebp
+  200088:	83 ec 18             	sub    $0x18,%esp
+  20008b:	e8 56 00 00 00       	call   2000e6 <print_clear>
+  200090:	c7 04 24 3c 11 20 00 	movl   $0x20113c,(%esp)
+  200097:	e8 a8 01 00 00       	call   200244 <print_str>
+  20009c:	b8 85 00 20 00       	mov    $0x200085,%eax
+  2000a1:	89 04 24             	mov    %eax,(%esp)
+  2000a4:	e8 08 02 00 00       	call   2002b1 <print_hex>
+  2000a9:	c7 04 24 3c 11 20 00 	movl   $0x20113c,(%esp)
+  2000b0:	e8 8f 01 00 00       	call   200244 <print_str>
+  2000b5:	a1 00 a0 20 00       	mov    0x20a000,%eax
+  2000ba:	89 04 24             	mov    %eax,(%esp)
+  2000bd:	e8 ef 01 00 00       	call   2002b1 <print_hex>
+  2000c2:	c7 04 24 3c 11 20 00 	movl   $0x20113c,(%esp)
+  2000c9:	e8 76 01 00 00       	call   200244 <print_str>
+  2000ce:	c7 04 24 3f 11 20 00 	movl   $0x20113f,(%esp)
+  2000d5:	e8 6a 01 00 00       	call   200244 <print_str>
+  2000da:	e8 4d ff ff ff       	call   20002c <show_memory_map>
+  2000df:	b8 00 00 00 00       	mov    $0x0,%eax
+  2000e4:	c9                   	leave  
+  2000e5:	c3                   	ret    
+
+002000e6 <print_clear>:
+  2000e6:	55                   	push   %ebp
+  2000e7:	89 e5                	mov    %esp,%ebp
+  2000e9:	83 ec 10             	sub    $0x10,%esp
+  2000ec:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%ebp)
+  2000f3:	eb 1b                	jmp    200110 <print_clear+0x2a>
+  2000f5:	a1 38 11 20 00       	mov    0x201138,%eax
+  2000fa:	8b 55 fc             	mov    -0x4(%ebp),%edx
+  2000fd:	01 d2                	add    %edx,%edx
+  2000ff:	01 d0                	add    %edx,%eax
+  200101:	ba 00 04 00 00       	mov    $0x400,%edx
+  200106:	83 ca 20             	or     $0x20,%edx
+  200109:	66 89 10             	mov    %dx,(%eax)
+  20010c:	83 45 fc 01          	addl   $0x1,-0x4(%ebp)
+  200110:	81 7d fc cf 07 00 00 	cmpl   $0x7cf,-0x4(%ebp)
+  200117:	76 dc                	jbe    2000f5 <print_clear+0xf>
+  200119:	c6 05 04 a0 20 00 00 	movb   $0x0,0x20a004
+  200120:	c6 05 05 a0 20 00 00 	movb   $0x0,0x20a005
+  200127:	c9                   	leave  
+  200128:	c3                   	ret    
+
+00200129 <scroll>:
+  200129:	55                   	push   %ebp
+  20012a:	89 e5                	mov    %esp,%ebp
+  20012c:	83 ec 10             	sub    $0x10,%esp
+  20012f:	0f b6 05 05 a0 20 00 	movzbl 0x20a005,%eax
+  200136:	3c 18                	cmp    $0x18,%al
+  200138:	76 6b                	jbe    2001a5 <scroll+0x7c>
+  20013a:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%ebp)
+  200141:	eb 25                	jmp    200168 <scroll+0x3f>
+  200143:	a1 38 11 20 00       	mov    0x201138,%eax
+  200148:	8b 55 fc             	mov    -0x4(%ebp),%edx
+  20014b:	01 d2                	add    %edx,%edx
+  20014d:	01 c2                	add    %eax,%edx
+  20014f:	a1 38 11 20 00       	mov    0x201138,%eax
+  200154:	8b 4d fc             	mov    -0x4(%ebp),%ecx
+  200157:	83 c1 50             	add    $0x50,%ecx
+  20015a:	01 c9                	add    %ecx,%ecx
+  20015c:	01 c8                	add    %ecx,%eax
+  20015e:	0f b7 00             	movzwl (%eax),%eax
+  200161:	66 89 02             	mov    %ax,(%edx)
+  200164:	83 45 fc 01          	addl   $0x1,-0x4(%ebp)
+  200168:	81 7d fc 7f 07 00 00 	cmpl   $0x77f,-0x4(%ebp)
+  20016f:	76 d2                	jbe    200143 <scroll+0x1a>
+  200171:	c7 45 fc 80 07 00 00 	movl   $0x780,-0x4(%ebp)
+  200178:	eb 1b                	jmp    200195 <scroll+0x6c>
+  20017a:	a1 38 11 20 00       	mov    0x201138,%eax
+  20017f:	8b 55 fc             	mov    -0x4(%ebp),%edx
+  200182:	01 d2                	add    %edx,%edx
+  200184:	01 d0                	add    %edx,%eax
+  200186:	ba 00 04 00 00       	mov    $0x400,%edx
+  20018b:	83 ca 20             	or     $0x20,%edx
+  20018e:	66 89 10             	mov    %dx,(%eax)
+  200191:	83 45 fc 01          	addl   $0x1,-0x4(%ebp)
+  200195:	81 7d fc cf 07 00 00 	cmpl   $0x7cf,-0x4(%ebp)
+  20019c:	76 dc                	jbe    20017a <scroll+0x51>
+  20019e:	c6 05 05 a0 20 00 18 	movb   $0x18,0x20a005
+  2001a5:	c9                   	leave  
+  2001a6:	c3                   	ret    
+
+002001a7 <print_char>:
+  2001a7:	55                   	push   %ebp
+  2001a8:	89 e5                	mov    %esp,%ebp
+  2001aa:	83 ec 04             	sub    $0x4,%esp
+  2001ad:	8b 45 08             	mov    0x8(%ebp),%eax
+  2001b0:	88 45 fc             	mov    %al,-0x4(%ebp)
+  2001b3:	80 7d fc 1f          	cmpb   $0x1f,-0x4(%ebp)
+  2001b7:	7e 4d                	jle    200206 <print_char+0x5f>
+  2001b9:	8b 0d 38 11 20 00    	mov    0x201138,%ecx
+  2001bf:	0f b6 05 05 a0 20 00 	movzbl 0x20a005,%eax
+  2001c6:	0f b6 d0             	movzbl %al,%edx
+  2001c9:	89 d0                	mov    %edx,%eax
+  2001cb:	c1 e0 02             	shl    $0x2,%eax
+  2001ce:	01 d0                	add    %edx,%eax
+  2001d0:	c1 e0 04             	shl    $0x4,%eax
+  2001d3:	89 c2                	mov    %eax,%edx
+  2001d5:	0f b6 05 04 a0 20 00 	movzbl 0x20a004,%eax
+  2001dc:	0f b6 c0             	movzbl %al,%eax
+  2001df:	01 d0                	add    %edx,%eax
+  2001e1:	01 c0                	add    %eax,%eax
+  2001e3:	8d 14 01             	lea    (%ecx,%eax,1),%edx
+  2001e6:	66 0f be 4d fc       	movsbw -0x4(%ebp),%cx
+  2001eb:	b8 00 04 00 00       	mov    $0x400,%eax
+  2001f0:	09 c8                	or     %ecx,%eax
+  2001f2:	66 89 02             	mov    %ax,(%edx)
+  2001f5:	0f b6 05 04 a0 20 00 	movzbl 0x20a004,%eax
+  2001fc:	83 c0 01             	add    $0x1,%eax
+  2001ff:	a2 04 a0 20 00       	mov    %al,0x20a004
+  200204:	eb 16                	jmp    20021c <print_char+0x75>
+  200206:	c6 05 04 a0 20 00 00 	movb   $0x0,0x20a004
+  20020d:	0f b6 05 05 a0 20 00 	movzbl 0x20a005,%eax
+  200214:	83 c0 01             	add    $0x1,%eax
+  200217:	a2 05 a0 20 00       	mov    %al,0x20a005
+  20021c:	0f b6 05 04 a0 20 00 	movzbl 0x20a004,%eax
+  200223:	3c 4f                	cmp    $0x4f,%al
+  200225:	76 16                	jbe    20023d <print_char+0x96>
+  200227:	c6 05 04 a0 20 00 00 	movb   $0x0,0x20a004
+  20022e:	0f b6 05 05 a0 20 00 	movzbl 0x20a005,%eax
+  200235:	83 c0 01             	add    $0x1,%eax
+  200238:	a2 05 a0 20 00       	mov    %al,0x20a005
+  20023d:	e8 e7 fe ff ff       	call   200129 <scroll>
+  200242:	c9                   	leave  
+  200243:	c3                   	ret    
+
+00200244 <print_str>:
+  200244:	55                   	push   %ebp
+  200245:	89 e5                	mov    %esp,%ebp
+  200247:	83 ec 04             	sub    $0x4,%esp
+  20024a:	eb 17                	jmp    200263 <print_str+0x1f>
+  20024c:	8b 45 08             	mov    0x8(%ebp),%eax
+  20024f:	8d 50 01             	lea    0x1(%eax),%edx
+  200252:	89 55 08             	mov    %edx,0x8(%ebp)
+  200255:	0f b6 00             	movzbl (%eax),%eax
+  200258:	0f be c0             	movsbl %al,%eax
+  20025b:	89 04 24             	mov    %eax,(%esp)
+  20025e:	e8 44 ff ff ff       	call   2001a7 <print_char>
+  200263:	8b 45 08             	mov    0x8(%ebp),%eax
+  200266:	0f b6 00             	movzbl (%eax),%eax
+  200269:	84 c0                	test   %al,%al
+  20026b:	75 df                	jne    20024c <print_str+0x8>
+  20026d:	c9                   	leave  
+  20026e:	c3                   	ret    
+
+0020026f <print_dec>:
+  20026f:	55                   	push   %ebp
+  200270:	89 e5                	mov    %esp,%ebp
+  200272:	83 ec 28             	sub    $0x28,%esp
+  200275:	c7 45 ec 00 00 00 00 	movl   $0x0,-0x14(%ebp)
+  20027c:	c7 45 f0 00 00 00 00 	movl   $0x0,-0x10(%ebp)
+  200283:	c7 45 f4 00 00 00 00 	movl   $0x0,-0xc(%ebp)
+  20028a:	c7 44 24 08 0a 00 00 	movl   $0xa,0x8(%esp)
+  200291:	00 
+  200292:	8d 45 ec             	lea    -0x14(%ebp),%eax
+  200295:	89 44 24 04          	mov    %eax,0x4(%esp)
+  200299:	8b 45 08             	mov    0x8(%ebp),%eax
+  20029c:	89 04 24             	mov    %eax,(%esp)
+  20029f:	e8 60 00 00 00       	call   200304 <kitoa>
+  2002a4:	8d 45 ec             	lea    -0x14(%ebp),%eax
+  2002a7:	89 04 24             	mov    %eax,(%esp)
+  2002aa:	e8 95 ff ff ff       	call   200244 <print_str>
+  2002af:	c9                   	leave  
+  2002b0:	c3                   	ret    
+
+002002b1 <print_hex>:
+  2002b1:	55                   	push   %ebp
+  2002b2:	89 e5                	mov    %esp,%ebp
+  2002b4:	83 ec 28             	sub    $0x28,%esp
+  2002b7:	c7 45 ea 00 00 00 00 	movl   $0x0,-0x16(%ebp)
+  2002be:	c7 45 ee 00 00 00 00 	movl   $0x0,-0x12(%ebp)
+  2002c5:	c7 45 f2 00 00 00 00 	movl   $0x0,-0xe(%ebp)
+  2002cc:	66 c7 45 f6 00 00    	movw   $0x0,-0xa(%ebp)
+  2002d2:	c6 45 ea 30          	movb   $0x30,-0x16(%ebp)
+  2002d6:	c6 45 eb 78          	movb   $0x78,-0x15(%ebp)
+  2002da:	c7 44 24 08 10 00 00 	movl   $0x10,0x8(%esp)
+  2002e1:	00 
+  2002e2:	8d 45 ea             	lea    -0x16(%ebp),%eax
+  2002e5:	83 c0 02             	add    $0x2,%eax
+  2002e8:	89 44 24 04          	mov    %eax,0x4(%esp)
+  2002ec:	8b 45 08             	mov    0x8(%ebp),%eax
+  2002ef:	89 04 24             	mov    %eax,(%esp)
+  2002f2:	e8 0d 00 00 00       	call   200304 <kitoa>
+  2002f7:	8d 45 ea             	lea    -0x16(%ebp),%eax
+  2002fa:	89 04 24             	mov    %eax,(%esp)
+  2002fd:	e8 42 ff ff ff       	call   200244 <print_str>
+  200302:	c9                   	leave  
+  200303:	c3                   	ret    
+
+00200304 <kitoa>:
+  200304:	55                   	push   %ebp
+  200305:	89 e5                	mov    %esp,%ebp
+  200307:	83 ec 10             	sub    $0x10,%esp
+  20030a:	83 7d 08 00          	cmpl   $0x0,0x8(%ebp)
+  20030e:	79 0f                	jns    20031f <kitoa+0x1b>
+  200310:	8b 45 0c             	mov    0xc(%ebp),%eax
+  200313:	8d 50 01             	lea    0x1(%eax),%edx
+  200316:	89 55 0c             	mov    %edx,0xc(%ebp)
+  200319:	c6 00 2d             	movb   $0x2d,(%eax)
+  20031c:	f7 5d 08             	negl   0x8(%ebp)
+  20031f:	8b 45 0c             	mov    0xc(%ebp),%eax
+  200322:	89 45 fc             	mov    %eax,-0x4(%ebp)
+  200325:	eb 3b                	jmp    200362 <kitoa+0x5e>
+  200327:	8b 45 08             	mov    0x8(%ebp),%eax
+  20032a:	ba 00 00 00 00       	mov    $0x0,%edx
+  20032f:	f7 75 10             	divl   0x10(%ebp)
+  200332:	89 55 f8             	mov    %edx,-0x8(%ebp)
+  200335:	8b 45 08             	mov    0x8(%ebp),%eax
+  200338:	ba 00 00 00 00       	mov    $0x0,%edx
+  20033d:	f7 75 10             	divl   0x10(%ebp)
+  200340:	89 45 08             	mov    %eax,0x8(%ebp)
+  200343:	8b 45 0c             	mov    0xc(%ebp),%eax
+  200346:	8d 50 01             	lea    0x1(%eax),%edx
+  200349:	89 55 0c             	mov    %edx,0xc(%ebp)
+  20034c:	83 7d f8 09          	cmpl   $0x9,-0x8(%ebp)
+  200350:	76 08                	jbe    20035a <kitoa+0x56>
+  200352:	8b 55 f8             	mov    -0x8(%ebp),%edx
+  200355:	83 c2 57             	add    $0x57,%edx
+  200358:	eb 06                	jmp    200360 <kitoa+0x5c>
+  20035a:	8b 55 f8             	mov    -0x8(%ebp),%edx
+  20035d:	83 c2 30             	add    $0x30,%edx
+  200360:	88 10                	mov    %dl,(%eax)
+  200362:	83 7d 08 00          	cmpl   $0x0,0x8(%ebp)
+  200366:	75 bf                	jne    200327 <kitoa+0x23>
+  200368:	8b 45 0c             	mov    0xc(%ebp),%eax
+  20036b:	c6 00 00             	movb   $0x0,(%eax)
+  20036e:	83 6d 0c 01          	subl   $0x1,0xc(%ebp)
+  200372:	eb 25                	jmp    200399 <kitoa+0x95>
+  200374:	8b 45 0c             	mov    0xc(%ebp),%eax
+  200377:	0f b6 00             	movzbl (%eax),%eax
+  20037a:	88 45 f7             	mov    %al,-0x9(%ebp)
+  20037d:	8b 45 fc             	mov    -0x4(%ebp),%eax
+  200380:	0f b6 10             	movzbl (%eax),%edx
+  200383:	8b 45 0c             	mov    0xc(%ebp),%eax
+  200386:	88 10                	mov    %dl,(%eax)
+  200388:	8b 45 fc             	mov    -0x4(%ebp),%eax
+  20038b:	0f b6 55 f7          	movzbl -0x9(%ebp),%edx
+  20038f:	88 10                	mov    %dl,(%eax)
+  200391:	83 45 fc 01          	addl   $0x1,-0x4(%ebp)
+  200395:	83 6d 0c 01          	subl   $0x1,0xc(%ebp)
+  200399:	8b 45 fc             	mov    -0x4(%ebp),%eax
+  20039c:	3b 45 0c             	cmp    0xc(%ebp),%eax
+  20039f:	72 d3                	jb     200374 <kitoa+0x70>
+  2003a1:	c9                   	leave  
+  2003a2:	c3                   	ret    
+  2003a3:	66 90                	xchg   %ax,%ax
+  2003a5:	66 90                	xchg   %ax,%ax
+  2003a7:	66 90                	xchg   %ax,%ax
+  2003a9:	66 90                	xchg   %ax,%ax
+  2003ab:	66 90                	xchg   %ax,%ax
+  2003ad:	66 90                	xchg   %ax,%ax
+  2003af:	66 90                	xchg   %ax,%ax
+  2003b1:	66 90                	xchg   %ax,%ax
+  2003b3:	66 90                	xchg   %ax,%ax
+  2003b5:	66 90                	xchg   %ax,%ax
+  2003b7:	66 90                	xchg   %ax,%ax
+  2003b9:	66 90                	xchg   %ax,%ax
+  2003bb:	66 90                	xchg   %ax,%ax
+  2003bd:	66 90                	xchg   %ax,%ax
+  2003bf:	66 90                	xchg   %ax,%ax
+  2003c1:	66 90                	xchg   %ax,%ax
+  2003c3:	66 90                	xchg   %ax,%ax
+  2003c5:	66 90                	xchg   %ax,%ax
+  2003c7:	66 90                	xchg   %ax,%ax
+  2003c9:	66 90                	xchg   %ax,%ax
+  2003cb:	66 90                	xchg   %ax,%ax
+  2003cd:	66 90                	xchg   %ax,%ax
+  2003cf:	66 90                	xchg   %ax,%ax
+  2003d1:	66 90                	xchg   %ax,%ax
+  2003d3:	66 90                	xchg   %ax,%ax
+  2003d5:	66 90                	xchg   %ax,%ax
+  2003d7:	66 90                	xchg   %ax,%ax
+  2003d9:	66 90                	xchg   %ax,%ax
+  2003db:	66 90                	xchg   %ax,%ax
+  2003dd:	66 90                	xchg   %ax,%ax
+  2003df:	66 90                	xchg   %ax,%ax
+  2003e1:	66 90                	xchg   %ax,%ax
+  2003e3:	66 90                	xchg   %ax,%ax
+  2003e5:	66 90                	xchg   %ax,%ax
+  2003e7:	66 90                	xchg   %ax,%ax
+  2003e9:	66 90                	xchg   %ax,%ax
+  2003eb:	66 90                	xchg   %ax,%ax
+  2003ed:	66 90                	xchg   %ax,%ax
+  2003ef:	66 90                	xchg   %ax,%ax
+  2003f1:	66 90                	xchg   %ax,%ax
+  2003f3:	66 90                	xchg   %ax,%ax
+  2003f5:	66 90                	xchg   %ax,%ax
+  2003f7:	66 90                	xchg   %ax,%ax
+  2003f9:	66 90                	xchg   %ax,%ax
+  2003fb:	66 90                	xchg   %ax,%ax
+  2003fd:	66 90                	xchg   %ax,%ax
+  2003ff:	66 90                	xchg   %ax,%ax
+  200401:	66 90                	xchg   %ax,%ax
+  200403:	66 90                	xchg   %ax,%ax
+  200405:	66 90                	xchg   %ax,%ax
+  200407:	66 90                	xchg   %ax,%ax
+  200409:	66 90                	xchg   %ax,%ax
+  20040b:	66 90                	xchg   %ax,%ax
+  20040d:	66 90                	xchg   %ax,%ax
+  20040f:	66 90                	xchg   %ax,%ax
+  200411:	66 90                	xchg   %ax,%ax
+  200413:	66 90                	xchg   %ax,%ax
+  200415:	66 90                	xchg   %ax,%ax
+  200417:	66 90                	xchg   %ax,%ax
+  200419:	66 90                	xchg   %ax,%ax
+  20041b:	66 90                	xchg   %ax,%ax
+  20041d:	66 90                	xchg   %ax,%ax
+  20041f:	66 90                	xchg   %ax,%ax
+  200421:	66 90                	xchg   %ax,%ax
+  200423:	66 90                	xchg   %ax,%ax
+  200425:	66 90                	xchg   %ax,%ax
+  200427:	66 90                	xchg   %ax,%ax
+  200429:	66 90                	xchg   %ax,%ax
+  20042b:	66 90                	xchg   %ax,%ax
+  20042d:	66 90                	xchg   %ax,%ax
+  20042f:	66 90                	xchg   %ax,%ax
+  200431:	66 90                	xchg   %ax,%ax
+  200433:	66 90                	xchg   %ax,%ax
+  200435:	66 90                	xchg   %ax,%ax
+  200437:	66 90                	xchg   %ax,%ax
+  200439:	66 90                	xchg   %ax,%ax
+  20043b:	66 90                	xchg   %ax,%ax
+  20043d:	66 90                	xchg   %ax,%ax
+  20043f:	66 90                	xchg   %ax,%ax
+  200441:	66 90                	xchg   %ax,%ax
+  200443:	66 90                	xchg   %ax,%ax
+  200445:	66 90                	xchg   %ax,%ax
+  200447:	66 90                	xchg   %ax,%ax
+  200449:	66 90                	xchg   %ax,%ax
+  20044b:	66 90                	xchg   %ax,%ax
+  20044d:	66 90                	xchg   %ax,%ax
+  20044f:	66 90                	xchg   %ax,%ax
+  200451:	66 90                	xchg   %ax,%ax
+  200453:	66 90                	xchg   %ax,%ax
+  200455:	66 90                	xchg   %ax,%ax
+  200457:	66 90                	xchg   %ax,%ax
+  200459:	66 90                	xchg   %ax,%ax
+  20045b:	66 90                	xchg   %ax,%ax
+  20045d:	66 90                	xchg   %ax,%ax
+  20045f:	66 90                	xchg   %ax,%ax
+  200461:	66 90                	xchg   %ax,%ax
+  200463:	66 90                	xchg   %ax,%ax
+  200465:	66 90                	xchg   %ax,%ax
+  200467:	66 90                	xchg   %ax,%ax
+  200469:	66 90                	xchg   %ax,%ax
+  20046b:	66 90                	xchg   %ax,%ax
+  20046d:	66 90                	xchg   %ax,%ax
+  20046f:	66 90                	xchg   %ax,%ax
+  200471:	66 90                	xchg   %ax,%ax
+  200473:	66 90                	xchg   %ax,%ax
+  200475:	66 90                	xchg   %ax,%ax
+  200477:	66 90                	xchg   %ax,%ax
+  200479:	66 90                	xchg   %ax,%ax
+  20047b:	66 90                	xchg   %ax,%ax
+  20047d:	66 90                	xchg   %ax,%ax
+  20047f:	66 90                	xchg   %ax,%ax
+  200481:	66 90                	xchg   %ax,%ax
+  200483:	66 90                	xchg   %ax,%ax
+  200485:	66 90                	xchg   %ax,%ax
+  200487:	66 90                	xchg   %ax,%ax
+  200489:	66 90                	xchg   %ax,%ax
+  20048b:	66 90                	xchg   %ax,%ax
+  20048d:	66 90                	xchg   %ax,%ax
+  20048f:	66 90                	xchg   %ax,%ax
+  200491:	66 90                	xchg   %ax,%ax
+  200493:	66 90                	xchg   %ax,%ax
+  200495:	66 90                	xchg   %ax,%ax
+  200497:	66 90                	xchg   %ax,%ax
+  200499:	66 90                	xchg   %ax,%ax
+  20049b:	66 90                	xchg   %ax,%ax
+  20049d:	66 90                	xchg   %ax,%ax
+  20049f:	66 90                	xchg   %ax,%ax
+  2004a1:	66 90                	xchg   %ax,%ax
+  2004a3:	66 90                	xchg   %ax,%ax
+  2004a5:	66 90                	xchg   %ax,%ax
+  2004a7:	66 90                	xchg   %ax,%ax
+  2004a9:	66 90                	xchg   %ax,%ax
+  2004ab:	66 90                	xchg   %ax,%ax
+  2004ad:	66 90                	xchg   %ax,%ax
+  2004af:	66 90                	xchg   %ax,%ax
+  2004b1:	66 90                	xchg   %ax,%ax
+  2004b3:	66 90                	xchg   %ax,%ax
+  2004b5:	66 90                	xchg   %ax,%ax
+  2004b7:	66 90                	xchg   %ax,%ax
+  2004b9:	66 90                	xchg   %ax,%ax
+  2004bb:	66 90                	xchg   %ax,%ax
+  2004bd:	66 90                	xchg   %ax,%ax
+  2004bf:	66 90                	xchg   %ax,%ax
+  2004c1:	66 90                	xchg   %ax,%ax
+  2004c3:	66 90                	xchg   %ax,%ax
+  2004c5:	66 90                	xchg   %ax,%ax
+  2004c7:	66 90                	xchg   %ax,%ax
+  2004c9:	66 90                	xchg   %ax,%ax
+  2004cb:	66 90                	xchg   %ax,%ax
+  2004cd:	66 90                	xchg   %ax,%ax
+  2004cf:	66 90                	xchg   %ax,%ax
+  2004d1:	66 90                	xchg   %ax,%ax
+  2004d3:	66 90                	xchg   %ax,%ax
+  2004d5:	66 90                	xchg   %ax,%ax
+  2004d7:	66 90                	xchg   %ax,%ax
+  2004d9:	66 90                	xchg   %ax,%ax
+  2004db:	66 90                	xchg   %ax,%ax
+  2004dd:	66 90                	xchg   %ax,%ax
+  2004df:	66 90                	xchg   %ax,%ax
+  2004e1:	66 90                	xchg   %ax,%ax
+  2004e3:	66 90                	xchg   %ax,%ax
+  2004e5:	66 90                	xchg   %ax,%ax
+  2004e7:	66 90                	xchg   %ax,%ax
+  2004e9:	66 90                	xchg   %ax,%ax
+  2004eb:	66 90                	xchg   %ax,%ax
+  2004ed:	66 90                	xchg   %ax,%ax
+  2004ef:	66 90                	xchg   %ax,%ax
+  2004f1:	66 90                	xchg   %ax,%ax
+  2004f3:	66 90                	xchg   %ax,%ax
+  2004f5:	66 90                	xchg   %ax,%ax
+  2004f7:	66 90                	xchg   %ax,%ax
+  2004f9:	66 90                	xchg   %ax,%ax
+  2004fb:	66 90                	xchg   %ax,%ax
+  2004fd:	66 90                	xchg   %ax,%ax
+  2004ff:	66 90                	xchg   %ax,%ax
+  200501:	66 90                	xchg   %ax,%ax
+  200503:	66 90                	xchg   %ax,%ax
+  200505:	66 90                	xchg   %ax,%ax
+  200507:	66 90                	xchg   %ax,%ax
+  200509:	66 90                	xchg   %ax,%ax
+  20050b:	66 90                	xchg   %ax,%ax
+  20050d:	66 90                	xchg   %ax,%ax
+  20050f:	66 90                	xchg   %ax,%ax
+  200511:	66 90                	xchg   %ax,%ax
+  200513:	66 90                	xchg   %ax,%ax
+  200515:	66 90                	xchg   %ax,%ax
+  200517:	66 90                	xchg   %ax,%ax
+  200519:	66 90                	xchg   %ax,%ax
+  20051b:	66 90                	xchg   %ax,%ax
+  20051d:	66 90                	xchg   %ax,%ax
+  20051f:	66 90                	xchg   %ax,%ax
+  200521:	66 90                	xchg   %ax,%ax
+  200523:	66 90                	xchg   %ax,%ax
+  200525:	66 90                	xchg   %ax,%ax
+  200527:	66 90                	xchg   %ax,%ax
+  200529:	66 90                	xchg   %ax,%ax
+  20052b:	66 90                	xchg   %ax,%ax
+  20052d:	66 90                	xchg   %ax,%ax
+  20052f:	66 90                	xchg   %ax,%ax
+  200531:	66 90                	xchg   %ax,%ax
+  200533:	66 90                	xchg   %ax,%ax
+  200535:	66 90                	xchg   %ax,%ax
+  200537:	66 90                	xchg   %ax,%ax
+  200539:	66 90                	xchg   %ax,%ax
+  20053b:	66 90                	xchg   %ax,%ax
+  20053d:	66 90                	xchg   %ax,%ax
+  20053f:	66 90                	xchg   %ax,%ax
+  200541:	66 90                	xchg   %ax,%ax
+  200543:	66 90                	xchg   %ax,%ax
+  200545:	66 90                	xchg   %ax,%ax
+  200547:	66 90                	xchg   %ax,%ax
+  200549:	66 90                	xchg   %ax,%ax
+  20054b:	66 90                	xchg   %ax,%ax
+  20054d:	66 90                	xchg   %ax,%ax
+  20054f:	66 90                	xchg   %ax,%ax
+  200551:	66 90                	xchg   %ax,%ax
+  200553:	66 90                	xchg   %ax,%ax
+  200555:	66 90                	xchg   %ax,%ax
+  200557:	66 90                	xchg   %ax,%ax
+  200559:	66 90                	xchg   %ax,%ax
+  20055b:	66 90                	xchg   %ax,%ax
+  20055d:	66 90                	xchg   %ax,%ax
+  20055f:	66 90                	xchg   %ax,%ax
+  200561:	66 90                	xchg   %ax,%ax
+  200563:	66 90                	xchg   %ax,%ax
+  200565:	66 90                	xchg   %ax,%ax
+  200567:	66 90                	xchg   %ax,%ax
+  200569:	66 90                	xchg   %ax,%ax
+  20056b:	66 90                	xchg   %ax,%ax
+  20056d:	66 90                	xchg   %ax,%ax
+  20056f:	66 90                	xchg   %ax,%ax
+  200571:	66 90                	xchg   %ax,%ax
+  200573:	66 90                	xchg   %ax,%ax
+  200575:	66 90                	xchg   %ax,%ax
+  200577:	66 90                	xchg   %ax,%ax
+  200579:	66 90                	xchg   %ax,%ax
+  20057b:	66 90                	xchg   %ax,%ax
+  20057d:	66 90                	xchg   %ax,%ax
+  20057f:	66 90                	xchg   %ax,%ax
+  200581:	66 90                	xchg   %ax,%ax
+  200583:	66 90                	xchg   %ax,%ax
+  200585:	66 90                	xchg   %ax,%ax
+  200587:	66 90                	xchg   %ax,%ax
+  200589:	66 90                	xchg   %ax,%ax
+  20058b:	66 90                	xchg   %ax,%ax
+  20058d:	66 90                	xchg   %ax,%ax
+  20058f:	66 90                	xchg   %ax,%ax
+  200591:	66 90                	xchg   %ax,%ax
+  200593:	66 90                	xchg   %ax,%ax
+  200595:	66 90                	xchg   %ax,%ax
+  200597:	66 90                	xchg   %ax,%ax
+  200599:	66 90                	xchg   %ax,%ax
+  20059b:	66 90                	xchg   %ax,%ax
+  20059d:	66 90                	xchg   %ax,%ax
+  20059f:	66 90                	xchg   %ax,%ax
+  2005a1:	66 90                	xchg   %ax,%ax
+  2005a3:	66 90                	xchg   %ax,%ax
+  2005a5:	66 90                	xchg   %ax,%ax
+  2005a7:	66 90                	xchg   %ax,%ax
+  2005a9:	66 90                	xchg   %ax,%ax
+  2005ab:	66 90                	xchg   %ax,%ax
+  2005ad:	66 90                	xchg   %ax,%ax
+  2005af:	66 90                	xchg   %ax,%ax
+  2005b1:	66 90                	xchg   %ax,%ax
+  2005b3:	66 90                	xchg   %ax,%ax
+  2005b5:	66 90                	xchg   %ax,%ax
+  2005b7:	66 90                	xchg   %ax,%ax
+  2005b9:	66 90                	xchg   %ax,%ax
+  2005bb:	66 90                	xchg   %ax,%ax
+  2005bd:	66 90                	xchg   %ax,%ax
+  2005bf:	66 90                	xchg   %ax,%ax
+  2005c1:	66 90                	xchg   %ax,%ax
+  2005c3:	66 90                	xchg   %ax,%ax
+  2005c5:	66 90                	xchg   %ax,%ax
+  2005c7:	66 90                	xchg   %ax,%ax
+  2005c9:	66 90                	xchg   %ax,%ax
+  2005cb:	66 90                	xchg   %ax,%ax
+  2005cd:	66 90                	xchg   %ax,%ax
+  2005cf:	66 90                	xchg   %ax,%ax
+  2005d1:	66 90                	xchg   %ax,%ax
+  2005d3:	66 90                	xchg   %ax,%ax
+  2005d5:	66 90                	xchg   %ax,%ax
+  2005d7:	66 90                	xchg   %ax,%ax
+  2005d9:	66 90                	xchg   %ax,%ax
+  2005db:	66 90                	xchg   %ax,%ax
+  2005dd:	66 90                	xchg   %ax,%ax
+  2005df:	66 90                	xchg   %ax,%ax
+  2005e1:	66 90                	xchg   %ax,%ax
+  2005e3:	66 90                	xchg   %ax,%ax
+  2005e5:	66 90                	xchg   %ax,%ax
+  2005e7:	66 90                	xchg   %ax,%ax
+  2005e9:	66 90                	xchg   %ax,%ax
+  2005eb:	66 90                	xchg   %ax,%ax
+  2005ed:	66 90                	xchg   %ax,%ax
+  2005ef:	66 90                	xchg   %ax,%ax
+  2005f1:	66 90                	xchg   %ax,%ax
+  2005f3:	66 90                	xchg   %ax,%ax
+  2005f5:	66 90                	xchg   %ax,%ax
+  2005f7:	66 90                	xchg   %ax,%ax
+  2005f9:	66 90                	xchg   %ax,%ax
+  2005fb:	66 90                	xchg   %ax,%ax
+  2005fd:	66 90                	xchg   %ax,%ax
+  2005ff:	66 90                	xchg   %ax,%ax
+  200601:	66 90                	xchg   %ax,%ax
+  200603:	66 90                	xchg   %ax,%ax
+  200605:	66 90                	xchg   %ax,%ax
+  200607:	66 90                	xchg   %ax,%ax
+  200609:	66 90                	xchg   %ax,%ax
+  20060b:	66 90                	xchg   %ax,%ax
+  20060d:	66 90                	xchg   %ax,%ax
+  20060f:	66 90                	xchg   %ax,%ax
+  200611:	66 90                	xchg   %ax,%ax
+  200613:	66 90                	xchg   %ax,%ax
+  200615:	66 90                	xchg   %ax,%ax
+  200617:	66 90                	xchg   %ax,%ax
+  200619:	66 90                	xchg   %ax,%ax
+  20061b:	66 90                	xchg   %ax,%ax
+  20061d:	66 90                	xchg   %ax,%ax
+  20061f:	66 90                	xchg   %ax,%ax
+  200621:	66 90                	xchg   %ax,%ax
+  200623:	66 90                	xchg   %ax,%ax
+  200625:	66 90                	xchg   %ax,%ax
+  200627:	66 90                	xchg   %ax,%ax
+  200629:	66 90                	xchg   %ax,%ax
+  20062b:	66 90                	xchg   %ax,%ax
+  20062d:	66 90                	xchg   %ax,%ax
+  20062f:	66 90                	xchg   %ax,%ax
+  200631:	66 90                	xchg   %ax,%ax
+  200633:	66 90                	xchg   %ax,%ax
+  200635:	66 90                	xchg   %ax,%ax
+  200637:	66 90                	xchg   %ax,%ax
+  200639:	66 90                	xchg   %ax,%ax
+  20063b:	66 90                	xchg   %ax,%ax
+  20063d:	66 90                	xchg   %ax,%ax
+  20063f:	66 90                	xchg   %ax,%ax
+  200641:	66 90                	xchg   %ax,%ax
+  200643:	66 90                	xchg   %ax,%ax
+  200645:	66 90                	xchg   %ax,%ax
+  200647:	66 90                	xchg   %ax,%ax
+  200649:	66 90                	xchg   %ax,%ax
+  20064b:	66 90                	xchg   %ax,%ax
+  20064d:	66 90                	xchg   %ax,%ax
+  20064f:	66 90                	xchg   %ax,%ax
+  200651:	66 90                	xchg   %ax,%ax
+  200653:	66 90                	xchg   %ax,%ax
+  200655:	66 90                	xchg   %ax,%ax
+  200657:	66 90                	xchg   %ax,%ax
+  200659:	66 90                	xchg   %ax,%ax
+  20065b:	66 90                	xchg   %ax,%ax
+  20065d:	66 90                	xchg   %ax,%ax
+  20065f:	66 90                	xchg   %ax,%ax
+  200661:	66 90                	xchg   %ax,%ax
+  200663:	66 90                	xchg   %ax,%ax
+  200665:	66 90                	xchg   %ax,%ax
+  200667:	66 90                	xchg   %ax,%ax
+  200669:	66 90                	xchg   %ax,%ax
+  20066b:	66 90                	xchg   %ax,%ax
+  20066d:	66 90                	xchg   %ax,%ax
+  20066f:	66 90                	xchg   %ax,%ax
+  200671:	66 90                	xchg   %ax,%ax
+  200673:	66 90                	xchg   %ax,%ax
+  200675:	66 90                	xchg   %ax,%ax
+  200677:	66 90                	xchg   %ax,%ax
+  200679:	66 90                	xchg   %ax,%ax
+  20067b:	66 90                	xchg   %ax,%ax
+  20067d:	66 90                	xchg   %ax,%ax
+  20067f:	66 90                	xchg   %ax,%ax
+  200681:	66 90                	xchg   %ax,%ax
+  200683:	66 90                	xchg   %ax,%ax
+  200685:	66 90                	xchg   %ax,%ax
+  200687:	66 90                	xchg   %ax,%ax
+  200689:	66 90                	xchg   %ax,%ax
+  20068b:	66 90                	xchg   %ax,%ax
+  20068d:	66 90                	xchg   %ax,%ax
+  20068f:	66 90                	xchg   %ax,%ax
+  200691:	66 90                	xchg   %ax,%ax
+  200693:	66 90                	xchg   %ax,%ax
+  200695:	66 90                	xchg   %ax,%ax
+  200697:	66 90                	xchg   %ax,%ax
+  200699:	66 90                	xchg   %ax,%ax
+  20069b:	66 90                	xchg   %ax,%ax
+  20069d:	66 90                	xchg   %ax,%ax
+  20069f:	66 90                	xchg   %ax,%ax
+  2006a1:	66 90                	xchg   %ax,%ax
+  2006a3:	66 90                	xchg   %ax,%ax
+  2006a5:	66 90                	xchg   %ax,%ax
+  2006a7:	66 90                	xchg   %ax,%ax
+  2006a9:	66 90                	xchg   %ax,%ax
+  2006ab:	66 90                	xchg   %ax,%ax
+  2006ad:	66 90                	xchg   %ax,%ax
+  2006af:	66 90                	xchg   %ax,%ax
+  2006b1:	66 90                	xchg   %ax,%ax
+  2006b3:	66 90                	xchg   %ax,%ax
+  2006b5:	66 90                	xchg   %ax,%ax
+  2006b7:	66 90                	xchg   %ax,%ax
+  2006b9:	66 90                	xchg   %ax,%ax
+  2006bb:	66 90                	xchg   %ax,%ax
+  2006bd:	66 90                	xchg   %ax,%ax
+  2006bf:	66 90                	xchg   %ax,%ax
+  2006c1:	66 90                	xchg   %ax,%ax
+  2006c3:	66 90                	xchg   %ax,%ax
+  2006c5:	66 90                	xchg   %ax,%ax
+  2006c7:	66 90                	xchg   %ax,%ax
+  2006c9:	66 90                	xchg   %ax,%ax
+  2006cb:	66 90                	xchg   %ax,%ax
+  2006cd:	66 90                	xchg   %ax,%ax
+  2006cf:	66 90                	xchg   %ax,%ax
+  2006d1:	66 90                	xchg   %ax,%ax
+  2006d3:	66 90                	xchg   %ax,%ax
+  2006d5:	66 90                	xchg   %ax,%ax
+  2006d7:	66 90                	xchg   %ax,%ax
+  2006d9:	66 90                	xchg   %ax,%ax
+  2006db:	66 90                	xchg   %ax,%ax
+  2006dd:	66 90                	xchg   %ax,%ax
+  2006df:	66 90                	xchg   %ax,%ax
+  2006e1:	66 90                	xchg   %ax,%ax
+  2006e3:	66 90                	xchg   %ax,%ax
+  2006e5:	66 90                	xchg   %ax,%ax
+  2006e7:	66 90                	xchg   %ax,%ax
+  2006e9:	66 90                	xchg   %ax,%ax
+  2006eb:	66 90                	xchg   %ax,%ax
+  2006ed:	66 90                	xchg   %ax,%ax
+  2006ef:	66 90                	xchg   %ax,%ax
+  2006f1:	66 90                	xchg   %ax,%ax
+  2006f3:	66 90                	xchg   %ax,%ax
+  2006f5:	66 90                	xchg   %ax,%ax
+  2006f7:	66 90                	xchg   %ax,%ax
+  2006f9:	66 90                	xchg   %ax,%ax
+  2006fb:	66 90                	xchg   %ax,%ax
+  2006fd:	66 90                	xchg   %ax,%ax
+  2006ff:	66 90                	xchg   %ax,%ax
+  200701:	66 90                	xchg   %ax,%ax
+  200703:	66 90                	xchg   %ax,%ax
+  200705:	66 90                	xchg   %ax,%ax
+  200707:	66 90                	xchg   %ax,%ax
+  200709:	66 90                	xchg   %ax,%ax
+  20070b:	66 90                	xchg   %ax,%ax
+  20070d:	66 90                	xchg   %ax,%ax
+  20070f:	66 90                	xchg   %ax,%ax
+  200711:	66 90                	xchg   %ax,%ax
+  200713:	66 90                	xchg   %ax,%ax
+  200715:	66 90                	xchg   %ax,%ax
+  200717:	66 90                	xchg   %ax,%ax
+  200719:	66 90                	xchg   %ax,%ax
+  20071b:	66 90                	xchg   %ax,%ax
+  20071d:	66 90                	xchg   %ax,%ax
+  20071f:	66 90                	xchg   %ax,%ax
+  200721:	66 90                	xchg   %ax,%ax
+  200723:	66 90                	xchg   %ax,%ax
+  200725:	66 90                	xchg   %ax,%ax
+  200727:	66 90                	xchg   %ax,%ax
+  200729:	66 90                	xchg   %ax,%ax
+  20072b:	66 90                	xchg   %ax,%ax
+  20072d:	66 90                	xchg   %ax,%ax
+  20072f:	66 90                	xchg   %ax,%ax
+  200731:	66 90                	xchg   %ax,%ax
+  200733:	66 90                	xchg   %ax,%ax
+  200735:	66 90                	xchg   %ax,%ax
+  200737:	66 90                	xchg   %ax,%ax
+  200739:	66 90                	xchg   %ax,%ax
+  20073b:	66 90                	xchg   %ax,%ax
+  20073d:	66 90                	xchg   %ax,%ax
+  20073f:	66 90                	xchg   %ax,%ax
+  200741:	66 90                	xchg   %ax,%ax
+  200743:	66 90                	xchg   %ax,%ax
+  200745:	66 90                	xchg   %ax,%ax
+  200747:	66 90                	xchg   %ax,%ax
+  200749:	66 90                	xchg   %ax,%ax
+  20074b:	66 90                	xchg   %ax,%ax
+  20074d:	66 90                	xchg   %ax,%ax
+  20074f:	66 90                	xchg   %ax,%ax
+  200751:	66 90                	xchg   %ax,%ax
+  200753:	66 90                	xchg   %ax,%ax
+  200755:	66 90                	xchg   %ax,%ax
+  200757:	66 90                	xchg   %ax,%ax
+  200759:	66 90                	xchg   %ax,%ax
+  20075b:	66 90                	xchg   %ax,%ax
+  20075d:	66 90                	xchg   %ax,%ax
+  20075f:	66 90                	xchg   %ax,%ax
+  200761:	66 90                	xchg   %ax,%ax
+  200763:	66 90                	xchg   %ax,%ax
+  200765:	66 90                	xchg   %ax,%ax
+  200767:	66 90                	xchg   %ax,%ax
+  200769:	66 90                	xchg   %ax,%ax
+  20076b:	66 90                	xchg   %ax,%ax
+  20076d:	66 90                	xchg   %ax,%ax
+  20076f:	66 90                	xchg   %ax,%ax
+  200771:	66 90                	xchg   %ax,%ax
+  200773:	66 90                	xchg   %ax,%ax
+  200775:	66 90                	xchg   %ax,%ax
+  200777:	66 90                	xchg   %ax,%ax
+  200779:	66 90                	xchg   %ax,%ax
+  20077b:	66 90                	xchg   %ax,%ax
+  20077d:	66 90                	xchg   %ax,%ax
+  20077f:	66 90                	xchg   %ax,%ax
+  200781:	66 90                	xchg   %ax,%ax
+  200783:	66 90                	xchg   %ax,%ax
+  200785:	66 90                	xchg   %ax,%ax
+  200787:	66 90                	xchg   %ax,%ax
+  200789:	66 90                	xchg   %ax,%ax
+  20078b:	66 90                	xchg   %ax,%ax
+  20078d:	66 90                	xchg   %ax,%ax
+  20078f:	66 90                	xchg   %ax,%ax
+  200791:	66 90                	xchg   %ax,%ax
+  200793:	66 90                	xchg   %ax,%ax
+  200795:	66 90                	xchg   %ax,%ax
+  200797:	66 90                	xchg   %ax,%ax
+  200799:	66 90                	xchg   %ax,%ax
+  20079b:	66 90                	xchg   %ax,%ax
+  20079d:	66 90                	xchg   %ax,%ax
+  20079f:	66 90                	xchg   %ax,%ax
+  2007a1:	66 90                	xchg   %ax,%ax
+  2007a3:	66 90                	xchg   %ax,%ax
+  2007a5:	66 90                	xchg   %ax,%ax
+  2007a7:	66 90                	xchg   %ax,%ax
+  2007a9:	66 90                	xchg   %ax,%ax
+  2007ab:	66 90                	xchg   %ax,%ax
+  2007ad:	66 90                	xchg   %ax,%ax
+  2007af:	66 90                	xchg   %ax,%ax
+  2007b1:	66 90                	xchg   %ax,%ax
+  2007b3:	66 90                	xchg   %ax,%ax
+  2007b5:	66 90                	xchg   %ax,%ax
+  2007b7:	66 90                	xchg   %ax,%ax
+  2007b9:	66 90                	xchg   %ax,%ax
+  2007bb:	66 90                	xchg   %ax,%ax
+  2007bd:	66 90                	xchg   %ax,%ax
+  2007bf:	66 90                	xchg   %ax,%ax
+  2007c1:	66 90                	xchg   %ax,%ax
+  2007c3:	66 90                	xchg   %ax,%ax
+  2007c5:	66 90                	xchg   %ax,%ax
+  2007c7:	66 90                	xchg   %ax,%ax
+  2007c9:	66 90                	xchg   %ax,%ax
+  2007cb:	66 90                	xchg   %ax,%ax
+  2007cd:	66 90                	xchg   %ax,%ax
+  2007cf:	66 90                	xchg   %ax,%ax
+  2007d1:	66 90                	xchg   %ax,%ax
+  2007d3:	66 90                	xchg   %ax,%ax
+  2007d5:	66 90                	xchg   %ax,%ax
+  2007d7:	66 90                	xchg   %ax,%ax
+  2007d9:	66 90                	xchg   %ax,%ax
+  2007db:	66 90                	xchg   %ax,%ax
+  2007dd:	66 90                	xchg   %ax,%ax
+  2007df:	66 90                	xchg   %ax,%ax
+  2007e1:	66 90                	xchg   %ax,%ax
+  2007e3:	66 90                	xchg   %ax,%ax
+  2007e5:	66 90                	xchg   %ax,%ax
+  2007e7:	66 90                	xchg   %ax,%ax
+  2007e9:	66 90                	xchg   %ax,%ax
+  2007eb:	66 90                	xchg   %ax,%ax
+  2007ed:	66 90                	xchg   %ax,%ax
+  2007ef:	66 90                	xchg   %ax,%ax
+  2007f1:	66 90                	xchg   %ax,%ax
+  2007f3:	66 90                	xchg   %ax,%ax
+  2007f5:	66 90                	xchg   %ax,%ax
+  2007f7:	66 90                	xchg   %ax,%ax
+  2007f9:	66 90                	xchg   %ax,%ax
+  2007fb:	66 90                	xchg   %ax,%ax
+  2007fd:	66 90                	xchg   %ax,%ax
+  2007ff:	66 90                	xchg   %ax,%ax
+  200801:	66 90                	xchg   %ax,%ax
+  200803:	66 90                	xchg   %ax,%ax
+  200805:	66 90                	xchg   %ax,%ax
+  200807:	66 90                	xchg   %ax,%ax
+  200809:	66 90                	xchg   %ax,%ax
+  20080b:	66 90                	xchg   %ax,%ax
+  20080d:	66 90                	xchg   %ax,%ax
+  20080f:	66 90                	xchg   %ax,%ax
+  200811:	66 90                	xchg   %ax,%ax
+  200813:	66 90                	xchg   %ax,%ax
+  200815:	66 90                	xchg   %ax,%ax
+  200817:	66 90                	xchg   %ax,%ax
+  200819:	66 90                	xchg   %ax,%ax
+  20081b:	66 90                	xchg   %ax,%ax
+  20081d:	66 90                	xchg   %ax,%ax
+  20081f:	66 90                	xchg   %ax,%ax
+  200821:	66 90                	xchg   %ax,%ax
+  200823:	66 90                	xchg   %ax,%ax
+  200825:	66 90                	xchg   %ax,%ax
+  200827:	66 90                	xchg   %ax,%ax
+  200829:	66 90                	xchg   %ax,%ax
+  20082b:	66 90                	xchg   %ax,%ax
+  20082d:	66 90                	xchg   %ax,%ax
+  20082f:	66 90                	xchg   %ax,%ax
+  200831:	66 90                	xchg   %ax,%ax
+  200833:	66 90                	xchg   %ax,%ax
+  200835:	66 90                	xchg   %ax,%ax
+  200837:	66 90                	xchg   %ax,%ax
+  200839:	66 90                	xchg   %ax,%ax
+  20083b:	66 90                	xchg   %ax,%ax
+  20083d:	66 90                	xchg   %ax,%ax
+  20083f:	66 90                	xchg   %ax,%ax
+  200841:	66 90                	xchg   %ax,%ax
+  200843:	66 90                	xchg   %ax,%ax
+  200845:	66 90                	xchg   %ax,%ax
+  200847:	66 90                	xchg   %ax,%ax
+  200849:	66 90                	xchg   %ax,%ax
+  20084b:	66 90                	xchg   %ax,%ax
+  20084d:	66 90                	xchg   %ax,%ax
+  20084f:	66 90                	xchg   %ax,%ax
+  200851:	66 90                	xchg   %ax,%ax
+  200853:	66 90                	xchg   %ax,%ax
+  200855:	66 90                	xchg   %ax,%ax
+  200857:	66 90                	xchg   %ax,%ax
+  200859:	66 90                	xchg   %ax,%ax
+  20085b:	66 90                	xchg   %ax,%ax
+  20085d:	66 90                	xchg   %ax,%ax
+  20085f:	66 90                	xchg   %ax,%ax
+  200861:	66 90                	xchg   %ax,%ax
+  200863:	66 90                	xchg   %ax,%ax
+  200865:	66 90                	xchg   %ax,%ax
+  200867:	66 90                	xchg   %ax,%ax
+  200869:	66 90                	xchg   %ax,%ax
+  20086b:	66 90                	xchg   %ax,%ax
+  20086d:	66 90                	xchg   %ax,%ax
+  20086f:	66 90                	xchg   %ax,%ax
+  200871:	66 90                	xchg   %ax,%ax
+  200873:	66 90                	xchg   %ax,%ax
+  200875:	66 90                	xchg   %ax,%ax
+  200877:	66 90                	xchg   %ax,%ax
+  200879:	66 90                	xchg   %ax,%ax
+  20087b:	66 90                	xchg   %ax,%ax
+  20087d:	66 90                	xchg   %ax,%ax
+  20087f:	66 90                	xchg   %ax,%ax
+  200881:	66 90                	xchg   %ax,%ax
+  200883:	66 90                	xchg   %ax,%ax
+  200885:	66 90                	xchg   %ax,%ax
+  200887:	66 90                	xchg   %ax,%ax
+  200889:	66 90                	xchg   %ax,%ax
+  20088b:	66 90                	xchg   %ax,%ax
+  20088d:	66 90                	xchg   %ax,%ax
+  20088f:	66 90                	xchg   %ax,%ax
+  200891:	66 90                	xchg   %ax,%ax
+  200893:	66 90                	xchg   %ax,%ax
+  200895:	66 90                	xchg   %ax,%ax
+  200897:	66 90                	xchg   %ax,%ax
+  200899:	66 90                	xchg   %ax,%ax
+  20089b:	66 90                	xchg   %ax,%ax
+  20089d:	66 90                	xchg   %ax,%ax
+  20089f:	66 90                	xchg   %ax,%ax
+  2008a1:	66 90                	xchg   %ax,%ax
+  2008a3:	66 90                	xchg   %ax,%ax
+  2008a5:	66 90                	xchg   %ax,%ax
+  2008a7:	66 90                	xchg   %ax,%ax
+  2008a9:	66 90                	xchg   %ax,%ax
+  2008ab:	66 90                	xchg   %ax,%ax
+  2008ad:	66 90                	xchg   %ax,%ax
+  2008af:	66 90                	xchg   %ax,%ax
+  2008b1:	66 90                	xchg   %ax,%ax
+  2008b3:	66 90                	xchg   %ax,%ax
+  2008b5:	66 90                	xchg   %ax,%ax
+  2008b7:	66 90                	xchg   %ax,%ax
+  2008b9:	66 90                	xchg   %ax,%ax
+  2008bb:	66 90                	xchg   %ax,%ax
+  2008bd:	66 90                	xchg   %ax,%ax
+  2008bf:	66 90                	xchg   %ax,%ax
+  2008c1:	66 90                	xchg   %ax,%ax
+  2008c3:	66 90                	xchg   %ax,%ax
+  2008c5:	66 90                	xchg   %ax,%ax
+  2008c7:	66 90                	xchg   %ax,%ax
+  2008c9:	66 90                	xchg   %ax,%ax
+  2008cb:	66 90                	xchg   %ax,%ax
+  2008cd:	66 90                	xchg   %ax,%ax
+  2008cf:	66 90                	xchg   %ax,%ax
+  2008d1:	66 90                	xchg   %ax,%ax
+  2008d3:	66 90                	xchg   %ax,%ax
+  2008d5:	66 90                	xchg   %ax,%ax
+  2008d7:	66 90                	xchg   %ax,%ax
+  2008d9:	66 90                	xchg   %ax,%ax
+  2008db:	66 90                	xchg   %ax,%ax
+  2008dd:	66 90                	xchg   %ax,%ax
+  2008df:	66 90                	xchg   %ax,%ax
+  2008e1:	66 90                	xchg   %ax,%ax
+  2008e3:	66 90                	xchg   %ax,%ax
+  2008e5:	66 90                	xchg   %ax,%ax
+  2008e7:	66 90                	xchg   %ax,%ax
+  2008e9:	66 90                	xchg   %ax,%ax
+  2008eb:	66 90                	xchg   %ax,%ax
+  2008ed:	66 90                	xchg   %ax,%ax
+  2008ef:	66 90                	xchg   %ax,%ax
+  2008f1:	66 90                	xchg   %ax,%ax
+  2008f3:	66 90                	xchg   %ax,%ax
+  2008f5:	66 90                	xchg   %ax,%ax
+  2008f7:	66 90                	xchg   %ax,%ax
+  2008f9:	66 90                	xchg   %ax,%ax
+  2008fb:	66 90                	xchg   %ax,%ax
+  2008fd:	66 90                	xchg   %ax,%ax
+  2008ff:	66 90                	xchg   %ax,%ax
+  200901:	66 90                	xchg   %ax,%ax
+  200903:	66 90                	xchg   %ax,%ax
+  200905:	66 90                	xchg   %ax,%ax
+  200907:	66 90                	xchg   %ax,%ax
+  200909:	66 90                	xchg   %ax,%ax
+  20090b:	66 90                	xchg   %ax,%ax
+  20090d:	66 90                	xchg   %ax,%ax
+  20090f:	66 90                	xchg   %ax,%ax
+  200911:	66 90                	xchg   %ax,%ax
+  200913:	66 90                	xchg   %ax,%ax
+  200915:	66 90                	xchg   %ax,%ax
+  200917:	66 90                	xchg   %ax,%ax
+  200919:	66 90                	xchg   %ax,%ax
+  20091b:	66 90                	xchg   %ax,%ax
+  20091d:	66 90                	xchg   %ax,%ax
+  20091f:	66 90                	xchg   %ax,%ax
+  200921:	66 90                	xchg   %ax,%ax
+  200923:	66 90                	xchg   %ax,%ax
+  200925:	66 90                	xchg   %ax,%ax
+  200927:	66 90                	xchg   %ax,%ax
+  200929:	66 90                	xchg   %ax,%ax
+  20092b:	66 90                	xchg   %ax,%ax
+  20092d:	66 90                	xchg   %ax,%ax
+  20092f:	66 90                	xchg   %ax,%ax
+  200931:	66 90                	xchg   %ax,%ax
+  200933:	66 90                	xchg   %ax,%ax
+  200935:	66 90                	xchg   %ax,%ax
+  200937:	66 90                	xchg   %ax,%ax
+  200939:	66 90                	xchg   %ax,%ax
+  20093b:	66 90                	xchg   %ax,%ax
+  20093d:	66 90                	xchg   %ax,%ax
+  20093f:	66 90                	xchg   %ax,%ax
+  200941:	66 90                	xchg   %ax,%ax
+  200943:	66 90                	xchg   %ax,%ax
+  200945:	66 90                	xchg   %ax,%ax
+  200947:	66 90                	xchg   %ax,%ax
+  200949:	66 90                	xchg   %ax,%ax
+  20094b:	66 90                	xchg   %ax,%ax
+  20094d:	66 90                	xchg   %ax,%ax
+  20094f:	66 90                	xchg   %ax,%ax
+  200951:	66 90                	xchg   %ax,%ax
+  200953:	66 90                	xchg   %ax,%ax
+  200955:	66 90                	xchg   %ax,%ax
+  200957:	66 90                	xchg   %ax,%ax
+  200959:	66 90                	xchg   %ax,%ax
+  20095b:	66 90                	xchg   %ax,%ax
+  20095d:	66 90                	xchg   %ax,%ax
+  20095f:	66 90                	xchg   %ax,%ax
+  200961:	66 90                	xchg   %ax,%ax
+  200963:	66 90                	xchg   %ax,%ax
+  200965:	66 90                	xchg   %ax,%ax
+  200967:	66 90                	xchg   %ax,%ax
+  200969:	66 90                	xchg   %ax,%ax
+  20096b:	66 90                	xchg   %ax,%ax
+  20096d:	66 90                	xchg   %ax,%ax
+  20096f:	66 90                	xchg   %ax,%ax
+  200971:	66 90                	xchg   %ax,%ax
+  200973:	66 90                	xchg   %ax,%ax
+  200975:	66 90                	xchg   %ax,%ax
+  200977:	66 90                	xchg   %ax,%ax
+  200979:	66 90                	xchg   %ax,%ax
+  20097b:	66 90                	xchg   %ax,%ax
+  20097d:	66 90                	xchg   %ax,%ax
+  20097f:	66 90                	xchg   %ax,%ax
+  200981:	66 90                	xchg   %ax,%ax
+  200983:	66 90                	xchg   %ax,%ax
+  200985:	66 90                	xchg   %ax,%ax
+  200987:	66 90                	xchg   %ax,%ax
+  200989:	66 90                	xchg   %ax,%ax
+  20098b:	66 90                	xchg   %ax,%ax
+  20098d:	66 90                	xchg   %ax,%ax
+  20098f:	66 90                	xchg   %ax,%ax
+  200991:	66 90                	xchg   %ax,%ax
+  200993:	66 90                	xchg   %ax,%ax
+  200995:	66 90                	xchg   %ax,%ax
+  200997:	66 90                	xchg   %ax,%ax
+  200999:	66 90                	xchg   %ax,%ax
+  20099b:	66 90                	xchg   %ax,%ax
+  20099d:	66 90                	xchg   %ax,%ax
+  20099f:	66 90                	xchg   %ax,%ax
+  2009a1:	66 90                	xchg   %ax,%ax
+  2009a3:	66 90                	xchg   %ax,%ax
+  2009a5:	66 90                	xchg   %ax,%ax
+  2009a7:	66 90                	xchg   %ax,%ax
+  2009a9:	66 90                	xchg   %ax,%ax
+  2009ab:	66 90                	xchg   %ax,%ax
+  2009ad:	66 90                	xchg   %ax,%ax
+  2009af:	66 90                	xchg   %ax,%ax
+  2009b1:	66 90                	xchg   %ax,%ax
+  2009b3:	66 90                	xchg   %ax,%ax
+  2009b5:	66 90                	xchg   %ax,%ax
+  2009b7:	66 90                	xchg   %ax,%ax
+  2009b9:	66 90                	xchg   %ax,%ax
+  2009bb:	66 90                	xchg   %ax,%ax
+  2009bd:	66 90                	xchg   %ax,%ax
+  2009bf:	66 90                	xchg   %ax,%ax
+  2009c1:	66 90                	xchg   %ax,%ax
+  2009c3:	66 90                	xchg   %ax,%ax
+  2009c5:	66 90                	xchg   %ax,%ax
+  2009c7:	66 90                	xchg   %ax,%ax
+  2009c9:	66 90                	xchg   %ax,%ax
+  2009cb:	66 90                	xchg   %ax,%ax
+  2009cd:	66 90                	xchg   %ax,%ax
+  2009cf:	66 90                	xchg   %ax,%ax
+  2009d1:	66 90                	xchg   %ax,%ax
+  2009d3:	66 90                	xchg   %ax,%ax
+  2009d5:	66 90                	xchg   %ax,%ax
+  2009d7:	66 90                	xchg   %ax,%ax
+  2009d9:	66 90                	xchg   %ax,%ax
+  2009db:	66 90                	xchg   %ax,%ax
+  2009dd:	66 90                	xchg   %ax,%ax
+  2009df:	66 90                	xchg   %ax,%ax
+  2009e1:	66 90                	xchg   %ax,%ax
+  2009e3:	66 90                	xchg   %ax,%ax
+  2009e5:	66 90                	xchg   %ax,%ax
+  2009e7:	66 90                	xchg   %ax,%ax
+  2009e9:	66 90                	xchg   %ax,%ax
+  2009eb:	66 90                	xchg   %ax,%ax
+  2009ed:	66 90                	xchg   %ax,%ax
+  2009ef:	66 90                	xchg   %ax,%ax
+  2009f1:	66 90                	xchg   %ax,%ax
+  2009f3:	66 90                	xchg   %ax,%ax
+  2009f5:	66 90                	xchg   %ax,%ax
+  2009f7:	66 90                	xchg   %ax,%ax
+  2009f9:	66 90                	xchg   %ax,%ax
+  2009fb:	66 90                	xchg   %ax,%ax
+  2009fd:	66 90                	xchg   %ax,%ax
+  2009ff:	66 90                	xchg   %ax,%ax
+  200a01:	66 90                	xchg   %ax,%ax
+  200a03:	66 90                	xchg   %ax,%ax
+  200a05:	66 90                	xchg   %ax,%ax
+  200a07:	66 90                	xchg   %ax,%ax
+  200a09:	66 90                	xchg   %ax,%ax
+  200a0b:	66 90                	xchg   %ax,%ax
+  200a0d:	66 90                	xchg   %ax,%ax
+  200a0f:	66 90                	xchg   %ax,%ax
+  200a11:	66 90                	xchg   %ax,%ax
+  200a13:	66 90                	xchg   %ax,%ax
+  200a15:	66 90                	xchg   %ax,%ax
+  200a17:	66 90                	xchg   %ax,%ax
+  200a19:	66 90                	xchg   %ax,%ax
+  200a1b:	66 90                	xchg   %ax,%ax
+  200a1d:	66 90                	xchg   %ax,%ax
+  200a1f:	66 90                	xchg   %ax,%ax
+  200a21:	66 90                	xchg   %ax,%ax
+  200a23:	66 90                	xchg   %ax,%ax
+  200a25:	66 90                	xchg   %ax,%ax
+  200a27:	66 90                	xchg   %ax,%ax
+  200a29:	66 90                	xchg   %ax,%ax
+  200a2b:	66 90                	xchg   %ax,%ax
+  200a2d:	66 90                	xchg   %ax,%ax
+  200a2f:	66 90                	xchg   %ax,%ax
+  200a31:	66 90                	xchg   %ax,%ax
+  200a33:	66 90                	xchg   %ax,%ax
+  200a35:	66 90                	xchg   %ax,%ax
+  200a37:	66 90                	xchg   %ax,%ax
+  200a39:	66 90                	xchg   %ax,%ax
+  200a3b:	66 90                	xchg   %ax,%ax
+  200a3d:	66 90                	xchg   %ax,%ax
+  200a3f:	66 90                	xchg   %ax,%ax
+  200a41:	66 90                	xchg   %ax,%ax
+  200a43:	66 90                	xchg   %ax,%ax
+  200a45:	66 90                	xchg   %ax,%ax
+  200a47:	66 90                	xchg   %ax,%ax
+  200a49:	66 90                	xchg   %ax,%ax
+  200a4b:	66 90                	xchg   %ax,%ax
+  200a4d:	66 90                	xchg   %ax,%ax
+  200a4f:	66 90                	xchg   %ax,%ax
+  200a51:	66 90                	xchg   %ax,%ax
+  200a53:	66 90                	xchg   %ax,%ax
+  200a55:	66 90                	xchg   %ax,%ax
+  200a57:	66 90                	xchg   %ax,%ax
+  200a59:	66 90                	xchg   %ax,%ax
+  200a5b:	66 90                	xchg   %ax,%ax
+  200a5d:	66 90                	xchg   %ax,%ax
+  200a5f:	66 90                	xchg   %ax,%ax
+  200a61:	66 90                	xchg   %ax,%ax
+  200a63:	66 90                	xchg   %ax,%ax
+  200a65:	66 90                	xchg   %ax,%ax
+  200a67:	66 90                	xchg   %ax,%ax
+  200a69:	66 90                	xchg   %ax,%ax
+  200a6b:	66 90                	xchg   %ax,%ax
+  200a6d:	66 90                	xchg   %ax,%ax
+  200a6f:	66 90                	xchg   %ax,%ax
+  200a71:	66 90                	xchg   %ax,%ax
+  200a73:	66 90                	xchg   %ax,%ax
+  200a75:	66 90                	xchg   %ax,%ax
+  200a77:	66 90                	xchg   %ax,%ax
+  200a79:	66 90                	xchg   %ax,%ax
+  200a7b:	66 90                	xchg   %ax,%ax
+  200a7d:	66 90                	xchg   %ax,%ax
+  200a7f:	66 90                	xchg   %ax,%ax
+  200a81:	66 90                	xchg   %ax,%ax
+  200a83:	66 90                	xchg   %ax,%ax
+  200a85:	66 90                	xchg   %ax,%ax
+  200a87:	66 90                	xchg   %ax,%ax
+  200a89:	66 90                	xchg   %ax,%ax
+  200a8b:	66 90                	xchg   %ax,%ax
+  200a8d:	66 90                	xchg   %ax,%ax
+  200a8f:	66 90                	xchg   %ax,%ax
+  200a91:	66 90                	xchg   %ax,%ax
+  200a93:	66 90                	xchg   %ax,%ax
+  200a95:	66 90                	xchg   %ax,%ax
+  200a97:	66 90                	xchg   %ax,%ax
+  200a99:	66 90                	xchg   %ax,%ax
+  200a9b:	66 90                	xchg   %ax,%ax
+  200a9d:	66 90                	xchg   %ax,%ax
+  200a9f:	66 90                	xchg   %ax,%ax
+  200aa1:	66 90                	xchg   %ax,%ax
+  200aa3:	66 90                	xchg   %ax,%ax
+  200aa5:	66 90                	xchg   %ax,%ax
+  200aa7:	66 90                	xchg   %ax,%ax
+  200aa9:	66 90                	xchg   %ax,%ax
+  200aab:	66 90                	xchg   %ax,%ax
+  200aad:	66 90                	xchg   %ax,%ax
+  200aaf:	66 90                	xchg   %ax,%ax
+  200ab1:	66 90                	xchg   %ax,%ax
+  200ab3:	66 90                	xchg   %ax,%ax
+  200ab5:	66 90                	xchg   %ax,%ax
+  200ab7:	66 90                	xchg   %ax,%ax
+  200ab9:	66 90                	xchg   %ax,%ax
+  200abb:	66 90                	xchg   %ax,%ax
+  200abd:	66 90                	xchg   %ax,%ax
+  200abf:	66 90                	xchg   %ax,%ax
+  200ac1:	66 90                	xchg   %ax,%ax
+  200ac3:	66 90                	xchg   %ax,%ax
+  200ac5:	66 90                	xchg   %ax,%ax
+  200ac7:	66 90                	xchg   %ax,%ax
+  200ac9:	66 90                	xchg   %ax,%ax
+  200acb:	66 90                	xchg   %ax,%ax
+  200acd:	66 90                	xchg   %ax,%ax
+  200acf:	66 90                	xchg   %ax,%ax
+  200ad1:	66 90                	xchg   %ax,%ax
+  200ad3:	66 90                	xchg   %ax,%ax
+  200ad5:	66 90                	xchg   %ax,%ax
+  200ad7:	66 90                	xchg   %ax,%ax
+  200ad9:	66 90                	xchg   %ax,%ax
+  200adb:	66 90                	xchg   %ax,%ax
+  200add:	66 90                	xchg   %ax,%ax
+  200adf:	66 90                	xchg   %ax,%ax
+  200ae1:	66 90                	xchg   %ax,%ax
+  200ae3:	66 90                	xchg   %ax,%ax
+  200ae5:	66 90                	xchg   %ax,%ax
+  200ae7:	66 90                	xchg   %ax,%ax
+  200ae9:	66 90                	xchg   %ax,%ax
+  200aeb:	66 90                	xchg   %ax,%ax
+  200aed:	66 90                	xchg   %ax,%ax
+  200aef:	66 90                	xchg   %ax,%ax
+  200af1:	66 90                	xchg   %ax,%ax
+  200af3:	66 90                	xchg   %ax,%ax
+  200af5:	66 90                	xchg   %ax,%ax
+  200af7:	66 90                	xchg   %ax,%ax
+  200af9:	66 90                	xchg   %ax,%ax
+  200afb:	66 90                	xchg   %ax,%ax
+  200afd:	66 90                	xchg   %ax,%ax
+  200aff:	66 90                	xchg   %ax,%ax
+  200b01:	66 90                	xchg   %ax,%ax
+  200b03:	66 90                	xchg   %ax,%ax
+  200b05:	66 90                	xchg   %ax,%ax
+  200b07:	66 90                	xchg   %ax,%ax
+  200b09:	66 90                	xchg   %ax,%ax
+  200b0b:	66 90                	xchg   %ax,%ax
+  200b0d:	66 90                	xchg   %ax,%ax
+  200b0f:	66 90                	xchg   %ax,%ax
+  200b11:	66 90                	xchg   %ax,%ax
+  200b13:	66 90                	xchg   %ax,%ax
+  200b15:	66 90                	xchg   %ax,%ax
+  200b17:	66 90                	xchg   %ax,%ax
+  200b19:	66 90                	xchg   %ax,%ax
+  200b1b:	66 90                	xchg   %ax,%ax
+  200b1d:	66 90                	xchg   %ax,%ax
+  200b1f:	66 90                	xchg   %ax,%ax
+  200b21:	66 90                	xchg   %ax,%ax
+  200b23:	66 90                	xchg   %ax,%ax
+  200b25:	66 90                	xchg   %ax,%ax
+  200b27:	66 90                	xchg   %ax,%ax
+  200b29:	66 90                	xchg   %ax,%ax
+  200b2b:	66 90                	xchg   %ax,%ax
+  200b2d:	66 90                	xchg   %ax,%ax
+  200b2f:	66 90                	xchg   %ax,%ax
+  200b31:	66 90                	xchg   %ax,%ax
+  200b33:	66 90                	xchg   %ax,%ax
+  200b35:	66 90                	xchg   %ax,%ax
+  200b37:	66 90                	xchg   %ax,%ax
+  200b39:	66 90                	xchg   %ax,%ax
+  200b3b:	66 90                	xchg   %ax,%ax
+  200b3d:	66 90                	xchg   %ax,%ax
+  200b3f:	66 90                	xchg   %ax,%ax
+  200b41:	66 90                	xchg   %ax,%ax
+  200b43:	66 90                	xchg   %ax,%ax
+  200b45:	66 90                	xchg   %ax,%ax
+  200b47:	66 90                	xchg   %ax,%ax
+  200b49:	66 90                	xchg   %ax,%ax
+  200b4b:	66 90                	xchg   %ax,%ax
+  200b4d:	66 90                	xchg   %ax,%ax
+  200b4f:	66 90                	xchg   %ax,%ax
+  200b51:	66 90                	xchg   %ax,%ax
+  200b53:	66 90                	xchg   %ax,%ax
+  200b55:	66 90                	xchg   %ax,%ax
+  200b57:	66 90                	xchg   %ax,%ax
+  200b59:	66 90                	xchg   %ax,%ax
+  200b5b:	66 90                	xchg   %ax,%ax
+  200b5d:	66 90                	xchg   %ax,%ax
+  200b5f:	66 90                	xchg   %ax,%ax
+  200b61:	66 90                	xchg   %ax,%ax
+  200b63:	66 90                	xchg   %ax,%ax
+  200b65:	66 90                	xchg   %ax,%ax
+  200b67:	66 90                	xchg   %ax,%ax
+  200b69:	66 90                	xchg   %ax,%ax
+  200b6b:	66 90                	xchg   %ax,%ax
+  200b6d:	66 90                	xchg   %ax,%ax
+  200b6f:	66 90                	xchg   %ax,%ax
+  200b71:	66 90                	xchg   %ax,%ax
+  200b73:	66 90                	xchg   %ax,%ax
+  200b75:	66 90                	xchg   %ax,%ax
+  200b77:	66 90                	xchg   %ax,%ax
+  200b79:	66 90                	xchg   %ax,%ax
+  200b7b:	66 90                	xchg   %ax,%ax
+  200b7d:	66 90                	xchg   %ax,%ax
+  200b7f:	66 90                	xchg   %ax,%ax
+  200b81:	66 90                	xchg   %ax,%ax
+  200b83:	66 90                	xchg   %ax,%ax
+  200b85:	66 90                	xchg   %ax,%ax
+  200b87:	66 90                	xchg   %ax,%ax
+  200b89:	66 90                	xchg   %ax,%ax
+  200b8b:	66 90                	xchg   %ax,%ax
+  200b8d:	66 90                	xchg   %ax,%ax
+  200b8f:	66 90                	xchg   %ax,%ax
+  200b91:	66 90                	xchg   %ax,%ax
+  200b93:	66 90                	xchg   %ax,%ax
+  200b95:	66 90                	xchg   %ax,%ax
+  200b97:	66 90                	xchg   %ax,%ax
+  200b99:	66 90                	xchg   %ax,%ax
+  200b9b:	66 90                	xchg   %ax,%ax
+  200b9d:	66 90                	xchg   %ax,%ax
+  200b9f:	66 90                	xchg   %ax,%ax
+  200ba1:	66 90                	xchg   %ax,%ax
+  200ba3:	66 90                	xchg   %ax,%ax
+  200ba5:	66 90                	xchg   %ax,%ax
+  200ba7:	66 90                	xchg   %ax,%ax
+  200ba9:	66 90                	xchg   %ax,%ax
+  200bab:	66 90                	xchg   %ax,%ax
+  200bad:	66 90                	xchg   %ax,%ax
+  200baf:	66 90                	xchg   %ax,%ax
+  200bb1:	66 90                	xchg   %ax,%ax
+  200bb3:	66 90                	xchg   %ax,%ax
+  200bb5:	66 90                	xchg   %ax,%ax
+  200bb7:	66 90                	xchg   %ax,%ax
+  200bb9:	66 90                	xchg   %ax,%ax
+  200bbb:	66 90                	xchg   %ax,%ax
+  200bbd:	66 90                	xchg   %ax,%ax
+  200bbf:	66 90                	xchg   %ax,%ax
+  200bc1:	66 90                	xchg   %ax,%ax
+  200bc3:	66 90                	xchg   %ax,%ax
+  200bc5:	66 90                	xchg   %ax,%ax
+  200bc7:	66 90                	xchg   %ax,%ax
+  200bc9:	66 90                	xchg   %ax,%ax
+  200bcb:	66 90                	xchg   %ax,%ax
+  200bcd:	66 90                	xchg   %ax,%ax
+  200bcf:	66 90                	xchg   %ax,%ax
+  200bd1:	66 90                	xchg   %ax,%ax
+  200bd3:	66 90                	xchg   %ax,%ax
+  200bd5:	66 90                	xchg   %ax,%ax
+  200bd7:	66 90                	xchg   %ax,%ax
+  200bd9:	66 90                	xchg   %ax,%ax
+  200bdb:	66 90                	xchg   %ax,%ax
+  200bdd:	66 90                	xchg   %ax,%ax
+  200bdf:	66 90                	xchg   %ax,%ax
+  200be1:	66 90                	xchg   %ax,%ax
+  200be3:	66 90                	xchg   %ax,%ax
+  200be5:	66 90                	xchg   %ax,%ax
+  200be7:	66 90                	xchg   %ax,%ax
+  200be9:	66 90                	xchg   %ax,%ax
+  200beb:	66 90                	xchg   %ax,%ax
+  200bed:	66 90                	xchg   %ax,%ax
+  200bef:	66 90                	xchg   %ax,%ax
+  200bf1:	66 90                	xchg   %ax,%ax
+  200bf3:	66 90                	xchg   %ax,%ax
+  200bf5:	66 90                	xchg   %ax,%ax
+  200bf7:	66 90                	xchg   %ax,%ax
+  200bf9:	66 90                	xchg   %ax,%ax
+  200bfb:	66 90                	xchg   %ax,%ax
+  200bfd:	66 90                	xchg   %ax,%ax
+  200bff:	66 90                	xchg   %ax,%ax
+  200c01:	66 90                	xchg   %ax,%ax
+  200c03:	66 90                	xchg   %ax,%ax
+  200c05:	66 90                	xchg   %ax,%ax
+  200c07:	66 90                	xchg   %ax,%ax
+  200c09:	66 90                	xchg   %ax,%ax
+  200c0b:	66 90                	xchg   %ax,%ax
+  200c0d:	66 90                	xchg   %ax,%ax
+  200c0f:	66 90                	xchg   %ax,%ax
+  200c11:	66 90                	xchg   %ax,%ax
+  200c13:	66 90                	xchg   %ax,%ax
+  200c15:	66 90                	xchg   %ax,%ax
+  200c17:	66 90                	xchg   %ax,%ax
+  200c19:	66 90                	xchg   %ax,%ax
+  200c1b:	66 90                	xchg   %ax,%ax
+  200c1d:	66 90                	xchg   %ax,%ax
+  200c1f:	66 90                	xchg   %ax,%ax
+  200c21:	66 90                	xchg   %ax,%ax
+  200c23:	66 90                	xchg   %ax,%ax
+  200c25:	66 90                	xchg   %ax,%ax
+  200c27:	66 90                	xchg   %ax,%ax
+  200c29:	66 90                	xchg   %ax,%ax
+  200c2b:	66 90                	xchg   %ax,%ax
+  200c2d:	66 90                	xchg   %ax,%ax
+  200c2f:	66 90                	xchg   %ax,%ax
+  200c31:	66 90                	xchg   %ax,%ax
+  200c33:	66 90                	xchg   %ax,%ax
+  200c35:	66 90                	xchg   %ax,%ax
+  200c37:	66 90                	xchg   %ax,%ax
+  200c39:	66 90                	xchg   %ax,%ax
+  200c3b:	66 90                	xchg   %ax,%ax
+  200c3d:	66 90                	xchg   %ax,%ax
+  200c3f:	66 90                	xchg   %ax,%ax
+  200c41:	66 90                	xchg   %ax,%ax
+  200c43:	66 90                	xchg   %ax,%ax
+  200c45:	66 90                	xchg   %ax,%ax
+  200c47:	66 90                	xchg   %ax,%ax
+  200c49:	66 90                	xchg   %ax,%ax
+  200c4b:	66 90                	xchg   %ax,%ax
+  200c4d:	66 90                	xchg   %ax,%ax
+  200c4f:	66 90                	xchg   %ax,%ax
+  200c51:	66 90                	xchg   %ax,%ax
+  200c53:	66 90                	xchg   %ax,%ax
+  200c55:	66 90                	xchg   %ax,%ax
+  200c57:	66 90                	xchg   %ax,%ax
+  200c59:	66 90                	xchg   %ax,%ax
+  200c5b:	66 90                	xchg   %ax,%ax
+  200c5d:	66 90                	xchg   %ax,%ax
+  200c5f:	66 90                	xchg   %ax,%ax
+  200c61:	66 90                	xchg   %ax,%ax
+  200c63:	66 90                	xchg   %ax,%ax
+  200c65:	66 90                	xchg   %ax,%ax
+  200c67:	66 90                	xchg   %ax,%ax
+  200c69:	66 90                	xchg   %ax,%ax
+  200c6b:	66 90                	xchg   %ax,%ax
+  200c6d:	66 90                	xchg   %ax,%ax
+  200c6f:	66 90                	xchg   %ax,%ax
+  200c71:	66 90                	xchg   %ax,%ax
+  200c73:	66 90                	xchg   %ax,%ax
+  200c75:	66 90                	xchg   %ax,%ax
+  200c77:	66 90                	xchg   %ax,%ax
+  200c79:	66 90                	xchg   %ax,%ax
+  200c7b:	66 90                	xchg   %ax,%ax
+  200c7d:	66 90                	xchg   %ax,%ax
+  200c7f:	66 90                	xchg   %ax,%ax
+  200c81:	66 90                	xchg   %ax,%ax
+  200c83:	66 90                	xchg   %ax,%ax
+  200c85:	66 90                	xchg   %ax,%ax
+  200c87:	66 90                	xchg   %ax,%ax
+  200c89:	66 90                	xchg   %ax,%ax
+  200c8b:	66 90                	xchg   %ax,%ax
+  200c8d:	66 90                	xchg   %ax,%ax
+  200c8f:	66 90                	xchg   %ax,%ax
+  200c91:	66 90                	xchg   %ax,%ax
+  200c93:	66 90                	xchg   %ax,%ax
+  200c95:	66 90                	xchg   %ax,%ax
+  200c97:	66 90                	xchg   %ax,%ax
+  200c99:	66 90                	xchg   %ax,%ax
+  200c9b:	66 90                	xchg   %ax,%ax
+  200c9d:	66 90                	xchg   %ax,%ax
+  200c9f:	66 90                	xchg   %ax,%ax
+  200ca1:	66 90                	xchg   %ax,%ax
+  200ca3:	66 90                	xchg   %ax,%ax
+  200ca5:	66 90                	xchg   %ax,%ax
+  200ca7:	66 90                	xchg   %ax,%ax
+  200ca9:	66 90                	xchg   %ax,%ax
+  200cab:	66 90                	xchg   %ax,%ax
+  200cad:	66 90                	xchg   %ax,%ax
+  200caf:	66 90                	xchg   %ax,%ax
+  200cb1:	66 90                	xchg   %ax,%ax
+  200cb3:	66 90                	xchg   %ax,%ax
+  200cb5:	66 90                	xchg   %ax,%ax
+  200cb7:	66 90                	xchg   %ax,%ax
+  200cb9:	66 90                	xchg   %ax,%ax
+  200cbb:	66 90                	xchg   %ax,%ax
+  200cbd:	66 90                	xchg   %ax,%ax
+  200cbf:	66 90                	xchg   %ax,%ax
+  200cc1:	66 90                	xchg   %ax,%ax
+  200cc3:	66 90                	xchg   %ax,%ax
+  200cc5:	66 90                	xchg   %ax,%ax
+  200cc7:	66 90                	xchg   %ax,%ax
+  200cc9:	66 90                	xchg   %ax,%ax
+  200ccb:	66 90                	xchg   %ax,%ax
+  200ccd:	66 90                	xchg   %ax,%ax
+  200ccf:	66 90                	xchg   %ax,%ax
+  200cd1:	66 90                	xchg   %ax,%ax
+  200cd3:	66 90                	xchg   %ax,%ax
+  200cd5:	66 90                	xchg   %ax,%ax
+  200cd7:	66 90                	xchg   %ax,%ax
+  200cd9:	66 90                	xchg   %ax,%ax
+  200cdb:	66 90                	xchg   %ax,%ax
+  200cdd:	66 90                	xchg   %ax,%ax
+  200cdf:	66 90                	xchg   %ax,%ax
+  200ce1:	66 90                	xchg   %ax,%ax
+  200ce3:	66 90                	xchg   %ax,%ax
+  200ce5:	66 90                	xchg   %ax,%ax
+  200ce7:	66 90                	xchg   %ax,%ax
+  200ce9:	66 90                	xchg   %ax,%ax
+  200ceb:	66 90                	xchg   %ax,%ax
+  200ced:	66 90                	xchg   %ax,%ax
+  200cef:	66 90                	xchg   %ax,%ax
+  200cf1:	66 90                	xchg   %ax,%ax
+  200cf3:	66 90                	xchg   %ax,%ax
+  200cf5:	66 90                	xchg   %ax,%ax
+  200cf7:	66 90                	xchg   %ax,%ax
+  200cf9:	66 90                	xchg   %ax,%ax
+  200cfb:	66 90                	xchg   %ax,%ax
+  200cfd:	66 90                	xchg   %ax,%ax
+  200cff:	66 90                	xchg   %ax,%ax
+  200d01:	66 90                	xchg   %ax,%ax
+  200d03:	66 90                	xchg   %ax,%ax
+  200d05:	66 90                	xchg   %ax,%ax
+  200d07:	66 90                	xchg   %ax,%ax
+  200d09:	66 90                	xchg   %ax,%ax
+  200d0b:	66 90                	xchg   %ax,%ax
+  200d0d:	66 90                	xchg   %ax,%ax
+  200d0f:	66 90                	xchg   %ax,%ax
+  200d11:	66 90                	xchg   %ax,%ax
+  200d13:	66 90                	xchg   %ax,%ax
+  200d15:	66 90                	xchg   %ax,%ax
+  200d17:	66 90                	xchg   %ax,%ax
+  200d19:	66 90                	xchg   %ax,%ax
+  200d1b:	66 90                	xchg   %ax,%ax
+  200d1d:	66 90                	xchg   %ax,%ax
+  200d1f:	66 90                	xchg   %ax,%ax
+  200d21:	66 90                	xchg   %ax,%ax
+  200d23:	66 90                	xchg   %ax,%ax
+  200d25:	66 90                	xchg   %ax,%ax
+  200d27:	66 90                	xchg   %ax,%ax
+  200d29:	66 90                	xchg   %ax,%ax
+  200d2b:	66 90                	xchg   %ax,%ax
+  200d2d:	66 90                	xchg   %ax,%ax
+  200d2f:	66 90                	xchg   %ax,%ax
+  200d31:	66 90                	xchg   %ax,%ax
+  200d33:	66 90                	xchg   %ax,%ax
+  200d35:	66 90                	xchg   %ax,%ax
+  200d37:	66 90                	xchg   %ax,%ax
+  200d39:	66 90                	xchg   %ax,%ax
+  200d3b:	66 90                	xchg   %ax,%ax
+  200d3d:	66 90                	xchg   %ax,%ax
+  200d3f:	66 90                	xchg   %ax,%ax
+  200d41:	66 90                	xchg   %ax,%ax
+  200d43:	66 90                	xchg   %ax,%ax
+  200d45:	66 90                	xchg   %ax,%ax
+  200d47:	66 90                	xchg   %ax,%ax
+  200d49:	66 90                	xchg   %ax,%ax
+  200d4b:	66 90                	xchg   %ax,%ax
+  200d4d:	66 90                	xchg   %ax,%ax
+  200d4f:	66 90                	xchg   %ax,%ax
+  200d51:	66 90                	xchg   %ax,%ax
+  200d53:	66 90                	xchg   %ax,%ax
+  200d55:	66 90                	xchg   %ax,%ax
+  200d57:	66 90                	xchg   %ax,%ax
+  200d59:	66 90                	xchg   %ax,%ax
+  200d5b:	66 90                	xchg   %ax,%ax
+  200d5d:	66 90                	xchg   %ax,%ax
+  200d5f:	66 90                	xchg   %ax,%ax
+  200d61:	66 90                	xchg   %ax,%ax
+  200d63:	66 90                	xchg   %ax,%ax
+  200d65:	66 90                	xchg   %ax,%ax
+  200d67:	66 90                	xchg   %ax,%ax
+  200d69:	66 90                	xchg   %ax,%ax
+  200d6b:	66 90                	xchg   %ax,%ax
+  200d6d:	66 90                	xchg   %ax,%ax
+  200d6f:	66 90                	xchg   %ax,%ax
+  200d71:	66 90                	xchg   %ax,%ax
+  200d73:	66 90                	xchg   %ax,%ax
+  200d75:	66 90                	xchg   %ax,%ax
+  200d77:	66 90                	xchg   %ax,%ax
+  200d79:	66 90                	xchg   %ax,%ax
+  200d7b:	66 90                	xchg   %ax,%ax
+  200d7d:	66 90                	xchg   %ax,%ax
+  200d7f:	66 90                	xchg   %ax,%ax
+  200d81:	66 90                	xchg   %ax,%ax
+  200d83:	66 90                	xchg   %ax,%ax
+  200d85:	66 90                	xchg   %ax,%ax
+  200d87:	66 90                	xchg   %ax,%ax
+  200d89:	66 90                	xchg   %ax,%ax
+  200d8b:	66 90                	xchg   %ax,%ax
+  200d8d:	66 90                	xchg   %ax,%ax
+  200d8f:	66 90                	xchg   %ax,%ax
+  200d91:	66 90                	xchg   %ax,%ax
+  200d93:	66 90                	xchg   %ax,%ax
+  200d95:	66 90                	xchg   %ax,%ax
+  200d97:	66 90                	xchg   %ax,%ax
+  200d99:	66 90                	xchg   %ax,%ax
+  200d9b:	66 90                	xchg   %ax,%ax
+  200d9d:	66 90                	xchg   %ax,%ax
+  200d9f:	66 90                	xchg   %ax,%ax
+  200da1:	66 90                	xchg   %ax,%ax
+  200da3:	66 90                	xchg   %ax,%ax
+  200da5:	66 90                	xchg   %ax,%ax
+  200da7:	66 90                	xchg   %ax,%ax
+  200da9:	66 90                	xchg   %ax,%ax
+  200dab:	66 90                	xchg   %ax,%ax
+  200dad:	66 90                	xchg   %ax,%ax
+  200daf:	66 90                	xchg   %ax,%ax
+  200db1:	66 90                	xchg   %ax,%ax
+  200db3:	66 90                	xchg   %ax,%ax
+  200db5:	66 90                	xchg   %ax,%ax
+  200db7:	66 90                	xchg   %ax,%ax
+  200db9:	66 90                	xchg   %ax,%ax
+  200dbb:	66 90                	xchg   %ax,%ax
+  200dbd:	66 90                	xchg   %ax,%ax
+  200dbf:	66 90                	xchg   %ax,%ax
+  200dc1:	66 90                	xchg   %ax,%ax
+  200dc3:	66 90                	xchg   %ax,%ax
+  200dc5:	66 90                	xchg   %ax,%ax
+  200dc7:	66 90                	xchg   %ax,%ax
+  200dc9:	66 90                	xchg   %ax,%ax
+  200dcb:	66 90                	xchg   %ax,%ax
+  200dcd:	66 90                	xchg   %ax,%ax
+  200dcf:	66 90                	xchg   %ax,%ax
+  200dd1:	66 90                	xchg   %ax,%ax
+  200dd3:	66 90                	xchg   %ax,%ax
+  200dd5:	66 90                	xchg   %ax,%ax
+  200dd7:	66 90                	xchg   %ax,%ax
+  200dd9:	66 90                	xchg   %ax,%ax
+  200ddb:	66 90                	xchg   %ax,%ax
+  200ddd:	66 90                	xchg   %ax,%ax
+  200ddf:	66 90                	xchg   %ax,%ax
+  200de1:	66 90                	xchg   %ax,%ax
+  200de3:	66 90                	xchg   %ax,%ax
+  200de5:	66 90                	xchg   %ax,%ax
+  200de7:	66 90                	xchg   %ax,%ax
+  200de9:	66 90                	xchg   %ax,%ax
+  200deb:	66 90                	xchg   %ax,%ax
+  200ded:	66 90                	xchg   %ax,%ax
+  200def:	66 90                	xchg   %ax,%ax
+  200df1:	66 90                	xchg   %ax,%ax
+  200df3:	66 90                	xchg   %ax,%ax
+  200df5:	66 90                	xchg   %ax,%ax
+  200df7:	66 90                	xchg   %ax,%ax
+  200df9:	66 90                	xchg   %ax,%ax
+  200dfb:	66 90                	xchg   %ax,%ax
+  200dfd:	66 90                	xchg   %ax,%ax
+  200dff:	66 90                	xchg   %ax,%ax
+  200e01:	66 90                	xchg   %ax,%ax
+  200e03:	66 90                	xchg   %ax,%ax
+  200e05:	66 90                	xchg   %ax,%ax
+  200e07:	66 90                	xchg   %ax,%ax
+  200e09:	66 90                	xchg   %ax,%ax
+  200e0b:	66 90                	xchg   %ax,%ax
+  200e0d:	66 90                	xchg   %ax,%ax
+  200e0f:	66 90                	xchg   %ax,%ax
+  200e11:	66 90                	xchg   %ax,%ax
+  200e13:	66 90                	xchg   %ax,%ax
+  200e15:	66 90                	xchg   %ax,%ax
+  200e17:	66 90                	xchg   %ax,%ax
+  200e19:	66 90                	xchg   %ax,%ax
+  200e1b:	66 90                	xchg   %ax,%ax
+  200e1d:	66 90                	xchg   %ax,%ax
+  200e1f:	66 90                	xchg   %ax,%ax
+  200e21:	66 90                	xchg   %ax,%ax
+  200e23:	66 90                	xchg   %ax,%ax
+  200e25:	66 90                	xchg   %ax,%ax
+  200e27:	66 90                	xchg   %ax,%ax
+  200e29:	66 90                	xchg   %ax,%ax
+  200e2b:	66 90                	xchg   %ax,%ax
+  200e2d:	66 90                	xchg   %ax,%ax
+  200e2f:	66 90                	xchg   %ax,%ax
+  200e31:	66 90                	xchg   %ax,%ax
+  200e33:	66 90                	xchg   %ax,%ax
+  200e35:	66 90                	xchg   %ax,%ax
+  200e37:	66 90                	xchg   %ax,%ax
+  200e39:	66 90                	xchg   %ax,%ax
+  200e3b:	66 90                	xchg   %ax,%ax
+  200e3d:	66 90                	xchg   %ax,%ax
+  200e3f:	66 90                	xchg   %ax,%ax
+  200e41:	66 90                	xchg   %ax,%ax
+  200e43:	66 90                	xchg   %ax,%ax
+  200e45:	66 90                	xchg   %ax,%ax
+  200e47:	66 90                	xchg   %ax,%ax
+  200e49:	66 90                	xchg   %ax,%ax
+  200e4b:	66 90                	xchg   %ax,%ax
+  200e4d:	66 90                	xchg   %ax,%ax
+  200e4f:	66 90                	xchg   %ax,%ax
+  200e51:	66 90                	xchg   %ax,%ax
+  200e53:	66 90                	xchg   %ax,%ax
+  200e55:	66 90                	xchg   %ax,%ax
+  200e57:	66 90                	xchg   %ax,%ax
+  200e59:	66 90                	xchg   %ax,%ax
+  200e5b:	66 90                	xchg   %ax,%ax
+  200e5d:	66 90                	xchg   %ax,%ax
+  200e5f:	66 90                	xchg   %ax,%ax
+  200e61:	66 90                	xchg   %ax,%ax
+  200e63:	66 90                	xchg   %ax,%ax
+  200e65:	66 90                	xchg   %ax,%ax
+  200e67:	66 90                	xchg   %ax,%ax
+  200e69:	66 90                	xchg   %ax,%ax
+  200e6b:	66 90                	xchg   %ax,%ax
+  200e6d:	66 90                	xchg   %ax,%ax
+  200e6f:	66 90                	xchg   %ax,%ax
+  200e71:	66 90                	xchg   %ax,%ax
+  200e73:	66 90                	xchg   %ax,%ax
+  200e75:	66 90                	xchg   %ax,%ax
+  200e77:	66 90                	xchg   %ax,%ax
+  200e79:	66 90                	xchg   %ax,%ax
+  200e7b:	66 90                	xchg   %ax,%ax
+  200e7d:	66 90                	xchg   %ax,%ax
+  200e7f:	66 90                	xchg   %ax,%ax
+  200e81:	66 90                	xchg   %ax,%ax
+  200e83:	66 90                	xchg   %ax,%ax
+  200e85:	66 90                	xchg   %ax,%ax
+  200e87:	66 90                	xchg   %ax,%ax
+  200e89:	66 90                	xchg   %ax,%ax
+  200e8b:	66 90                	xchg   %ax,%ax
+  200e8d:	66 90                	xchg   %ax,%ax
+  200e8f:	66 90                	xchg   %ax,%ax
+  200e91:	66 90                	xchg   %ax,%ax
+  200e93:	66 90                	xchg   %ax,%ax
+  200e95:	66 90                	xchg   %ax,%ax
+  200e97:	66 90                	xchg   %ax,%ax
+  200e99:	66 90                	xchg   %ax,%ax
+  200e9b:	66 90                	xchg   %ax,%ax
+  200e9d:	66 90                	xchg   %ax,%ax
+  200e9f:	66 90                	xchg   %ax,%ax
+  200ea1:	66 90                	xchg   %ax,%ax
+  200ea3:	66 90                	xchg   %ax,%ax
+  200ea5:	66 90                	xchg   %ax,%ax
+  200ea7:	66 90                	xchg   %ax,%ax
+  200ea9:	66 90                	xchg   %ax,%ax
+  200eab:	66 90                	xchg   %ax,%ax
+  200ead:	66 90                	xchg   %ax,%ax
+  200eaf:	66 90                	xchg   %ax,%ax
+  200eb1:	66 90                	xchg   %ax,%ax
+  200eb3:	66 90                	xchg   %ax,%ax
+  200eb5:	66 90                	xchg   %ax,%ax
+  200eb7:	66 90                	xchg   %ax,%ax
+  200eb9:	66 90                	xchg   %ax,%ax
+  200ebb:	66 90                	xchg   %ax,%ax
+  200ebd:	66 90                	xchg   %ax,%ax
+  200ebf:	66 90                	xchg   %ax,%ax
+  200ec1:	66 90                	xchg   %ax,%ax
+  200ec3:	66 90                	xchg   %ax,%ax
+  200ec5:	66 90                	xchg   %ax,%ax
+  200ec7:	66 90                	xchg   %ax,%ax
+  200ec9:	66 90                	xchg   %ax,%ax
+  200ecb:	66 90                	xchg   %ax,%ax
+  200ecd:	66 90                	xchg   %ax,%ax
+  200ecf:	66 90                	xchg   %ax,%ax
+  200ed1:	66 90                	xchg   %ax,%ax
+  200ed3:	66 90                	xchg   %ax,%ax
+  200ed5:	66 90                	xchg   %ax,%ax
+  200ed7:	66 90                	xchg   %ax,%ax
+  200ed9:	66 90                	xchg   %ax,%ax
+  200edb:	66 90                	xchg   %ax,%ax
+  200edd:	66 90                	xchg   %ax,%ax
+  200edf:	66 90                	xchg   %ax,%ax
+  200ee1:	66 90                	xchg   %ax,%ax
+  200ee3:	66 90                	xchg   %ax,%ax
+  200ee5:	66 90                	xchg   %ax,%ax
+  200ee7:	66 90                	xchg   %ax,%ax
+  200ee9:	66 90                	xchg   %ax,%ax
+  200eeb:	66 90                	xchg   %ax,%ax
+  200eed:	66 90                	xchg   %ax,%ax
+  200eef:	66 90                	xchg   %ax,%ax
+  200ef1:	66 90                	xchg   %ax,%ax
+  200ef3:	66 90                	xchg   %ax,%ax
+  200ef5:	66 90                	xchg   %ax,%ax
+  200ef7:	66 90                	xchg   %ax,%ax
+  200ef9:	66 90                	xchg   %ax,%ax
+  200efb:	66 90                	xchg   %ax,%ax
+  200efd:	66 90                	xchg   %ax,%ax
+  200eff:	66 90                	xchg   %ax,%ax
+  200f01:	66 90                	xchg   %ax,%ax
+  200f03:	66 90                	xchg   %ax,%ax
+  200f05:	66 90                	xchg   %ax,%ax
+  200f07:	66 90                	xchg   %ax,%ax
+  200f09:	66 90                	xchg   %ax,%ax
+  200f0b:	66 90                	xchg   %ax,%ax
+  200f0d:	66 90                	xchg   %ax,%ax
+  200f0f:	66 90                	xchg   %ax,%ax
+  200f11:	66 90                	xchg   %ax,%ax
+  200f13:	66 90                	xchg   %ax,%ax
+  200f15:	66 90                	xchg   %ax,%ax
+  200f17:	66 90                	xchg   %ax,%ax
+  200f19:	66 90                	xchg   %ax,%ax
+  200f1b:	66 90                	xchg   %ax,%ax
+  200f1d:	66 90                	xchg   %ax,%ax
+  200f1f:	66 90                	xchg   %ax,%ax
+  200f21:	66 90                	xchg   %ax,%ax
+  200f23:	66 90                	xchg   %ax,%ax
+  200f25:	66 90                	xchg   %ax,%ax
+  200f27:	66 90                	xchg   %ax,%ax
+  200f29:	66 90                	xchg   %ax,%ax
+  200f2b:	66 90                	xchg   %ax,%ax
+  200f2d:	66 90                	xchg   %ax,%ax
+  200f2f:	66 90                	xchg   %ax,%ax
+  200f31:	66 90                	xchg   %ax,%ax
+  200f33:	66 90                	xchg   %ax,%ax
+  200f35:	66 90                	xchg   %ax,%ax
+  200f37:	66 90                	xchg   %ax,%ax
+  200f39:	66 90                	xchg   %ax,%ax
+  200f3b:	66 90                	xchg   %ax,%ax
+  200f3d:	66 90                	xchg   %ax,%ax
+  200f3f:	66 90                	xchg   %ax,%ax
+  200f41:	66 90                	xchg   %ax,%ax
+  200f43:	66 90                	xchg   %ax,%ax
+  200f45:	66 90                	xchg   %ax,%ax
+  200f47:	66 90                	xchg   %ax,%ax
+  200f49:	66 90                	xchg   %ax,%ax
+  200f4b:	66 90                	xchg   %ax,%ax
+  200f4d:	66 90                	xchg   %ax,%ax
+  200f4f:	66 90                	xchg   %ax,%ax
+  200f51:	66 90                	xchg   %ax,%ax
+  200f53:	66 90                	xchg   %ax,%ax
+  200f55:	66 90                	xchg   %ax,%ax
+  200f57:	66 90                	xchg   %ax,%ax
+  200f59:	66 90                	xchg   %ax,%ax
+  200f5b:	66 90                	xchg   %ax,%ax
+  200f5d:	66 90                	xchg   %ax,%ax
+  200f5f:	66 90                	xchg   %ax,%ax
+  200f61:	66 90                	xchg   %ax,%ax
+  200f63:	66 90                	xchg   %ax,%ax
+  200f65:	66 90                	xchg   %ax,%ax
+  200f67:	66 90                	xchg   %ax,%ax
+  200f69:	66 90                	xchg   %ax,%ax
+  200f6b:	66 90                	xchg   %ax,%ax
+  200f6d:	66 90                	xchg   %ax,%ax
+  200f6f:	66 90                	xchg   %ax,%ax
+  200f71:	66 90                	xchg   %ax,%ax
+  200f73:	66 90                	xchg   %ax,%ax
+  200f75:	66 90                	xchg   %ax,%ax
+  200f77:	66 90                	xchg   %ax,%ax
+  200f79:	66 90                	xchg   %ax,%ax
+  200f7b:	66 90                	xchg   %ax,%ax
+  200f7d:	66 90                	xchg   %ax,%ax
+  200f7f:	66 90                	xchg   %ax,%ax
+  200f81:	66 90                	xchg   %ax,%ax
+  200f83:	66 90                	xchg   %ax,%ax
+  200f85:	66 90                	xchg   %ax,%ax
+  200f87:	66 90                	xchg   %ax,%ax
+  200f89:	66 90                	xchg   %ax,%ax
+  200f8b:	66 90                	xchg   %ax,%ax
+  200f8d:	66 90                	xchg   %ax,%ax
+  200f8f:	66 90                	xchg   %ax,%ax
+  200f91:	66 90                	xchg   %ax,%ax
+  200f93:	66 90                	xchg   %ax,%ax
+  200f95:	66 90                	xchg   %ax,%ax
+  200f97:	66 90                	xchg   %ax,%ax
+  200f99:	66 90                	xchg   %ax,%ax
+  200f9b:	66 90                	xchg   %ax,%ax
+  200f9d:	66 90                	xchg   %ax,%ax
+  200f9f:	66 90                	xchg   %ax,%ax
+  200fa1:	66 90                	xchg   %ax,%ax
+  200fa3:	66 90                	xchg   %ax,%ax
+  200fa5:	66 90                	xchg   %ax,%ax
+  200fa7:	66 90                	xchg   %ax,%ax
+  200fa9:	66 90                	xchg   %ax,%ax
+  200fab:	66 90                	xchg   %ax,%ax
+  200fad:	66 90                	xchg   %ax,%ax
+  200faf:	66 90                	xchg   %ax,%ax
+  200fb1:	66 90                	xchg   %ax,%ax
+  200fb3:	66 90                	xchg   %ax,%ax
+  200fb5:	66 90                	xchg   %ax,%ax
+  200fb7:	66 90                	xchg   %ax,%ax
+  200fb9:	66 90                	xchg   %ax,%ax
+  200fbb:	66 90                	xchg   %ax,%ax
+  200fbd:	66 90                	xchg   %ax,%ax
+  200fbf:	66 90                	xchg   %ax,%ax
+  200fc1:	66 90                	xchg   %ax,%ax
+  200fc3:	66 90                	xchg   %ax,%ax
+  200fc5:	66 90                	xchg   %ax,%ax
+  200fc7:	66 90                	xchg   %ax,%ax
+  200fc9:	66 90                	xchg   %ax,%ax
+  200fcb:	66 90                	xchg   %ax,%ax
+  200fcd:	66 90                	xchg   %ax,%ax
+  200fcf:	66 90                	xchg   %ax,%ax
+  200fd1:	66 90                	xchg   %ax,%ax
+  200fd3:	66 90                	xchg   %ax,%ax
+  200fd5:	66 90                	xchg   %ax,%ax
+  200fd7:	66 90                	xchg   %ax,%ax
+  200fd9:	66 90                	xchg   %ax,%ax
+  200fdb:	66 90                	xchg   %ax,%ax
+  200fdd:	66 90                	xchg   %ax,%ax
+  200fdf:	66 90                	xchg   %ax,%ax
+  200fe1:	66 90                	xchg   %ax,%ax
+  200fe3:	66 90                	xchg   %ax,%ax
+  200fe5:	66 90                	xchg   %ax,%ax
+  200fe7:	66 90                	xchg   %ax,%ax
+  200fe9:	66 90                	xchg   %ax,%ax
+  200feb:	66 90                	xchg   %ax,%ax
+  200fed:	66 90                	xchg   %ax,%ax
+  200fef:	66 90                	xchg   %ax,%ax
+  200ff1:	66 90                	xchg   %ax,%ax
+  200ff3:	66 90                	xchg   %ax,%ax
+  200ff5:	66 90                	xchg   %ax,%ax
+  200ff7:	66 90                	xchg   %ax,%ax
+  200ff9:	66 90                	xchg   %ax,%ax
+  200ffb:	66 90                	xchg   %ax,%ax
+  200ffd:	66 90                	xchg   %ax,%ax
+  200fff:	90                   	nop
