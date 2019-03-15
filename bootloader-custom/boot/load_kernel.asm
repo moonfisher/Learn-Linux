@@ -1,7 +1,7 @@
 [BITS 16]
 
 ; 常量
-KERNEL_OFFSET equ 0x8000		; 内核加载到0x1000的内存地址
+KERNEL_OFFSET equ 0x1000		; 内核加载到0x1000的内存地址
 
 ; 加载内核 kernel.bin 到 KERNEL_OFFSET 地址上
 load_kernel:
