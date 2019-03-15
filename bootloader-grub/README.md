@@ -1,4 +1,5 @@
 本文通过 grub 引导 os 进入 c 代码内核，并非是自己写 bootloader 去引导，通过 grub 方式可以让开发更聚焦于内核功能，无需关注引导过程<br>
+https://www.binss.me/blog/boot-process-of-linux-grub/<br>
 
 1）grub 提供一个通用内核加载方式，可以加载多种操作系统内核镜像<br>
 2）linux 下编译开发的内核镜像实际是一个 elf 格式文件<br>
