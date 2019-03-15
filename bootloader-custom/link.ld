@@ -1,4 +1,4 @@
-start = 0x1000;
+start = 0x8000;
 ENTRY(start)
 SECTIONS {
 	. = start; /*起始地址*/
