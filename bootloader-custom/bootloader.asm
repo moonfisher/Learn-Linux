@@ -160,7 +160,7 @@ PRINT_STRING_PM:
 
 
 ; 常量
-KERNEL_OFFSET 		EQU 	0X8000					; 内核加载到0X1000的内存地址
+KERNEL_OFFSET 		EQU 	0X9000					; 内核加载到0X9000的内存地址，这个地址内存是空闲的没有其他程序会用到
 VRAM_ADDR       	EQU     0XB8000     			; 显存地址
 WHITE_ON_BLACK  	EQU     0X0F        			; 黑底白字
 CODE_SEG 			EQU 	GDT_CODE - GDT_START   	; 段寄存器的索引，GDT[DS]
