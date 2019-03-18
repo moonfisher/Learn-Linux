@@ -12,15 +12,15 @@ OBJS = $(C_SOURCES:.c=.o) # 将.c替换为.o
 
 all: OS.bin
 
-OS.bin: boot/bootloader.bin kernel/kernel.bin
+OS.bin: boot/bootloader.bin kernel/main.bin
 	cat $^ > $@
 
 # 调试用
-kernel/kernel.elf: kernel/kernel_entry.o\
+kernel/main.elf: boot/bootentry.o\
 	$(OBJS)
 	$(LD) -Tlink.ld -m elf_i386 -o $@ $^
 
-kernel/kernel.bin: kernel/kernel.elf
+kernel/main.bin: kernel/main.elf
 	# 利用objcopy从带符号的elf文件中抽出纯二进制文件
 	$(OBJCOPY) -O binary $< $@
 
