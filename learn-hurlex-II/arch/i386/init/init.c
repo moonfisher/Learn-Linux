@@ -28,7 +28,11 @@ multiboot_t *glb_mboot_ptr;
 uint8_t kern_stack[STACK_SIZE]  __attribute__ ((aligned(STACK_SIZE)));
 
 // 内核栈的栈顶
-uint32_t kern_stack_top = (uint32_t)kern_stack + STACK_SIZE;
+#if ASM_NO_XCODE
+    uint32_t kern_stack_top = (uint32_t)kern_stack + STACK_SIZE;
+#else
+    uint32_t kern_stack_top;
+#endif
 
 #if ASM_NO_XCODE
 

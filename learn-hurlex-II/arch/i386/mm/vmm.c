@@ -26,7 +26,11 @@
 pgd_t pgd_kern[PGD_SIZE] __attribute__ ((aligned(PAGE_SIZE)));
 
 // 内核页表起始
-static pte_t *pte_addr = (pte_t *)((uint32_t)kern_end + KERNBASE);
+#if ASM_NO_XCODE
+    static pte_t *pte_addr = (pte_t *)((uint32_t)kern_end + KERNBASE);
+#else
+    static pte_t *pte_addr;
+#endif
 
 void vmm_init(void)
 {
