@@ -1,6 +1,8 @@
 
 #include "kprint.h"
-#include "types.h"
+#include "defs.h"
+#include "x86.h"
+#include "elf.h"
 
 int main()
 {
