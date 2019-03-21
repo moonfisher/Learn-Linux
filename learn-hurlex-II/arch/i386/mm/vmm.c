@@ -34,11 +34,11 @@ pgd_t pgd_kern[PGD_SIZE] __attribute__ ((aligned(PAGE_SIZE)));
 
 void vmm_init(void)
 {
-        // 注册页错误中断的处理函数 
-        register_interrupt_handler(INT_PAGE_FAULT, &do_page_fault);
-        
-        // 页表数组指针
-        pte_t (*pte_kern)[PTE_SIZE] = (pte_t (*)[PTE_SIZE])pte_addr;
+    // 注册页错误中断的处理函数
+    register_interrupt_handler(INT_PAGE_FAULT, &do_page_fault);
+    
+    // 页表数组指针
+    pte_t (*pte_kern)[PTE_SIZE] = (pte_t (*)[PTE_SIZE])pte_addr;
 
     // 构造页目录(MMU需要的是物理地址，此处需要减去偏移)
     uint32_t pgd_idx = PGD_INDEX(PAGE_OFFSET);
@@ -63,12 +63,15 @@ void map(pgd_t *pgd_now, uint32_t va, uint32_t pa, uint32_t flags)
     uint32_t pte_idx = PTE_INDEX(va);
     
     pte_t *pte = (pte_t *)(pgd_now[pgd_idx] & PAGE_MASK);
-    if (!pte) {
-            pte = (pte_t *)alloc_pages(1);
-            pgd_now[pgd_idx] = (uint32_t)pte | PAGE_PRESENT | PAGE_WRITE;
-            pte = (pte_t *)pa_to_ka(pte);
-    } else {
-            pte = (pte_t *)pa_to_ka(pte);
+    if (!pte)
+    {
+        pte = (pte_t *)alloc_pages(1);
+        pgd_now[pgd_idx] = (uint32_t)pte | PAGE_PRESENT | PAGE_WRITE;
+        pte = (pte_t *)pa_to_ka(pte);
+    }
+    else
+    {
+        pte = (pte_t *)pa_to_ka(pte);
     }
 
     pte[pte_idx] = (pa & PAGE_MASK) | flags;
@@ -82,9 +85,9 @@ void unmap(pgd_t *pgd_now, uint32_t va)
     uint32_t pte_idx = PTE_INDEX(va);
 
     pte_t *pte = (pte_t *)(pgd_now[pgd_idx] & PAGE_MASK);
-
-    if (!pte) {
-            return;
+    if (!pte)
+    {
+        return;
     }
 
     // 转换到内核线性地址
@@ -101,17 +104,19 @@ uint32_t get_mapping(pgd_t *pgd_now, uint32_t va, uint32_t *pa)
     uint32_t pte_idx = PTE_INDEX(va);
 
     pte_t *pte = (pte_t *)(pgd_now[pgd_idx] & PAGE_MASK);
-    if (!pte) {
-          return 0;
+    if (!pte)
+    {
+        return 0;
     }
     
     // 转换到内核线性地址
     pte = (pte_t *)(pa_to_ka(pte));
 
     // 如果地址有效而且指针不为NULL，则返回地址
-    if (pte[pte_idx] != 0 && pa) {
-             *pa = pte[pte_idx] & PAGE_MASK;
-            return 1;
+    if (pte[pte_idx] != 0 && pa)
+    {
+        *pa = pte[pte_idx] & PAGE_MASK;
+        return 1;
     }
 
     return 0;

@@ -30,7 +30,11 @@
 
 #define __UNUSED__ __attribute__((unused))
 
-#define ASM_NO_XCODE    1
+#if DEBUG
+    #define ASM_NO_XCODE    0
+#else
+    #define ASM_NO_XCODE    1
+#endif
 
 typedef
 enum bool {

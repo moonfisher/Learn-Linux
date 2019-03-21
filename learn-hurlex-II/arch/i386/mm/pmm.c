@@ -54,13 +54,13 @@ void pmm_init(void)
 {
 	show_kernel_memory_map();
 	
-        e820map_t e820map;
-        bzero(&e820map, sizeof(e820map));
-        
-        get_ram_info(&e820map);
-        phy_pages_init(&e820map);
-        
-        page_init(phy_pages, phy_pages_count);
+    e820map_t e820map;
+    bzero(&e820map, sizeof(e820map));
+    
+    get_ram_info(&e820map);
+    phy_pages_init(&e820map);
+    
+    page_init(phy_pages, phy_pages_count);
 }
 
 static void get_ram_info(e820map_t *e820map)
