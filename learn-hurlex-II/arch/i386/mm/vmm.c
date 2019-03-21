@@ -16,11 +16,11 @@
 * =====================================================================================
 */
 
-#include "arch.h"
-#include "common.h"
-#include "debug.h"
-#include "mm.h"
-#include "string.h"
+#include <arch.h>
+#include <common.h>
+#include <debug.h>
+#include <mm/mm.h>
+#include <lib/string.h>
 
 // 内核页目录
 pgd_t pgd_kern[PGD_SIZE] __attribute__ ((aligned(PAGE_SIZE)));

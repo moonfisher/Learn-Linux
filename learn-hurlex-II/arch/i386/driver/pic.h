@@ -19,7 +19,7 @@
 #ifndef INCLUDE_PIC_H_
 #define INCLUDE_PIC_H_
 
-#include "arch.h"
+#include <arch.h>
 
 // 设置8259A芯片
 void init_interrupt_chip(void);

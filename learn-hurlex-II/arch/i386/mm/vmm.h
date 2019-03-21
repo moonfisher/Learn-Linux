@@ -19,9 +19,9 @@
 #ifndef INCLUDE_MM_VMM_H
 #define INCLUDE_MM_VMM_H
 
-#include "arch.h"
-#include "types.h"
-#include "list.h"
+#include <arch.h>
+#include <types.h>
+#include <lib/list.h>
 
 /* *
 * Virtual memory map:

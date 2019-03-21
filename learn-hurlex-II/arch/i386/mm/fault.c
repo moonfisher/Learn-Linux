@@ -16,10 +16,10 @@
 * =====================================================================================
 */
 
-#include "mm.h"
-#include "common.h"
-#include "debug.h"
-#include "arch.h"
+#include <mm/mm.h>
+#include <common.h>
+#include <debug.h>
+#include <arch.h>
 
 void do_page_fault(pt_regs_t *regs)
 {

@@ -16,9 +16,9 @@
 * =====================================================================================
 */
 
-#include "debug.h"
-#include "char_dev.h"
-#include "string.h"
+#include <debug.h>
+#include <char_dev.h>
+#include <lib/string.h>
 
 // 全局字符设备链表
 char_dev_t *char_devs;

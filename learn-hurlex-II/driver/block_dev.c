@@ -16,9 +16,9 @@
  * =====================================================================================
  */
 
-#include "debug.h"
-#include "string.h"
-#include "block_dev.h"
+#include <debug.h>
+#include <lib/string.h>
+#include <block_dev.h>
 
 // 全局块设备链表
 block_dev_t *block_devs;

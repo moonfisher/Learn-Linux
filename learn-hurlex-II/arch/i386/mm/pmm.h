@@ -19,8 +19,8 @@
 #ifndef INCLUDE_MM_PMM_H
 #define INCLUDE_MM_PMM_H
 
-#include "types.h"
-#include "atomic.h"
+#include <types.h>
+#include <atomic.h>
 
 // 默认栈的大小 4k
 #define STACK_SIZE     (0x1000)

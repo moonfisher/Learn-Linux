@@ -16,14 +16,14 @@
 * =====================================================================================
 */
 
-#include "init.h"
-#include "arch.h"
-#include "common.h"
-#include "debug.h"
-#include "sched.h"
-#include "mm.h"
-#include "fs.h"
-#include "kio.h"
+#include <init.h>
+#include <arch.h>
+#include <common.h>
+#include <debug.h>
+#include <sched.h>
+#include <mm/mm.h>
+#include <fs.h>
+#include <kio.h>
 
 static void kthread_test(void) __UNUSED__;
 

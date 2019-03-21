@@ -16,14 +16,14 @@
 * =====================================================================================
 */
 
-#include "mboot.h"
-#include "types.h"
-#include "debug.h"
-#include "sync.h"
-#include "mm.h"
-#include "ff_mm.h"
-#include "buddy_mm.h"
-#include "string.h"
+#include <mboot.h>
+#include <types.h>
+#include <debug.h>
+#include <sync.h>
+#include <mm/mm.h>
+#include <mm/ff_mm.h>
+#include <mm/buddy_mm.h>
+#include <lib/string.h>
 
 // 物理内存管理算法
 static const struct pmm_manager *pmm_manager = &ff_mm_manager;

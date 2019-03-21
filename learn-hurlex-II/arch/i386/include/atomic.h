@@ -19,7 +19,7 @@
 #ifndef ATOMIC_H_
 #define ATOMIC_H_
 
-#include "types.h"
+#include <types.h>
 
 #define LOCK_PREFIX "lock;"
 

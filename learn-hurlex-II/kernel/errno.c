@@ -16,7 +16,7 @@
  * =====================================================================================
  */
 
-#include "errno.h"
+#include <errno.h>
 
 // 内核错误的字符串定义
 static const char * const error_string[MAXERROR + 1] = {

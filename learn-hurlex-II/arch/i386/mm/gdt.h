@@ -19,7 +19,7 @@
 #ifndef GDT_H_
 #define GDT_H_
 
-#include "types.h"
+#include <types.h>
 
 // 全局描述符表长度
 #define GDT_LENGTH 6

@@ -19,10 +19,10 @@
 #ifndef INCLUDE_DEBUG_H_
 #define INCLUDE_DEBUG_H_
 
-#include "arch.h"
-#include "vargs.h"
-#include "elf.h"
-#include "errno.h"
+#include <arch.h>
+#include <vargs.h>
+#include <elf.h>
+#include <errno.h>
 
 // 内核代码段在内存中的起始和结束位置，在链接脚本中定义
 extern uint8_t kern_init_text_start[];

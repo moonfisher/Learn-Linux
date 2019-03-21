@@ -19,7 +19,7 @@
 #ifndef INCLUDE_CHAR_DEV_H_
 #define INCLUDE_CHAR_DEV_H_
 
-#include "types.h"
+#include <types.h>
 
 // 字符设备接口
 typedef

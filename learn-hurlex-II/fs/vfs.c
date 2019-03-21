@@ -16,13 +16,13 @@
 * =====================================================================================
 */
 
-#include "debug.h"
-#include "atomic.h"
-#include "arch.h"
-#include "mm.h"
-#include "string.h"
-#include "list.h"
-#include "fs.h"
+#include <debug.h>
+#include <atomic.h>
+#include <arch.h>
+#include <mm/mm.h>
+#include <lib/string.h>
+#include <lib/list.h>
+#include <fs.h>
 
 // 全局的文件系统指针
 struct filesystem *file_systems;

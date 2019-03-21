@@ -19,7 +19,7 @@
 #ifndef INCLUDE_LIB_STRING_H_
 #define INCLUDE_LIB_STRING_H_
 
-#include "types.h"
+#include <types.h>
 
 void memcpy(void *dest, void *src, uint32_t len);
 

@@ -19,7 +19,7 @@
 #ifndef INCLUDE_MM_SLOB_H_
 #define INCLUDE_MM_SLOB_H_
 
-#include "types.h"
+#include <types.h>
 
 // slob 分配器初始化
 void slob_init(void);

@@ -16,9 +16,9 @@
 * =====================================================================================
 */
 
-#include "common.h"
-#include "char_dev.h"
-#include "kio.h"
+#include <common.h>
+#include <char_dev.h>
+#include <kio.h>
 
 // 读取一个字符
 char getchar(void)

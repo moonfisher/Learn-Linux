@@ -16,9 +16,9 @@
 * =====================================================================================
 */
 
-#include "debug.h"
-#include "list.h"
-#include "mm.h"
+#include <debug.h>
+#include <lib/list.h>
+#include <mm/mm.h>
 
 typedef
 struct slob_block {

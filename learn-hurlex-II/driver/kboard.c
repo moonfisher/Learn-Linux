@@ -16,9 +16,10 @@
 * =====================================================================================
 */
 
-#include "common.h"
-#include "intr.h"
-#include "char_dev.h"
+#include <common.h>
+#include <intr/intr.h>
+
+#include <char_dev.h>
 
 /*
 * 键盘当前状态信息(相关位被设置即为有效)

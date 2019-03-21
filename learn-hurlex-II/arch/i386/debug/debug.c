@@ -16,11 +16,11 @@
 * =====================================================================================
 */
 
-#include "common.h"
-#include "debug.h"
-#include "elf.h"
-#include "string.h"
-#include "mm.h"
+#include <common.h>
+#include <debug.h>
+#include <elf.h>
+#include <lib/string.h>
+#include <mm/mm.h>
 
 static elf_t kernel_elf;
 

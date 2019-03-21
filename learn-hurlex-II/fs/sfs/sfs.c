@@ -16,13 +16,13 @@
 * =====================================================================================
 */
 
-#include "sfs.h"
-#include "debug.h"
-#include "string.h"
-#include "list.h"
-#include "atomic.h"
-#include "mbr.h"
-#include "fs.h"
+#include <fs/sfs/sfs.h>
+#include <debug.h>
+#include <lib/string.h>
+#include <lib/list.h>
+#include <atomic.h>
+#include <mbr.h>
+#include <fs.h>
 
 #define SUPER_BLOCK_OFFSET   4   // super_block 偏移
 #define INODEMAP_OFFSET     12   // inode_map 偏移

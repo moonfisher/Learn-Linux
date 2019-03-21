@@ -19,7 +19,7 @@
 #ifndef FS_SFS_SFS_H
 #define FS_SFS_SFS_H
 
-#include "types.h"
+#include <types.h>
 
 struct sfs_super_block {
         uint16_t s_type;                // 文件系统类型

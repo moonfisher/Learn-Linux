@@ -19,8 +19,8 @@
 #ifndef INCLUDE_MBR_H_
 #define INCLUDE_MBR_H_
 
-#include "types.h"
-#include "block_dev.h"
+#include <types.h>
+#include <block_dev.h>
 
 #define SECTION_SIZE      512 	  // 扇区大小
 #define MBR_CODE_LENGTH   446     // MBR代码长度

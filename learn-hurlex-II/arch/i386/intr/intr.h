@@ -19,7 +19,7 @@
 #ifndef IDT_H_
 #define IDT_H_
 
-#include "types.h"
+#include <types.h>
 
 // 中断保存的寄存器类型
 typedef

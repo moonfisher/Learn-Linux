@@ -16,10 +16,10 @@
 * =====================================================================================
 */
 
-#include "debug.h"
-#include "common.h"
-#include "arch.h"
-#include "sched.h"
+#include <debug.h>
+#include <common.h>
+#include <arch.h>
+#include <sched.h>
 
 #include "clock.h"
 

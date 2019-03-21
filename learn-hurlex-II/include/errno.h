@@ -19,7 +19,7 @@
 #ifndef INCLUDE_ERRNO_H_
 #define INCLUDE_ERRNO_H_
 
-#include "types.h"
+#include <types.h>
 
 #define E_UNSPECIFIED       1   // Unspecified or unknown problem
 #define E_BAD_PROC          2   // Process doesn't exist or otherwise

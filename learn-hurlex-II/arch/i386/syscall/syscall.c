@@ -16,10 +16,11 @@
 * =====================================================================================
 */
 
-#include "types.h"
-#include "debug.h"
-#include "fs.h"
-#include "intr.h"
+#include <types.h>
+#include <debug.h>
+#include <fs.h>
+#include <intr/intr.h>
+
 #include "syscall.h"
 
 static int sys_test(uint32_t args[])

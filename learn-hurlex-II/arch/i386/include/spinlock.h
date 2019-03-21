@@ -20,7 +20,7 @@
 #ifndef INCLUDE_SPINLOCK_H_
 #define INCLUDE_SPINLOCK_H_
 
-#include "types.h"
+#include <types.h>
 
 typedef
 struct spinlock_t {

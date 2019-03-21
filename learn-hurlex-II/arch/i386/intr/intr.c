@@ -16,9 +16,9 @@
 * =====================================================================================
 */
 
-#include "debug.h"
-#include "arch.h"
-#include "common.h"
+#include <debug.h>
+#include <arch.h>
+#include <common.h>
 
 #define INTERRUPT_MAX 256
 

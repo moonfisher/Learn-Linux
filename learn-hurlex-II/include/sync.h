@@ -19,9 +19,9 @@
 #ifndef INCLUDE_SYNC_H_
 #define INCLUDE_SYNC_H_
 
-#include "common.h"
-#include "types.h"
-#include "arch.h"
+#include <common.h>
+#include <types.h>
+#include <arch.h>
 
 static inline bool __intr_store(void)
 {

@@ -19,8 +19,8 @@
 #ifndef INCLUDE_SCHEDULING_H_
 #define INCLUDE_SCHEDULING_H_
 
-#include "arch.h"
-#include "task.h"
+#include <arch.h>
+#include <task/task.h>
 
 // clock 中断回调函数
 void clock_callback(pt_regs_t *regs);

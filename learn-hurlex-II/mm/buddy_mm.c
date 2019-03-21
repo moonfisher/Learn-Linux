@@ -16,11 +16,11 @@
  * =====================================================================================
  */
 
-#include "atomic.h"
-#include "debug.h"
-#include "pmm.h"
-#include "buddy_mm.h"
-#include "list.h"
+#include <atomic.h>
+#include <debug.h>
+#include <mm/pmm.h>
+#include <mm/buddy_mm.h>
+#include <lib/list.h>
 
 // 简化 list_entry 使用
 #define le_to_page(le) list_entry(le, page_t, list)

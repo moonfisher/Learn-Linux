@@ -19,12 +19,12 @@
 #ifndef ARCH_H_
 #define ARCH_H_
 
-#include "gdt.h"
-#include "intr.h"
-#include "pic.h"
-#include "clock.h"
-#include "console.h"
-#include "task.h"
+#include <mm/gdt.h>
+#include <intr/intr.h>
+#include <driver/pic.h>
+#include <driver/clock.h>
+#include <driver/console.h>
+#include <task/task.h>
 
 // 架构相关的初始化
 void arch_init(void);

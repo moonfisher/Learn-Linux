@@ -16,9 +16,9 @@
 * =====================================================================================
 */
 
-#include "device.h"
-#include "char_dev.h"
-#include "block_dev.h"
+#include <device.h>
+#include <char_dev.h>
+#include <block_dev.h>
 
 // 外部设备初始化
 void device_init(void)

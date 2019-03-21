@@ -19,9 +19,9 @@
 #ifndef INCLUDE_FS_H_
 #define INCLUDE_FS_H_
 
-#include "types.h"
-#include "spinlock.h"
-#include "block_dev.h"
+#include <types.h>
+#include <spinlock.h>
+#include <block_dev.h>
 
 #define RAMFS_T        0xA0
 #define SFS_T          0xAA

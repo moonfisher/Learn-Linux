@@ -16,10 +16,11 @@
 * =====================================================================================
 */
 
-#include "common.h"
-#include "debug.h"
-#include "sync.h"
-#include "mm.h"
+#include <common.h>
+#include <debug.h>
+#include <sync.h>
+#include <mm/mm.h>
+
 #include "console.h"
 
 /*
