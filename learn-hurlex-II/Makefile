@@ -20,7 +20,7 @@ ASM = nasm
 
 C_FLAGS = -std=c99 -c -m32 -Wall -Wextra -ggdb -gstabs+ -ffreestanding \
                  -I. -Iinclude -Iarch/i386 -Iarch/i386/include
-LD_FLAGS = -T scripts/kernel.ld -nostdlib
+LD_FLAGS = -T scripts/kernel.ld -m elf_i386 -nostdlib
 ASM_FLAGS = -f elf -g -F stabs
 
 all: $(S_OBJECTS) $(C_OBJECTS) link update_fd
