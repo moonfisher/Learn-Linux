@@ -29,7 +29,7 @@
 static const struct pmm_manager *pmm_manager = &ff_mm_manager;
 
 // 物理页帧数组指针 (内核结束地址[实地址]+内核基址+内核页表保留地址)
-static page_t *phy_pages;
+static page_t *phy_pages = (page_t *)((uint32_t)kern_end + KERNBASE + KVPAGE_SIZE);
 
 // 物理页帧数组长度
 static uint32_t phy_pages_count;
@@ -48,16 +48,15 @@ static void phy_pages_init(e820map_t *e820map);
 
 void pmm_init(void)
 {
-    phy_pages = (page_t *)((uint32_t)kern_end + KERNBASE + KVPAGE_SIZE);
-    show_kernel_memory_map();
-
-    e820map_t e820map;
-    bzero(&e820map, sizeof(e820map));
-    
-    get_ram_info(&e820map);
-    phy_pages_init(&e820map);
-    
-    page_init(phy_pages, phy_pages_count);
+	show_kernel_memory_map();
+	
+        e820map_t e820map;
+        bzero(&e820map, sizeof(e820map));
+        
+        get_ram_info(&e820map);
+        phy_pages_init(&e820map);
+        
+        page_init(phy_pages, phy_pages_count);
 }
 
 static void get_ram_info(e820map_t *e820map)

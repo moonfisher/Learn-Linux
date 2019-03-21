@@ -26,17 +26,15 @@
 pgd_t pgd_kern[PGD_SIZE] __attribute__ ((aligned(PAGE_SIZE)));
 
 // 内核页表起始
-static pte_t *pte_addr;
+static pte_t *pte_addr = (pte_t *)((uint32_t)kern_end + KERNBASE);
 
 void vmm_init(void)
 {
-    pte_addr = (pte_t *)((uint32_t)kern_end + KERNBASE);
-    
-    // 注册页错误中断的处理函数
-    register_interrupt_handler(INT_PAGE_FAULT, &do_page_fault);
-    
-    // 页表数组指针
-    pte_t (*pte_kern)[PTE_SIZE] = (pte_t (*)[PTE_SIZE])pte_addr;
+        // 注册页错误中断的处理函数 
+        register_interrupt_handler(INT_PAGE_FAULT, &do_page_fault);
+        
+        // 页表数组指针
+        pte_t (*pte_kern)[PTE_SIZE] = (pte_t (*)[PTE_SIZE])pte_addr;
 
     // 构造页目录(MMU需要的是物理地址，此处需要减去偏移)
     uint32_t pgd_idx = PGD_INDEX(PAGE_OFFSET);

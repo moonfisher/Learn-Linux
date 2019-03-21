@@ -28,7 +28,7 @@ multiboot_t *glb_mboot_ptr;
 uint8_t kern_stack[STACK_SIZE]  __attribute__ ((aligned(STACK_SIZE)));
 
 // 内核栈的栈顶
-uint32_t kern_stack_top;
+uint32_t kern_stack_top = (uint32_t)kern_stack + STACK_SIZE;
 
 #if ASM_NO_XCODE
 
@@ -53,10 +53,8 @@ __attribute__((section(".init.text"))) void enable_paging(void);
 // 内核入口函数
 __attribute__((section(".init.text"))) void kern_entry(void)
 {
-    kern_stack_top = (uint32_t)kern_stack + STACK_SIZE;
-    
-    // 映射临时页表
-    mmap_tmp_page();
+        // 映射临时页表
+        mmap_tmp_page();
 
     // 启用分页，这之后的代码就开始根据虚拟地址来寻址运行
     enable_paging();
