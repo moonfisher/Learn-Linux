@@ -21,13 +21,13 @@
 #include <init.h>
 #include <mm/mm.h>
 
-// 开启分页机制之后的 Multiboot 数据指针
+// 开启分页机制之后的 Multiboot 数据指针 0xc011b000
 multiboot_t *glb_mboot_ptr;
 
-// 开启分页机制之后的内核栈
+// 开启分页机制之后的内核栈 0xc011c000
 uint8_t kern_stack[STACK_SIZE]  __attribute__ ((aligned(STACK_SIZE)));
 
-// 内核栈的栈顶
+// 内核栈的栈顶 0xc010c12c
 #if ASM_NO_XCODE
     uint32_t kern_stack_top = (uint32_t)kern_stack + STACK_SIZE;
 #else

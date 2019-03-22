@@ -31,7 +31,7 @@ MBOOT_CHECKSUM          equ     - (MBOOT_HEADER_MAGIC + MBOOT_HEADER_FLAGS)
 
 [BITS 32]               ; 所有代码以 32-bit 的方式编译
 
-section .init.text      ; 临时代码段从这里开始
+section .init.text      ; 临时代码段从这里开始 被 grub 加载到内存物理地址 0x100000 上
 
 ; 在代码段的起始位置定义符合 Multiboot 规范的标记
 
@@ -43,15 +43,15 @@ dd MBOOT_CHECKSUM       ; 检测数值，其含义在定义处
 [GLOBAL mboot_ptr_tmp]  ; 全局的 struct multiboot * 变量
 [EXTERN kern_entry]     ; 声明内核 C 代码的入口函数
 
-start:
+start:                  ; 0x10000C
     mov [mboot_ptr_tmp], ebx        ; 将 ebx 中的指针存入 mboot_ptr_tmp
-    mov esp, STACK_TOP              ; 设置内核栈地址
+    mov esp, STACK_TOP              ; 设置内核栈地址 0x3ff
     and esp, 0FFFFFFF0H             ; 栈地址按照 16 字节对齐
     mov ebp, 0                      ; 帧指针修改为 0
 
-    call kern_entry                 ; 调用内核入口函数
+    call kern_entry                 ; 调用内核入口函数 call 0x100132
 
-noreturn:                               ; 代码永远不会返回到这里
+noreturn:                           ; 代码永远不会返回到这里
     hlt
     jmp noreturn
 
@@ -59,9 +59,9 @@ noreturn:                               ; 代码永远不会返回到这里
 
 section .init.data              ; 开启分页前临时的数据段
 
-stack:    times 1024 db 0       ; 这里作为临时内核栈
+stack:    times 1024 db 0       ; 这里作为临时内核栈 0x101000
 STACK_TOP equ $-stack-1         ; 内核栈顶，$ 符指代是当前地址
 
-mboot_ptr_tmp: dd 0             ; 全局的 multiboot 结构体指针
+mboot_ptr_tmp: dd 0             ; 全局的 multiboot 结构体指针 0x101400
 
 ;-----------------------------------------------------------------------------

@@ -35,8 +35,8 @@
 #define RAM_KERNEL_START (0x100000)
 
 // 内核代码在内存中的起始和结束位置，在链接脚本中定义
-extern uint8_t kern_start[];
-extern uint8_t kern_end[];
+extern uint8_t kern_start[];    // 0x100000
+extern uint8_t kern_end[];      // 0x13b000
 
 // 开启分页机制之后的内核栈
 extern uint8_t kern_stack[STACK_SIZE];
