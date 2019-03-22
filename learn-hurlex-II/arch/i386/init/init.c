@@ -44,9 +44,9 @@ uint8_t kern_stack[STACK_SIZE]  __attribute__ ((aligned(STACK_SIZE)));
 
 // 内核使用的临时页表和页目录
 // 该地址必须是页对齐的地址，内存 0-640KB 肯定是空闲的
-__attribute__((section(".init.data"))) pgd_t *pgd_tmp  = (pgd_t *)0x1000;
-__attribute__((section(".init.data"))) pte_t *pte_low  = (pte_t *)0x2000;
-__attribute__((section(".init.data"))) pte_t *pte_hign = (pte_t *)0x3000;
+__attribute__((section(".init.data"))) pgd_t *pgd_tmp  = (pgd_t *)0x1000; // 0x101404
+__attribute__((section(".init.data"))) pte_t *pte_low  = (pte_t *)0x2000; // 0x101408
+__attribute__((section(".init.data"))) pte_t *pte_high = (pte_t *)0x3000; // 0x10140c
 
 // 映射临时页表
 __attribute__((section(".init.text"))) void mmap_tmp_page(void);
@@ -54,7 +54,7 @@ __attribute__((section(".init.text"))) void mmap_tmp_page(void);
 // 启用分页
 __attribute__((section(".init.text"))) void enable_paging(void);
 
-// 内核入口函数
+// 内核入口函数 0x00100027
 __attribute__((section(".init.text"))) void kern_entry(void)
 {
     // 映射临时页表
@@ -82,11 +82,12 @@ __attribute__((section(".init.text"))) void mmap_tmp_page(void)
 
     for (int i = 0; i < 4; ++i)
     {
+        //PAGE_OFFSET = 0xC0000000 PAGE_MAP_SIZE = 0x400000 = 4M PAGE_SIZE = 0x1000 = 4k
         uint32_t pgd_idx = PGD_INDEX(PAGE_OFFSET + PAGE_MAP_SIZE * i);
-        pgd_tmp[pgd_idx] = ((uint32_t)pte_hign + PAGE_SIZE * i) | PAGE_PRESENT | PAGE_WRITE;
+        pgd_tmp[pgd_idx] = ((uint32_t)pte_high + PAGE_SIZE * i) | PAGE_PRESENT | PAGE_WRITE;
     }
 
-    // 映射内核虚拟地址 4MB 到物理地址的前 4MB
+    // 映射内核虚拟地址 4MB 到物理地址的前 4MB，用到多少先映射多少
     // 因为 .init.text 段的代码在物理地址前 4MB 处(肯定不会超出这个范围)，
     // 开启分页后若此处不映射，代码执行立即会出错，离开 .init.text 段后的代码执行，
     // 不再需要映射物理前 4MB 的内存
@@ -95,10 +96,10 @@ __attribute__((section(".init.text"))) void mmap_tmp_page(void)
         pte_low[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
     }
 
-    // 映射 0x00000000-0x01000000 的物理地址到虚拟地址 0xC0000000-0xC1000000
+    // 映射 0x00000000-0x01000000 16M 的物理地址到虚拟地址 0xC0000000-0xC1000000，用到多少先映射多少
     for (int i = 0; i < 1024 * 4; i++)
     {
-        pte_hign[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
+        pte_high[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
     }
     
     // 设置临时页表，等内核代码运行之后重新设置虚拟内存

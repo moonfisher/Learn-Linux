@@ -77,22 +77,22 @@
 // 内核起始虚拟地址
 #define KERNBASE          (0xC0000000)
 
-// 内核管理内存的大小
+// 内核管理内存的大小 896M
 #define KMEMSIZE          (0x38000000)
 
-// 内核页表大小
+// 内核页表大小 4M
 #define KVPAGE_SIZE       (0x400000)
 
-// 内核管理的物理内存的顶端地址
+// 内核管理的物理内存的顶端地址 0xF8000000
 #define KERNTOP           (KERNBASE + KMEMSIZE)
 
-// 内核的偏移地址
+// 内核的偏移地址 0xC0000000
 #define PAGE_OFFSET 	  KERNBASE
 
-// 每个页表可以映射的内存数
+// 每个页表可以映射的内存数 4M
 #define PAGE_MAP_SIZE 	  (0x400000)
 
-// 映射 KMEM_SIZE 的内存所需要的页数
+// 映射 KMEM_SIZE 的内存所需要的页数 896M / 4M = 224
 #define PTE_COUNT         (KMEMSIZE/PAGE_MAP_SIZE)
 
 // 获取一个地址的页目录项
@@ -113,10 +113,10 @@
 // U/S--位2是用户/超级用户标识，为 1 则任何特权级上的程序都可以访问该页面。
 #define PAGE_USER         (0x4)
 
-// 页表成员数
+// 页表成员数 1024
 #define PGD_SIZE (PAGE_SIZE/sizeof(pte_t))
 
-// 页表成员数
+// 页表成员数 1024
 #define PTE_SIZE (PAGE_SIZE/sizeof(uint32_t))
 
 // 任务内存信息

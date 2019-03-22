@@ -1,0 +1,55 @@
+ELF 头：
+  Magic：  7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00 
+  类别:                              ELF32
+  数据:                              2 补码，小端序 (little endian)
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI 版本:                          0
+  类型:                              EXEC (可执行文件)
+  系统架构:                          Intel 80386
+  版本:                              0x1
+  入口点地址：                        0x10000c
+  程序头起点：                        52 (bytes into file)
+  Start of section headers:          241776 (bytes into file)
+  标志：                             0x0
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         5
+  Size of section headers:           40 (bytes)
+  Number of section headers:         11
+  Section header string table index: 10
+
+节头：
+  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            00000000 000000 000000 00      0   0  0
+  [ 1] .init.text        PROGBITS        00100000 001000 001000 00  AX  0   0  1
+  [ 2] .init.data        PROGBITS        00101000 002000 001000 00  WA  0   0  4
+  [ 3] .text             PROGBITS        c0102000 003000 007000 00  AX  0   0 16
+  [ 4] .data             PROGBITS        c0109000 00a000 002000 00  WA  0   0 32
+  [ 5] .bss              NOBITS          c010b000 00c000 010010 00  WA  0   0 4096
+  [ 6] .stab             PROGBITS        c011b010 01c010 012ff0 0c   A  7   0  4
+  [ 7] .stabstr          STRTAB          c012e000 02f000 009000 00   A  0   0  1
+  [ 8] .symtab           SYMTAB          00000000 038000 001dc0 10      9 280  4
+  [ 9] .strtab           STRTAB          00000000 039dc0 00126a 00      0   0  1
+  [10] .shstrtab         STRTAB          00000000 03b02a 000045 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
+  L (link order), O (extra OS processing required), G (group), T (TLS),
+  C (compressed), x (unknown), o (OS specific), E (exclude),
+  p (processor specific)
+
+程序头：
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  LOAD           0x001000 0x00100000 0x00100000 0x01000 0x01000 R E 0x1000
+  LOAD           0x002000 0x00101000 0x00101000 0x01000 0x01000 RW  0x1000
+  LOAD           0x003000 0xc0102000 0x00102000 0x07000 0x07000 R E 0x1000
+  LOAD           0x00a000 0xc0109000 0x00109000 0x2e000 0x2e000 RW  0x1000
+  GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RWE 0x10
+
+ Section to Segment mapping:
+  段节...
+   00     .init.text 
+   01     .init.data 
+   02     .text 
+   03     .data .bss .stab .stabstr 
+   04     

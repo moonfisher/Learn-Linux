@@ -27,7 +27,7 @@
 
 static void kthread_test(void) __UNUSED__;
 
-// 内核初始化函数
+// 内核初始化函数 0xc0104a92
 void kern_init(void)
 {
     debug_init();

@@ -49,7 +49,7 @@ start:                  ; 0x10000C
     and esp, 0FFFFFFF0H             ; 栈地址按照 16 字节对齐
     mov ebp, 0                      ; 帧指针修改为 0
 
-    call kern_entry                 ; 调用内核入口函数 call 0x100132
+    call kern_entry                 ; 调用内核入口函数 call 0x00100027
 
 noreturn:                           ; 代码永远不会返回到这里
     hlt
