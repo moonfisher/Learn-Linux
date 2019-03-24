@@ -21,6 +21,7 @@
 // 体系结构相关的初始化函数
 void arch_init(void)
 {
+    //进入内核之前 grub 实际已经设置好了 gdt，此处可以根据实际需要重新设置
     gdt_init();
     idt_init();
     clock_init();

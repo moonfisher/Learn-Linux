@@ -201,18 +201,21 @@ static void copy_thread(struct task_struct *task, struct pt_regs_t *pt_regs)
 
 pid_t do_fork(uint32_t clone_flags, struct pt_regs_t *pt_regs)
 {
-    if (nr_task >= MAX_TASK) {
-            return -E_NO_FREE_PROC;
+    if (nr_task >= MAX_TASK)
+    {
+        return -E_NO_FREE_PROC;
     }
 
     struct task_struct *task = alloc_task_struct();
-    if (!task) {
-            return -E_NO_MEM;
+    if (!task)
+    {
+        return -E_NO_MEM;
     }
-
-    if (copy_mm(clone_flags, task) != 0) {
-            free_pages((uint32_t)ka_to_pa(task), STACK_SIZE/PAGE_SIZE);
-            return -E_NO_MEM;
+ 
+    if (copy_mm(clone_flags, task) != 0)
+    {
+        free_pages((uint32_t)ka_to_pa(task), STACK_SIZE/PAGE_SIZE);
+        return -E_NO_MEM;
     }
 
     copy_thread(task, pt_regs);
@@ -220,9 +223,9 @@ pid_t do_fork(uint32_t clone_flags, struct pt_regs_t *pt_regs)
     bool intr_flag = false;
     local_intr_store(intr_flag);
     {
-            task->pid = alloc_pid();
-            list_add(&task->list, &task_list);
-            nr_task ++;
+        task->pid = alloc_pid();
+        list_add(&task->list, &task_list);
+        nr_task ++;
     }
     local_intr_restore(intr_flag);
 
@@ -236,11 +239,11 @@ void do_exit(int errno)
     bool intr_flag = false;
     local_intr_store(intr_flag);
     {
-            current->state = TASK_ZOMBIE;
-            current->exit_code = errno;
-            current->need_resched = true;
-            nr_task--;
-            free_pid(current->pid);
+        current->state = TASK_ZOMBIE;
+        current->exit_code = errno;
+        current->need_resched = true;
+        nr_task--;
+        free_pid(current->pid);
     }
     local_intr_restore(intr_flag);
 
@@ -249,8 +252,9 @@ void do_exit(int errno)
 
 void cpu_idle(void)
 {
-    if (current->need_resched) {
-            schedule();
+    if (current->need_resched)
+    {
+        schedule();
     }
 }
 

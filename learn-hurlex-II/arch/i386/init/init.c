@@ -44,9 +44,9 @@ uint8_t kern_stack[STACK_SIZE]  __attribute__ ((aligned(STACK_SIZE)));
 
 // 内核使用的临时页表和页目录
 // 该地址必须是页对齐的地址，内存 0-640KB 肯定是空闲的
-__attribute__((section(".init.data"))) pgd_t *pgd_tmp  = (pgd_t *)0x1000; // 0x101404
-__attribute__((section(".init.data"))) pte_t *pte_low  = (pte_t *)0x2000; // 0x101408
-__attribute__((section(".init.data"))) pte_t *pte_high = (pte_t *)0x3000; // 0x10140c
+__attribute__((section(".init.data"))) pgd_t *pgd_tmp  = (pgd_t *)0x1000; // 页目录
+__attribute__((section(".init.data"))) pte_t *pte_low  = (pte_t *)0x2000; // 低端内存页表
+__attribute__((section(".init.data"))) pte_t *pte_high = (pte_t *)0x3000; // 高端内存页表
 
 // 映射临时页表
 __attribute__((section(".init.text"))) void mmap_tmp_page(void);
@@ -58,10 +58,10 @@ __attribute__((section(".init.text"))) void enable_paging(void);
 __attribute__((section(".init.text"))) void kern_entry(void)
 {
     // 映射临时页表
-    mmap_tmp_page();
+    mmap_tmp_page();    //call   100056 <mmap_tmp_page>
 
     // 启用分页，这之后的代码就开始根据虚拟地址来寻址运行
-    enable_paging();
+    enable_paging();    //call   100118 <enable_paging>
 
     // 切换临时内核栈到分页后的新栈，因为此时 cpu 已经按照分页来寻址了
     __asm__ volatile ("mov %0, %%esp\n\t" "xor %%ebp, %%ebp" : : "r" (kern_stack_top));
@@ -70,8 +70,12 @@ __attribute__((section(".init.text"))) void kern_entry(void)
     glb_mboot_ptr = (multiboot_t *)((uint32_t)mboot_ptr_tmp + PAGE_OFFSET);
 
     // 调用内核初始化函数
-    kern_init();
-
+    kern_init();        //call   c0106474 <kern_init>
+    
+    // 根据临时分页的方式，0xC0106474 对应的物理地址如下
+    // 0xC0106474 = 1100000000 0100000110 010001110100 = 0x300 0x106 0x474
+    // pgd_tmp[0x300][0x106] + 0x474 = 0x00106474
+    
     // 之前的函数调用链自栈切换后断开，无法再返回之前的调用点
 }
 
@@ -79,12 +83,17 @@ __attribute__((section(".init.text"))) void kern_entry(void)
 __attribute__((section(".init.text"))) void mmap_tmp_page(void)
 {
     pgd_tmp[0] = (uint32_t)pte_low | PAGE_PRESENT | PAGE_WRITE;
-
+    // pgd_tmp[0] = 0x2003 低端内存临时映射到目录0
+    
     for (int i = 0; i < 4; ++i)
     {
         //PAGE_OFFSET = 0xC0000000 PAGE_MAP_SIZE = 0x400000 = 4M PAGE_SIZE = 0x1000 = 4k
         uint32_t pgd_idx = PGD_INDEX(PAGE_OFFSET + PAGE_MAP_SIZE * i);
         pgd_tmp[pgd_idx] = ((uint32_t)pte_high + PAGE_SIZE * i) | PAGE_PRESENT | PAGE_WRITE;
+        // pgd_tmp[0x300] = 0x3003 高端内存映射到4个索引，4个目录
+        // pgd_tmp[0x301] = 0x4003
+        // pgd_tmp[0x302] = 0x5003
+        // pgd_tmp[0x303] = 0x6003
     }
 
     // 映射内核虚拟地址 4MB 到物理地址的前 4MB，用到多少先映射多少
@@ -94,12 +103,20 @@ __attribute__((section(".init.text"))) void mmap_tmp_page(void)
     for (int i = 0; i < 1024; i++)
     {
         pte_low[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
+        // pte_low[0] = 0x0003
+        // pte_low[1] = 0x1003
+        // pte_low[2] = 0x2003
+        // pte_low[3] = 0x3003
     }
 
     // 映射 0x00000000-0x01000000 16M 的物理地址到虚拟地址 0xC0000000-0xC1000000，用到多少先映射多少
     for (int i = 0; i < 1024 * 4; i++)
     {
         pte_high[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
+        // pte_high[0] = 0x0003
+        // pte_high[1] = 0x1003
+        // pte_high[2] = 0x2003
+        // pte_high[3] = 0x3003
     }
     
     // 设置临时页表，等内核代码运行之后重新设置虚拟内存

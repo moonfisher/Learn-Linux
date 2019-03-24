@@ -85,7 +85,7 @@ void idt_init(void)
     for (uint32_t i = 0; i < 48; ++i)
     {
         idt_set_gate(i, (uint32_t)isr_irq_func[i], 0x08, 0x8E);
-    }
+    } 
 
     // 128 (0x80) 将来用于实现系统调用
     idt_set_gate(128, (uint32_t)isr128, 0x08, 0xEF);

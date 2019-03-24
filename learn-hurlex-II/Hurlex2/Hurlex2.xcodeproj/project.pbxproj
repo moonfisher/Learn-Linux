@@ -175,7 +175,7 @@
 				C4E4D2EE22438DE3009EF5BE /* lib */,
 				C4E4D32B22438DE3009EF5BE /* mm */,
 			);
-			path = Hurlex2;
+			name = Hurlex2;
 			sourceTree = "<group>";
 		};
 		C4E4D2D322438DE3009EF5BE /* include */ = {
@@ -200,7 +200,7 @@
 				C4E4D2EB22438DE3009EF5BE /* kio.h */,
 			);
 			name = include;
-			path = ../../include;
+			path = ../include;
 			sourceTree = "<group>";
 		};
 		C4E4D2DE22438DE3009EF5BE /* lib */ = {
@@ -230,7 +230,7 @@
 				C4E4D2ED22438DE3009EF5BE /* kmain.c */,
 			);
 			name = init;
-			path = ../../init;
+			path = ../init;
 			sourceTree = "<group>";
 		};
 		C4E4D2EE22438DE3009EF5BE /* lib */ = {
@@ -240,7 +240,7 @@
 				C4E4D2F022438DE3009EF5BE /* string.c */,
 			);
 			name = lib;
-			path = ../../lib;
+			path = ../lib;
 			sourceTree = "<group>";
 		};
 		C4E4D2F122438DE3009EF5BE /* Hurlex2 */ = {
@@ -273,7 +273,7 @@
 				C4E4D2FA22438DE3009EF5BE /* sched */,
 			);
 			name = kernel;
-			path = ../../kernel;
+			path = ../kernel;
 			sourceTree = "<group>";
 		};
 		C4E4D2FA22438DE3009EF5BE /* sched */ = {
@@ -290,7 +290,7 @@
 				C4E4D2FD22438DE3009EF5BE /* i386 */,
 			);
 			name = arch;
-			path = ../../arch;
+			path = ../arch;
 			sourceTree = "<group>";
 		};
 		C4E4D2FD22438DE3009EF5BE /* i386 */ = {
@@ -405,7 +405,7 @@
 				C4E4D32A22438DE3009EF5BE /* char_dev.c */,
 			);
 			name = driver;
-			path = ../../driver;
+			path = ../driver;
 			sourceTree = "<group>";
 		};
 		C4E4D32B22438DE3009EF5BE /* mm */ = {
@@ -417,7 +417,7 @@
 				C4E4D32F22438DE3009EF5BE /* ff_mm.c */,
 			);
 			name = mm;
-			path = ../../mm;
+			path = ../mm;
 			sourceTree = "<group>";
 		};
 		C4E4D33022438DE3009EF5BE /* fs */ = {
@@ -430,7 +430,7 @@
 				C4E4D33722438DE3009EF5BE /* ramfs */,
 			);
 			name = fs;
-			path = ../../fs;
+			path = ../fs;
 			sourceTree = "<group>";
 		};
 		C4E4D33322438DE3009EF5BE /* sfs */ = {
