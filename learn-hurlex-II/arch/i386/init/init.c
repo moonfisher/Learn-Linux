@@ -74,7 +74,7 @@ __attribute__((section(".init.text"))) void kern_entry(void)
     
     // 根据临时分页的方式，0xC0106474 对应的物理地址如下
     // 0xC0106474 = 1100000000 0100000110 010001110100 = 0x300 0x106 0x474
-    // pgd_tmp[0x300][0x106] + 0x474 = 0x00106474
+    // pgd_tmp[0x300 * 4][0x106 * 4] + 0x474 = 0x00106474
     
     // 之前的函数调用链自栈切换后断开，无法再返回之前的调用点
 }
@@ -82,8 +82,8 @@ __attribute__((section(".init.text"))) void kern_entry(void)
 // 映射临时页表
 __attribute__((section(".init.text"))) void mmap_tmp_page(void)
 {
-    pgd_tmp[0] = (uint32_t)pte_low | PAGE_PRESENT | PAGE_WRITE;
     // pgd_tmp[0] = 0x2003 低端内存临时映射到目录0
+    pgd_tmp[0] = (uint32_t)pte_low | PAGE_PRESENT | PAGE_WRITE;
     
     for (int i = 0; i < 4; ++i)
     {
