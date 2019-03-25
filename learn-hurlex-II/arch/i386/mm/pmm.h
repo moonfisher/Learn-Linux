@@ -72,7 +72,7 @@ enum mem_zone_t {
 #define ZONE_NORMAL_ADDR     (0x1000000)   // 16 MB
 #define ZONE_HIGHMEM_ADDR    (0x38000000)  // 896 MB
 
-// 物理页结构
+// 物理页结构，单链表结构
 typedef
 struct page_t {
     atomic_t ref;                // 物理页被引用的次数

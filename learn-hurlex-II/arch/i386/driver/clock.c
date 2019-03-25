@@ -45,7 +45,8 @@ void clock_init(void)
     register_interrupt_handler(IRQ0, clock_callback);
 
     uint32_t divisor = TIMER_FREQ / FREQUENCY;
-
+    printk("clock_init() divisor: 0x%X\n", divisor);
+    
     outb(TIMER_MODE, TIMER_SEL0 | TIMER_RATEGEN | TIMER_16BIT);
 
     // 拆分低字节和高字节

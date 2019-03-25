@@ -28,7 +28,7 @@
 // 物理内存管理算法
 static const struct pmm_manager *pmm_manager = &ff_mm_manager;
 
-// 物理页帧数组指针 (内核结束地址[实地址]+内核基址+内核页表保留地址)
+// 物理页帧数组指针，单链表结构 (内核结束地址[实地址]+内核基址+内核页表保留地址)
 #if ASM_NO_XCODE
     static page_t *phy_pages = (page_t *)((uint32_t)kern_end + KERNBASE + KVPAGE_SIZE);
 #else
@@ -85,7 +85,7 @@ static void get_ram_info(e820map_t *e820map)
 
 static void phy_pages_init(e820map_t *e820map)
 {
-    uint32_t phy_mem_length = 0;
+    uint32_t phy_mem_length = 0; //找到最大可管理物理内存地址，不超过 896M
     for (uint32_t i = 0; i < e820map->count; ++i)
     {
         if (e820map->map[i].addr_low > ZONE_HIGHMEM_ADDR)
@@ -100,12 +100,18 @@ static void phy_pages_init(e820map_t *e820map)
         phy_mem_length = e820map->map[i].length_low;
     }
 
+    printk("phy_pages_init() phy_mem_length: 0x%X\n", phy_mem_length);
+    printk("phy_pages_init() phy_pages: 0x%X\n", phy_pages);
+    
     uint32_t pages_mem_length = sizeof(page_t) * (phy_mem_length / PMM_PAGE_SIZE);
     bzero(phy_pages, pages_mem_length);
-
-    // 物理内存页管理起始地址
+    printk("phy_pages_init() pages_mem_length: 0x%X\n", pages_mem_length);
+    
+    // 物理内存页管理起始地址，这个不能根据 grub 返回的开始地址直接计算，
+    // 内核本身也占用了空间，还有页表也占用了空间，要根据内核规划来计算可用内存
     pmm_addr_start = ((uint32_t)phy_pages - KERNBASE + pages_mem_length + PMM_PAGE_SIZE) & PMM_PAGE_MASK;
 
+    // 找到物理内存页管理起始地址和结束地址
     for (uint32_t i = 0; i < e820map->count; ++i)
     {
         uint32_t start_addr = e820map->map[i].addr_low;
@@ -124,7 +130,9 @@ static void phy_pages_init(e820map_t *e820map)
         }
         pmm_addr_end = end_addr;
     }
-
+    
+    printk("phy_pages_init() pmm_addr_start: 0x%X, pmm_addr_end: 0x%X, phy_pages_count: 0x%X\n", pmm_addr_start, pmm_addr_end, phy_pages_count);
+    
     assert(pmm_addr_start == page_to_addr(&phy_pages[0]), "phy_pages_init error pmm_start != &page[0]");
     assert(pmm_addr_end - PMM_PAGE_SIZE == page_to_addr(&phy_pages[phy_pages_count - 1]), "phy_pages_init error pmm_end != &page[n-1]");
     assert(&phy_pages[0] == addr_to_page(page_to_addr(&phy_pages[0])), "phy_pages_init error addr_to_page error");

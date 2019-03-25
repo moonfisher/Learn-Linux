@@ -75,6 +75,8 @@ static isr_irq_func_t isr_irq_func[INTERRUPT_MAX] = {
 // 初始化中断描述符表
 void idt_init(void)
 {
+    printk("idt_init() idt_entries: 0x%X\n", &idt_entries);
+    
     init_interrupt_chip();
 
     idt_ptr.limit = sizeof(idt_entry_t) * INTERRUPT_MAX - 1;

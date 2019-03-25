@@ -90,10 +90,10 @@ __attribute__((section(".init.text"))) void mmap_tmp_page(void)
         //PAGE_OFFSET = 0xC0000000 PAGE_MAP_SIZE = 0x400000 = 4M PAGE_SIZE = 0x1000 = 4k
         uint32_t pgd_idx = PGD_INDEX(PAGE_OFFSET + PAGE_MAP_SIZE * i);
         pgd_tmp[pgd_idx] = ((uint32_t)pte_high + PAGE_SIZE * i) | PAGE_PRESENT | PAGE_WRITE;
-        // pgd_tmp[0x300] = 0x3003 高端内存映射到4个索引，4个目录
-        // pgd_tmp[0x301] = 0x4003
-        // pgd_tmp[0x302] = 0x5003
-        // pgd_tmp[0x303] = 0x6003
+        // pgd_tmp[0x300 * 4] = 0x3003 高端内存映射到4个索引，4个目录
+        // pgd_tmp[0x301 * 4] = 0x4003
+        // pgd_tmp[0x302 * 4] = 0x5003
+        // pgd_tmp[0x303 * 4] = 0x6003
     }
 
     // 映射内核虚拟地址 4MB 到物理地址的前 4MB，用到多少先映射多少
@@ -103,20 +103,20 @@ __attribute__((section(".init.text"))) void mmap_tmp_page(void)
     for (int i = 0; i < 1024; i++)
     {
         pte_low[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
-        // pte_low[0] = 0x0003
-        // pte_low[1] = 0x1003
-        // pte_low[2] = 0x2003
-        // pte_low[3] = 0x3003
+        // pte_low[0 * 4] = 0x0003
+        // pte_low[1 * 4] = 0x1003
+        // pte_low[2 * 4] = 0x2003
+        // pte_low[3 * 4] = 0x3003
     }
 
     // 映射 0x00000000-0x01000000 16M 的物理地址到虚拟地址 0xC0000000-0xC1000000，用到多少先映射多少
     for (int i = 0; i < 1024 * 4; i++)
     {
         pte_high[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
-        // pte_high[0] = 0x0003
-        // pte_high[1] = 0x1003
-        // pte_high[2] = 0x2003
-        // pte_high[3] = 0x3003
+        // pte_high[0 * 4] = 0x0003
+        // pte_high[1 * 4] = 0x1003
+        // pte_high[2 * 4] = 0x2003
+        // pte_high[3 * 4] = 0x3003
     }
     
     // 设置临时页表，等内核代码运行之后重新设置虚拟内存

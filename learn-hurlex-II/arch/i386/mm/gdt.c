@@ -80,6 +80,8 @@ static gdt_ptr_t gdt_ptr;
 // 初始化全局描述符表
 void gdt_init(void)
 {
+    printk("gdt_init() gdt_entries: 0x%X\n", &gdt_entries);
+    
     // 全局描述符表界限  从 0 开始，所以总长要 - 1
     gdt_ptr.limit = sizeof(gdt_entry_t) * GDT_LENGTH - 1;
     gdt_ptr.base = (uint32_t)&gdt_entries;
