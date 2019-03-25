@@ -35,13 +35,13 @@
 #define RAM_KERNEL_START (0x100000)
 
 // 内核代码在内存中的起始和结束位置，在链接脚本中定义
-extern uint8_t kern_start[];    // 0x100000
-extern uint8_t kern_end[];      // 0x13b000
+extern uint8_t kern_start[];    // 0x00100000
+extern uint8_t kern_end[];      // 0x00137000
 
-// 开启分页机制之后的内核栈
+// 开启分页机制之后的内核栈 0xC011A000
 extern uint8_t kern_stack[STACK_SIZE];
 
-// 内核栈的栈顶
+// 内核栈的栈顶 0xC011B000
 extern uint32_t kern_stack_top;
 
 // BIOS int 0x15 AX = 0xE820 常量

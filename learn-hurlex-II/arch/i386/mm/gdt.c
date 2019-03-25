@@ -28,7 +28,7 @@ typedef struct gdt_entry_t {
     uint8_t  base_high;     // 段基地址 31～24
 } __attribute__((packed)) gdt_entry_t;
 
-// 全局描述符表定义
+// 全局描述符表定义 0xc010b540
 static gdt_entry_t gdt_entries[GDT_LENGTH] __attribute__ ((aligned(8)));
 
 static void gdt_set_gate(int32_t num, uint32_t base, uint32_t limit, uint8_t access, uint8_t gran)
@@ -44,9 +44,17 @@ static void gdt_set_gate(int32_t num, uint32_t base, uint32_t limit, uint8_t acc
     gdt_entries[num].access       = access;
 }
 
-// TSS 段定义
+// TSS 段定义 0xc010b570
 static tss_entry_t tss_entry __attribute__ ((aligned(8)));
 
+/*
+ {ts_link = 0x0, ts_esp0 = 0x0, ts_ss0 = 0x10, ts_padding1 = 0x0, ts_esp1 = 0x0, ts_ss1 = 0x0,
+ ts_padding2 = 0x0, ts_esp2 = 0x0, ts_ss2 = 0x0, ts_padding3 = 0x0, ts_cr3 = 0x0, ts_eip = 0x0,
+ ts_eflags = 0x0, ts_eax = 0x0, ts_ecx = 0x0, ts_edx = 0x0, ts_ebx = 0x0, ts_esp = 0x0, ts_ebp = 0x0,
+ ts_esi = 0x0, ts_edi = 0x0, ts_es = 0x23, ts_padding4 = 0x0, ts_cs = 0x1b, ts_padding5 = 0x0,
+ ts_ss = 0x23, ts_padding6 = 0x0, ts_ds = 0x23, ts_padding7 = 0x0, ts_fs = 0x23, ts_padding8 = 0x0,
+ ts_gs = 0x23, ts_padding9 = 0x0, ts_ldt = 0x0, ts_padding10 = 0x0, ts_t = 0x0, ts_iomb = 0x0}
+*/
 static void tss_set_gate(int32_t num, uint16_t ss0, uint32_t esp0)
 {
     // 获取 TSS 描述符的位置和长度
@@ -74,10 +82,20 @@ typedef struct gdt_ptr_t {
     uint32_t base;          // 全局描述符表 32位 基地址
 } __attribute__((packed)) gdt_ptr_t;
 
-// GDTR
+// GDTR  {limit = 0x2f, base = 0xc010b540}
 static gdt_ptr_t gdt_ptr;
 
 // 初始化全局描述符表
+/*
+ {
+    {limit_low = 0x0, base_low = 0x0, base_middle = 0x0, access = 0x0, granularity = 0x0, base_high = 0x0},
+    {limit_low = 0xffff, base_low = 0x0, base_middle = 0x0, access = 0x9b, granularity = 0xcf, base_high = 0x0},
+    {limit_low = 0xffff, base_low = 0x0, base_middle = 0x0, access = 0x93, granularity = 0xcf, base_high = 0x0},
+    {limit_low = 0xffff, base_low = 0x0, base_middle = 0x0, access = 0xfa, granularity = 0xcf, base_high = 0x0},
+    {limit_low = 0xffff, base_low = 0x0, base_middle = 0x0, access = 0xf2, granularity = 0xcf, base_high = 0x0},
+    {limit_low = 0xb5d8, base_low = 0xb570, base_middle = 0x10, access = 0x8b, granularity = 0x40, base_high = 0xc0}
+ }
+*/
 void gdt_init(void)
 {
     printk("gdt_init() gdt_entries: 0x%X\n", &gdt_entries);

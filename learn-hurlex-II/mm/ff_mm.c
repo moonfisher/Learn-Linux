@@ -55,6 +55,7 @@ static void ff_show_memory_info(void);
 static void ff_show_management_info(void);
 static void ff_test_mm(void) __UNUSED__;
 
+//从虚拟地址 0xC0537000 开始，初始化 0x1A92 个物理页面，每页 4k
 static void ff_page_init(page_t *pages, uint32_t n)
 {
     atomic_set(&ff_mm_info.phy_page_count, n);

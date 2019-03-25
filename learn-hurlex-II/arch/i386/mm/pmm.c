@@ -28,20 +28,20 @@
 // 物理内存管理算法
 static const struct pmm_manager *pmm_manager = &ff_mm_manager;
 
-// 物理页帧数组指针，单链表结构 (内核结束地址[实地址]+内核基址+内核页表保留地址)
+// 物理页帧数组指针，单链表结构，虚拟地址 (内核结束地址[实地址]+内核基址+内核页表保留地址) 0xC0537000
 #if ASM_NO_XCODE
     static page_t *phy_pages = (page_t *)((uint32_t)kern_end + KERNBASE + KVPAGE_SIZE);
 #else
     static page_t *phy_pages;
 #endif
 
-// 物理页帧数组长度
+// 物理页帧数组长度，一共 0x1A92 页，每页 4k
 static uint32_t phy_pages_count;
 
-// 可用物理内存页起始地址
+// 可用物理内存页起始地址 0x55E000
 static uint32_t pmm_addr_start;
 
-// 可用物理内存页结束地址
+// 可用物理内存页结束地址 0x1FF0000
 static uint32_t pmm_addr_end;
 
 // 获取可用内存的起始和结束地址
@@ -50,6 +50,16 @@ static void get_ram_info(e820map_t *e820map);
 // 物理内存页初始化
 static void phy_pages_init(e820map_t *e820map);
 
+/* e820map
+ {
+    count = 0x1,
+    map = {
+      {addr_low = 0x100000, addr_high = 0x0, length_low = 0x1EF0000, length_high = 0x0, type = 0x1},
+      {addr_low = 0x0, addr_high = 0x0, length_low = 0x0, length_high = 0x0, type = 0x0}
+        <repeats 19 times>
+    }
+ }
+*/
 void pmm_init(void)
 {
 	show_kernel_memory_map();
@@ -60,6 +70,7 @@ void pmm_init(void)
     get_ram_info(&e820map);
     phy_pages_init(&e820map);
     
+    //从虚拟地址 0xC0537000 开始，初始化 0x1A92 个物理页面，每页 4k
     page_init(phy_pages, phy_pages_count);
 }
 
@@ -100,11 +111,16 @@ static void phy_pages_init(e820map_t *e820map)
         phy_mem_length = e820map->map[i].length_low;
     }
 
+    // phy_mem_length = 0x1EF0000
     printk("phy_pages_init() phy_mem_length: 0x%X\n", phy_mem_length);
+    
+    // phy_pages = 0xC0537000
     printk("phy_pages_init() phy_pages: 0x%X\n", phy_pages);
     
     uint32_t pages_mem_length = sizeof(page_t) * (phy_mem_length / PMM_PAGE_SIZE);
     bzero(phy_pages, pages_mem_length);
+    
+    // pages_mem_length = 0x26AC0
     printk("phy_pages_init() pages_mem_length: 0x%X\n", pages_mem_length);
     
     // 物理内存页管理起始地址，这个不能根据 grub 返回的开始地址直接计算，
@@ -131,6 +147,7 @@ static void phy_pages_init(e820map_t *e820map)
         pmm_addr_end = end_addr;
     }
     
+    // pmm_addr_start = 0x55E000, pmm_addr_end = 0x1FF0000, phy_pages_count = 0x1A92
     printk("phy_pages_init() pmm_addr_start: 0x%X, pmm_addr_end: 0x%X, phy_pages_count: 0x%X\n", pmm_addr_start, pmm_addr_end, phy_pages_count);
     
     assert(pmm_addr_start == page_to_addr(&phy_pages[0]), "phy_pages_init error pmm_start != &page[0]");

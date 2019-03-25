@@ -46,8 +46,9 @@ static void *__slob_alloc_pages(uint32_t size)
 {
     uint32_t addr = alloc_pages(size);
 
-    if (addr == 0) {
-            return NULL;
+    if (addr == 0)
+    {
+        return NULL;
     }
 
     return pa_to_ka((void *)addr);
@@ -57,9 +58,10 @@ static void slob_print(void)
 {
     struct list_head *le = NULL;
 
-    list_for_each(le, &slob_head) {
-            slob_block_t *block = le_to_block(le);
-            printk("Addr: %08X  length: %d  used: %d\n", block, block->length, block->allocated);
+    list_for_each(le, &slob_head)
+    {
+        slob_block_t *block = le_to_block(le);
+        printk("Addr: %08X  length: %d  used: %d\n", block, block->length, block->allocated);
     }
     printk("\n");
 }
@@ -101,7 +103,7 @@ void slob_init(void)
     block->length = SLOB_PAGE_COUNT * PAGE_SIZE - sizeof(slob_block_t);
     list_add(&block->list, &slob_head);
 
-    //slob_test();
+    slob_test();
 }
 
 // 切分内存块

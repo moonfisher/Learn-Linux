@@ -44,7 +44,7 @@ void clock_init(void)
     // 注册时间相关的处理函数
     register_interrupt_handler(IRQ0, clock_callback);
 
-    uint32_t divisor = TIMER_FREQ / FREQUENCY;
+    uint32_t divisor = TIMER_FREQ / FREQUENCY;  //0x2e9b = 11931
     printk("clock_init() divisor: 0x%X\n", divisor);
     
     outb(TIMER_MODE, TIMER_SEL0 | TIMER_RATEGEN | TIMER_16BIT);

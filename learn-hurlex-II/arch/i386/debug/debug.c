@@ -152,6 +152,7 @@ void show_kernel_memory_map(void)
     printk("  .text         0x%08X ~ 0x%08X \n", kern_text_start, kern_text_end);
     printk("  .data         0x%08X ~ 0x%08X \n", kern_data_start, kern_data_end);
 
+    // 220KB, 55 pages
     printk("\nkernel in memory used: %d KB = %d Pages\n\n", (kern_end - kern_start) / 1024, (kern_end - kern_start) / 1024 / 4);
 }
 

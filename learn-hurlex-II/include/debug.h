@@ -25,14 +25,14 @@
 #include <errno.h>
 
 // 内核代码段在内存中的起始和结束位置，在链接脚本中定义
-extern uint8_t kern_init_text_start[];  // 0x100000
-extern uint8_t kern_init_text_end[];    // 0x101000
-extern uint8_t kern_init_data_start[];  // 0x101000
-extern uint8_t kern_init_data_end[];    // 0x102000
-extern uint8_t kern_text_start[];       // 0x102000
-extern uint8_t kern_text_end[];         // 0x10a000
-extern uint8_t kern_data_start[];       // 0x10a000
-extern uint8_t kern_data_end[];         // 0x11d010
+extern uint8_t kern_init_text_start[];  // 0x00100000
+extern uint8_t kern_init_text_end[];    // 0x00101000
+extern uint8_t kern_init_data_start[];  // 0x00101000
+extern uint8_t kern_init_data_end[];    // 0x00102000
+extern uint8_t kern_text_start[];       // 0x00102000
+extern uint8_t kern_text_end[];         // 0x00109000
+extern uint8_t kern_data_start[];       // 0x00109000
+extern uint8_t kern_data_end[];         // 0x0011B010
 
 #define assert(x, info)                                         \
     do {                                                    \
