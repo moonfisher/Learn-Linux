@@ -1,12 +1,12 @@
-#include <defs.h>
-#include <x86.h>
-#include <stdio.h>
-#include <string.h>
-#include <kbdreg.h>
-#include <picirq.h>
-#include <trap.h>
-#include <memlayout.h>
-#include <sync.h>
+#include "defs.h"
+#include "x86.h"
+#include "stdio.h"
+#include "string.h"
+#include "kbdreg.h"
+#include "picirq.h"
+#include "trap.h"
+#include "memlayout.h"
+#include "sync.h"
 
 /* stupid I/O delay routine necessitated by historical PC design flaws */
 static void

@@ -1,16 +1,16 @@
-#include <defs.h>
-#include <x86.h>
-#include <stdio.h>
-#include <string.h>
-#include <mmu.h>
-#include <memlayout.h>
-#include <pmm.h>
-#include <default_pmm.h>
-#include <sync.h>
-#include <error.h>
-#include <swap.h>
-#include <vmm.h>
-#include <kmalloc.h>
+#include "defs.h"
+#include "x86.h"
+#include "stdio.h"
+#include "string.h"
+#include "mmu.h"
+#include "memlayout.h"
+#include "pmm.h"
+#include "default_pmm.h"
+#include "sync.h"
+#include "error.h"
+#include "swap.h"
+#include "vmm.h"
+#include "kmalloc.h"
 
 /* *
  * Task State Segment:
@@ -86,9 +86,11 @@ static struct segdesc gdt[] = {
     [SEG_TSS]   = SEG_NULL,
 };
 
-static struct pseudodesc gdt_pd = {
-    sizeof(gdt) - 1, (uintptr_t)gdt
-};
+#if ASM_NO_64
+static struct pseudodesc gdt_pd = {sizeof(gdt) - 1, (uintptr_t)gdt};
+#else
+static struct pseudodesc gdt_pd;
+#endif
 
 static void check_alloc_page(void);
 static void check_pgdir(void);
@@ -98,8 +100,9 @@ static void check_boot_pgdir(void);
  * lgdt - load the global descriptor table register and reset the
  * data/code segement registers for kernel.
  * */
-static inline void
-lgdt(struct pseudodesc *pd) {
+static inline void lgdt(struct pseudodesc *pd)
+{
+#if ASM_NO_64
     asm volatile ("lgdt (%0)" :: "r" (pd));
     asm volatile ("movw %%ax, %%gs" :: "a" (USER_DS));
     asm volatile ("movw %%ax, %%fs" :: "a" (USER_DS));
@@ -108,6 +111,7 @@ lgdt(struct pseudodesc *pd) {
     asm volatile ("movw %%ax, %%ss" :: "a" (KERNEL_DS));
     // reload cs
     asm volatile ("ljmp %0, $1f\n 1:\n" :: "i" (KERNEL_CS));
+#endif
 }
 
 /* *

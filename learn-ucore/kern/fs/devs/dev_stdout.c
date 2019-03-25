@@ -1,12 +1,12 @@
-#include <defs.h>
-#include <stdio.h>
-#include <dev.h>
-#include <vfs.h>
-#include <iobuf.h>
-#include <inode.h>
-#include <unistd.h>
-#include <error.h>
-#include <assert.h>
+#include "defs.h"
+#include "stdio.h"
+#include "dev.h"
+#include "vfs.h"
+#include "iobuf.h"
+#include "inode.h"
+#include "unistd.h"
+#include "error.h"
+#include "assert.h"
 
 static int
 stdout_open(struct device *dev, uint32_t open_flags) {

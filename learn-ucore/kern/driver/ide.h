@@ -1,7 +1,7 @@
 #ifndef __KERN_DRIVER_IDE_H__
 #define __KERN_DRIVER_IDE_H__
 
-#include <defs.h>
+#include "defs.h"
 
 void ide_init(void);
 bool ide_device_valid(unsigned short ideno);

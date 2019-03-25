@@ -1,9 +1,9 @@
-#include <defs.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <syscall.h>
-#include <stat.h>
-#include <dirent.h>
+#include "defs.h"
+#include "unistd.h"
+#include "stdarg.h"
+#include "syscall.h"
+#include "stat.h"
+#include "dirent.h"
 
 
 #define MAX_ARGS            5

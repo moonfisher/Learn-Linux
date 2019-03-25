@@ -1,11 +1,11 @@
-#include <defs.h>
-#include <stdio.h>
-#include <trap.h>
-#include <picirq.h>
-#include <fs.h>
-#include <ide.h>
-#include <x86.h>
-#include <assert.h>
+#include "defs.h"
+#include "stdio.h"
+#include "trap.h"
+#include "picirq.h"
+#include "fs.h"
+#include "ide.h"
+#include "x86.h"
+#include "assert.h"
 
 #define ISA_DATA                0x00
 #define ISA_ERROR               0x01

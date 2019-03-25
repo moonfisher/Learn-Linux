@@ -24,7 +24,7 @@
 void do_page_fault(pt_regs_t *regs)
 {
     uint32_t cr2;
-#if ASM_NO_XCODE
+#if ASM_NO_64
     __asm__ volatile ("mov %%cr2, %0" : "=r" (cr2));
 #endif
     printk("Page fault at EIP: 0x%x, virtual faulting address 0x%x\n", regs->eip, cr2);

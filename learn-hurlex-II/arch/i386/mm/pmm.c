@@ -29,7 +29,7 @@
 static const struct pmm_manager *pmm_manager = &ff_mm_manager;
 
 // 物理页帧数组指针，单链表结构，虚拟地址 (内核结束地址[实地址]+内核基址+内核页表保留地址) 0xC0537000
-#if ASM_NO_XCODE
+#if ASM_NO_64
     static page_t *phy_pages = (page_t *)((uint32_t)kern_end + KERNBASE + KVPAGE_SIZE);
 #else
     static page_t *phy_pages;

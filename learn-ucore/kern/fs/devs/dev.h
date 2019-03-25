@@ -1,7 +1,7 @@
 #ifndef __KERN_FS_DEVS_DEV_H__
 #define __KERN_FS_DEVS_DEV_H__
 
-#include <defs.h>
+#include "defs.h"
 
 struct inode;
 struct iobuf;

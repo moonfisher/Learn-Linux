@@ -1,10 +1,10 @@
-#include <defs.h>
-#include <string.h>
-#include <syscall.h>
-#include <stdio.h>
-#include <stat.h>
-#include <error.h>
-#include <unistd.h>
+#include "defs.h"
+#include "string.h"
+#include "syscall.h"
+#include "stdio.h"
+#include "stat.h"
+#include "error.h"
+#include "unistd.h"
 
 int
 open(const char *path, uint32_t open_flags) {

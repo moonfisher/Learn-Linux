@@ -1,21 +1,21 @@
-#include <defs.h>
-#include <mmu.h>
-#include <memlayout.h>
-#include <clock.h>
-#include <trap.h>
-#include <x86.h>
-#include <stdio.h>
-#include <assert.h>
-#include <console.h>
-#include <vmm.h>
-#include <swap.h>
-#include <kdebug.h>
-#include <unistd.h>
-#include <syscall.h>
-#include <error.h>
-#include <sched.h>
-#include <sync.h>
-#include <proc.h>
+#include "defs.h"
+#include "mmu.h"
+#include "memlayout.h"
+#include "clock.h"
+#include "trap.h"
+#include "x86.h"
+#include "stdio.h"
+#include "assert.h"
+#include "console.h"
+#include "vmm.h"
+#include "swap.h"
+#include "kdebug.h"
+#include "unistd.h"
+#include "syscall.h"
+#include "error.h"
+#include "sched.h"
+#include "sync.h"
+#include "proc.h"
 
 #define TICK_NUM 100
 
@@ -35,9 +35,11 @@ static void print_ticks() {
  * */
 static struct gatedesc idt[256] = {{0}};
 
-static struct pseudodesc idt_pd = {
-    sizeof(idt) - 1, (uintptr_t)idt
-};
+#if ASM_NO_64
+static struct pseudodesc idt_pd = {sizeof(idt) - 1, (uintptr_t)idt};
+#else
+static struct pseudodesc idt_pd;
+#endif
 
 /* idt_init - initialize IDT to each of the entry points in kern/trap/vectors.S */
 void

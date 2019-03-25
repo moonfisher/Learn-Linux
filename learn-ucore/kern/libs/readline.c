@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "stdio.h"
 
 #define BUFSIZE 1024
 static char buf[BUFSIZE];

@@ -1,9 +1,9 @@
-#include <defs.h>
-#include <stdio.h>
-#include <syscall.h>
-#include <file.h>
-#include <ulib.h>
-#include <unistd.h>
+#include "defs.h"
+#include "stdio.h"
+#include "syscall.h"
+#include "file.h"
+#include "ulib.h"
+#include "unistd.h"
 
 /* *
  * cputch - writes a single character @c to stdout, and it will

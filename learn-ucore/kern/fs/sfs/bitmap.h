@@ -1,7 +1,7 @@
 #ifndef __KERN_FS_SFS_BITMAP_H__
 #define __KERN_FS_SFS_BITMAP_H__
 
-#include <defs.h>
+#include "defs.h"
 
 
 /*

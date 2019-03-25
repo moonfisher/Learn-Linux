@@ -1,22 +1,23 @@
-#include <defs.h>
-#include <stdio.h>
-#include <string.h>
-#include <console.h>
-#include <kdebug.h>
-#include <picirq.h>
-#include <trap.h>
-#include <clock.h>
-#include <intr.h>
-#include <pmm.h>
-#include <vmm.h>
-#include <ide.h>
-#include <swap.h>
-#include <proc.h>
-#include <fs.h>
+#include "defs.h"
+#include "stdio.h"
+#include "string.h"
+#include "console.h"
+#include "kdebug.h"
+#include "picirq.h"
+#include "trap.h"
+#include "clock.h"
+#include "intr.h"
+#include "pmm.h"
+#include "vmm.h"
+#include "ide.h"
+#include "swap.h"
+#include "proc.h"
+#include "fs.h"
 
 int kern_init(void) __attribute__((noreturn));
 
 static void lab1_switch_test(void);
+void grade_backtrace(void);
 
 int
 kern_init(void) {
@@ -70,8 +71,8 @@ grade_backtrace0(int arg0, int arg1, int arg2) {
     grade_backtrace1(arg0, arg2);
 }
 
-void
-grade_backtrace(void) {
+void grade_backtrace(void)
+{
     grade_backtrace0(0, (int)kern_init, 0xffff0000);
 }
 

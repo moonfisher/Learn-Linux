@@ -1,11 +1,11 @@
 #ifndef __KERN_FS_FILE_H__
 #define __KERN_FS_FILE_H__
 
-//#include <types.h>
-#include <fs.h>
-#include <proc.h>
-#include <atomic.h>
-#include <assert.h>
+//#include "types.h"
+#include "fs.h"
+#include "proc.h"
+#include "atomic.h"
+#include "assert.h"
 
 struct inode;
 struct stat;

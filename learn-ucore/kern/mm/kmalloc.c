@@ -1,11 +1,11 @@
-#include <defs.h>
-#include <list.h>
-#include <memlayout.h>
-#include <assert.h>
-#include <kmalloc.h>
-#include <sync.h>
-#include <pmm.h>
-#include <stdio.h>
+#include "defs.h"
+#include "list.h"
+#include "memlayout.h"
+#include "assert.h"
+#include "kmalloc.h"
+#include "sync.h"
+#include "pmm.h"
+#include "stdio.h"
 
 /*
  * SLOB Allocator: Simple List Of Blocks

@@ -74,7 +74,7 @@ void panic(const char *msg)
 void print_stack_trace(void)
 {
     uint32_t *ebp, *eip;
-#if ASM_NO_XCODE
+#if ASM_NO_64
     __asm__ volatile ("mov %%ebp, %0" : "=r" (ebp));
 #endif
     while (ebp)

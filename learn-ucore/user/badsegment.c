@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <ulib.h>
+#include "stdio.h"
+#include "ulib.h"
 
 /* try to load the kernel's TSS selector into the DS register */
 

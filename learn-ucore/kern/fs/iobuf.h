@@ -1,7 +1,7 @@
 #ifndef __KERN_FS_IOBUF_H__
 #define __KERN_FS_IOBUF_H__
 
-#include <defs.h>
+#include "defs.h"
 
 /*
  * iobuf is a buffer Rd/Wr status record

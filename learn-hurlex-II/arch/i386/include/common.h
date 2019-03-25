@@ -114,7 +114,7 @@ static inline void cpu_hlt(void)
 static inline uint32_t read_eflags(void)
 {
     uint32_t eflags = 0;
-#if ASM_NO_XCODE
+#if ASM_NO_64
     __asm__ volatile ("pushfl; popl %0" : "=r" (eflags));
 #endif
     return eflags;
@@ -129,7 +129,7 @@ static inline void write_eflags(uint32_t eflags)
 // 修改当前页表
 static inline void switch_pgd(uint32_t pd)
 {
-#if ASM_NO_XCODE
+#if ASM_NO_64
     __asm__ volatile ("mov %0, %%cr3" : : "r" (pd));
 #endif
 }

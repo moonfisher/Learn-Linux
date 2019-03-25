@@ -1,10 +1,10 @@
 #ifndef __KERN_MM_SWAP_H__
 #define __KERN_MM_SWAP_H__
 
-#include <defs.h>
-#include <memlayout.h>
-#include <pmm.h>
-#include <vmm.h>
+#include "defs.h"
+#include "memlayout.h"
+#include "pmm.h"
+#include "vmm.h"
 
 /* *
  * swap_entry_t

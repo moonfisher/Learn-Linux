@@ -1,11 +1,11 @@
 #ifndef __KERN_FS_SFS_SFS_H__
 #define __KERN_FS_SFS_SFS_H__
 
-#include <defs.h>
-#include <mmu.h>
-#include <list.h>
-#include <sem.h>
-#include <unistd.h>
+#include "defs.h"
+#include "mmu.h"
+#include "list.h"
+#include "sem.h"
+#include "unistd.h"
 
 /*
  * Simple FS (SFS) definitions visible to ucore. This covers the on-disk format

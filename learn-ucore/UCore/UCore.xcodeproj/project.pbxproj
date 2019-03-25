@@ -89,9 +89,6 @@
 		C4CB32C22248F5830014426C /* string.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32572248F5830014426C /* string.c */; };
 		C4CB32C32248F5830014426C /* hash.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32582248F5830014426C /* hash.c */; };
 		C4CB32C42248F5830014426C /* printfmt.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB325C2248F5830014426C /* printfmt.c */; };
-		C4CB32C52248F5830014426C /* mksfs.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32642248F5830014426C /* mksfs.c */; };
-		C4CB32C62248F5830014426C /* vector.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32652248F5830014426C /* vector.c */; };
-		C4CB32C72248F5830014426C /* sign.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB326A2248F5830014426C /* sign.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -255,15 +252,6 @@
 		C4CB325F2248F5830014426C /* stdarg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdarg.h; sourceTree = "<group>"; };
 		C4CB32602248F5830014426C /* string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = string.h; sourceTree = "<group>"; };
 		C4CB32612248F5830014426C /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = atomic.h; sourceTree = "<group>"; };
-		C4CB32632248F5830014426C /* boot.ld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = boot.ld; sourceTree = "<group>"; };
-		C4CB32642248F5830014426C /* mksfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mksfs.c; sourceTree = "<group>"; };
-		C4CB32652248F5830014426C /* vector.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vector.c; sourceTree = "<group>"; };
-		C4CB32662248F5830014426C /* user.ld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user.ld; sourceTree = "<group>"; };
-		C4CB32672248F5830014426C /* function.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = function.mk; sourceTree = "<group>"; };
-		C4CB32682248F5830014426C /* gdbinit */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gdbinit; sourceTree = "<group>"; };
-		C4CB32692248F5830014426C /* grade.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = grade.sh; sourceTree = "<group>"; };
-		C4CB326A2248F5830014426C /* sign.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sign.c; sourceTree = "<group>"; };
-		C4CB326B2248F5830014426C /* kernel.ld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = kernel.ld; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -299,10 +287,9 @@
 				C4CB324B2248F5830014426C /* boot */,
 				C4CB31BB2248F5820014426C /* kern */,
 				C4CB324F2248F5830014426C /* libs */,
-				C4CB32622248F5830014426C /* tools */,
 				C4CB32262248F5830014426C /* user */,
 			);
-			path = UCore;
+			name = UCore;
 			sourceTree = "<group>";
 		};
 		C4CB31BB2248F5820014426C /* kern */ = {
@@ -321,7 +308,7 @@
 				C4CB321E2248F5830014426C /* debug */,
 			);
 			name = kern;
-			path = ../../kern;
+			path = ../kern;
 			sourceTree = "<group>";
 		};
 		C4CB31BC2248F5820014426C /* init */ = {
@@ -552,7 +539,7 @@
 				C4CB324A2248F5830014426C /* faultreadkernel.c */,
 			);
 			name = user;
-			path = ../../user;
+			path = ../user;
 			sourceTree = "<group>";
 		};
 		C4CB32302248F5830014426C /* libs */ = {
@@ -583,7 +570,7 @@
 				C4CB324E2248F5830014426C /* bootasm.S */,
 			);
 			name = boot;
-			path = ../../boot;
+			path = ../boot;
 			sourceTree = "<group>";
 		};
 		C4CB324F2248F5830014426C /* libs */ = {
@@ -609,24 +596,7 @@
 				C4CB32612248F5830014426C /* atomic.h */,
 			);
 			name = libs;
-			path = ../../libs;
-			sourceTree = "<group>";
-		};
-		C4CB32622248F5830014426C /* tools */ = {
-			isa = PBXGroup;
-			children = (
-				C4CB32632248F5830014426C /* boot.ld */,
-				C4CB32642248F5830014426C /* mksfs.c */,
-				C4CB32652248F5830014426C /* vector.c */,
-				C4CB32662248F5830014426C /* user.ld */,
-				C4CB32672248F5830014426C /* function.mk */,
-				C4CB32682248F5830014426C /* gdbinit */,
-				C4CB32692248F5830014426C /* grade.sh */,
-				C4CB326A2248F5830014426C /* sign.c */,
-				C4CB326B2248F5830014426C /* kernel.ld */,
-			);
-			name = tools;
-			path = ../../tools;
+			path = ../libs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -701,7 +671,6 @@
 				C4CB32AA2248F5830014426C /* panic.c in Sources */,
 				C4CB32AD2248F5830014426C /* syscall.c in Sources */,
 				C4CB32922248F5830014426C /* fs.c in Sources */,
-				C4CB32C52248F5830014426C /* mksfs.c in Sources */,
 				C4CB32812248F5830014426C /* monitor.c in Sources */,
 				C4CB32C32248F5830014426C /* hash.c in Sources */,
 				C4CB32A62248F5830014426C /* ls.c in Sources */,
@@ -721,7 +690,6 @@
 				C4CB32B42248F5830014426C /* waitkill.c in Sources */,
 				C4CB32B02248F5830014426C /* file.c in Sources */,
 				C4CB327A2248F5830014426C /* readline.c in Sources */,
-				C4CB32C72248F5830014426C /* sign.c in Sources */,
 				C4CB32862248F5830014426C /* vfspath.c in Sources */,
 				C4CB328D2248F5830014426C /* dev_stdin.c in Sources */,
 				C4CB32782248F5830014426C /* stdio.c in Sources */,
@@ -753,7 +721,6 @@
 				C4CB326E2248F5830014426C /* default_sched.c in Sources */,
 				C4CB32AC2248F5830014426C /* dir.c in Sources */,
 				C4CB329C2248F5830014426C /* proc.c in Sources */,
-				C4CB32C62248F5830014426C /* vector.c in Sources */,
 				C4CB32A92248F5830014426C /* exit.c in Sources */,
 				C4CB32852248F5830014426C /* syscall.c in Sources */,
 				C4CB32BB2248F5830014426C /* testbss.c in Sources */,
@@ -892,6 +859,18 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = B5Y4Q4J39L;
+				HEADER_SEARCH_PATHS = (
+					../libs,
+					../user/libs,
+					../kern/sync,
+					../kern/driver,
+					../kern/mm,
+					../kern/trap,
+					../kern/fs/vfs,
+					../kern/fs,
+					../kern/process,
+					../kern/fs/devs,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -902,6 +881,18 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = B5Y4Q4J39L;
+				HEADER_SEARCH_PATHS = (
+					../libs,
+					../user/libs,
+					../kern/sync,
+					../kern/driver,
+					../kern/mm,
+					../kern/trap,
+					../kern/fs/vfs,
+					../kern/fs,
+					../kern/process,
+					../kern/fs/devs,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

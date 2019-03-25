@@ -1,7 +1,7 @@
-#include <defs.h>
-#include <stdio.h>
-#include <console.h>
-#include <unistd.h>
+#include "defs.h"
+#include "stdio.h"
+#include "console.h"
+#include "unistd.h"
 /* HIGH level console I/O */
 
 /* *

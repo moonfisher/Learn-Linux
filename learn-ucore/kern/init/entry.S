@@ -1,5 +1,5 @@
-#include <mmu.h>
-#include <memlayout.h>
+#include "mmu.h"
+#include "memlayout.h"
 
 #define REALLOC(x) (x - KERNBASE)
 

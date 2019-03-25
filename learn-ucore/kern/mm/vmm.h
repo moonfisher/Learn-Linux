@@ -1,12 +1,12 @@
 #ifndef __KERN_MM_VMM_H__
 #define __KERN_MM_VMM_H__
 
-#include <defs.h>
-#include <list.h>
-#include <memlayout.h>
-#include <sync.h>
-#include <proc.h>
-#include <sem.h>
+#include "defs.h"
+#include "list.h"
+#include "memlayout.h"
+#include "sync.h"
+#include "proc.h"
+#include "sem.h"
 
 //pre define
 struct mm_struct;

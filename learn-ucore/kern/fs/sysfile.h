@@ -1,7 +1,7 @@
 #ifndef __KERN_FS_SYSFILE_H__
 #define __KERN_FS_SYSFILE_H__
 
-#include <defs.h>
+#include "defs.h"
 
 struct stat;
 struct dirent;

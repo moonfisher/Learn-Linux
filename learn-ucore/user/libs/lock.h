@@ -1,9 +1,9 @@
 #ifndef __USER_LIBS_LOCK_H__
 #define __USER_LIBS_LOCK_H__
 
-#include <defs.h>
-#include <atomic.h>
-#include <ulib.h>
+#include "defs.h"
+#include "atomic.h"
+#include "ulib.h"
 
 #define INIT_LOCK           {0}
 

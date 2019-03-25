@@ -1,9 +1,9 @@
 #ifndef __KERN_FS_VFS_VFS_H__
 #define __KERN_FS_VFS_VFS_H__
 
-#include <defs.h>
-#include <fs.h>
-#include <sfs.h>
+#include "defs.h"
+#include "fs.h"
+#include "sfs.h"
 
 struct inode;   // abstract structure for an on-disk file (inode.h)
 struct device;  // abstract structure for a device (dev.h)

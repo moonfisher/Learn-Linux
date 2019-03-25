@@ -1,6 +1,6 @@
-#include <defs.h>
-#include <sem.h>
-#include <sfs.h>
+#include "defs.h"
+#include "sem.h"
+#include "sfs.h"
 
 
 /*

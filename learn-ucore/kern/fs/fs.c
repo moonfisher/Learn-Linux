@@ -1,12 +1,12 @@
-#include <defs.h>
-#include <kmalloc.h>
-#include <sem.h>
-#include <vfs.h>
-#include <dev.h>
-#include <file.h>
-#include <sfs.h>
-#include <inode.h>
-#include <assert.h>
+#include "defs.h"
+#include "kmalloc.h"
+#include "sem.h"
+#include "vfs.h"
+#include "dev.h"
+#include "file.h"
+#include "sfs.h"
+#include "inode.h"
+#include "assert.h"
 //called when init_main proc start
 void
 fs_init(void) {
@@ -33,7 +33,7 @@ unlock_files(struct files_struct *filesp) {
 struct files_struct *
 files_create(void) {
     //cprintf("[files_create]\n");
-    static_assert((int)FILES_STRUCT_NENTRY > 128);
+//    static_assert((int)FILES_STRUCT_NENTRY > 128);
     struct files_struct *filesp;
     if ((filesp = kmalloc(sizeof(struct files_struct) + FILES_STRUCT_BUFSIZE)) != NULL) {
         filesp->pwd = NULL;

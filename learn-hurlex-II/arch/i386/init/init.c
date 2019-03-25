@@ -28,13 +28,13 @@ multiboot_t *glb_mboot_ptr;
 uint8_t kern_stack[STACK_SIZE]  __attribute__ ((aligned(STACK_SIZE)));
 
 // 内核栈的栈顶 0xc010c12c
-#if ASM_NO_XCODE
+#if ASM_NO_64
     uint32_t kern_stack_top = (uint32_t)kern_stack + STACK_SIZE;
 #else
     uint32_t kern_stack_top;
 #endif
 
-#if ASM_NO_XCODE
+#if ASM_NO_64
 
 // 内核也需要映射到虚拟地址里，32位 cpu 4G虚拟地址空间，0-3G用户进程使用，最后1G内核使用
 // 内核虚拟地址为 0xC0000000 - 0xFFFFFFFF，内核在编译的时候，kernel.ld 脚本也指定了偏移地址

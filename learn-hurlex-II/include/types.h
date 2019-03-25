@@ -31,9 +31,9 @@
 #define __UNUSED__ __attribute__((unused))
 
 #if DEBUG
-    #define ASM_NO_XCODE    0
+    #define ASM_NO_64    0
 #else
-    #define ASM_NO_XCODE    1
+    #define ASM_NO_64    1
 #endif
 
 typedef

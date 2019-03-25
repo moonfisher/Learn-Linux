@@ -1,7 +1,7 @@
 #ifndef __LIBS_STAT_H__
 #define __LIBS_STAT_H__
 
-#include <defs.h>
+#include "defs.h"
 
 struct stat {
     uint32_t st_mode;                   // protection mode and file type

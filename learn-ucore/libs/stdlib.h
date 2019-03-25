@@ -1,7 +1,7 @@
 #ifndef __LIBS_STDLIB_H__
 #define __LIBS_STDLIB_H__
 
-#include <defs.h>
+#include "defs.h"
 
 /* the largest number rand will return */
 #define RAND_MAX    2147483647UL

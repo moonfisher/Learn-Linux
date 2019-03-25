@@ -1,15 +1,15 @@
-#include <defs.h>
-#include <x86.h>
-#include <stab.h>
-#include <stdio.h>
-#include <string.h>
-#include <memlayout.h>
-#include <sync.h>
-#include <vmm.h>
-#include <proc.h>
-#include <kdebug.h>
-#include <kmonitor.h>
-#include <assert.h>
+#include "defs.h"
+#include "x86.h"
+#include "stab.h"
+#include "stdio.h"
+#include "string.h"
+#include "memlayout.h"
+#include "sync.h"
+#include "vmm.h"
+#include "proc.h"
+#include "kdebug.h"
+#include "kmonitor.h"
+#include "assert.h"
 
 #define STACKFRAME_DEPTH 20
 

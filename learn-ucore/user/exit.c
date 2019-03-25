@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <ulib.h>
+#include "stdio.h"
+#include "ulib.h"
 
 int magic = -0x10384;
 

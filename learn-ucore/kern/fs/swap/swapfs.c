@@ -1,10 +1,10 @@
-#include <swap.h>
-#include <swapfs.h>
-#include <mmu.h>
-#include <fs.h>
-#include <ide.h>
-#include <pmm.h>
-#include <assert.h>
+#include "swap.h"
+#include "swapfs.h"
+#include "mmu.h"
+#include "fs.h"
+#include "ide.h"
+#include "pmm.h"
+#include "assert.h"
 
 void
 swapfs_init(void) {

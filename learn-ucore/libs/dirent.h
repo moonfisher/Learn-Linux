@@ -1,8 +1,8 @@
 #ifndef __LIBS_DIRENT_H__
 #define __LIBS_DIRENT_H__
 
-#include <defs.h>
-#include <unistd.h>
+#include "defs.h"
+#include "unistd.h"
 
 struct dirent {
     off_t offset;

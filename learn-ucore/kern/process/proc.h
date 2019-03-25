@@ -1,11 +1,11 @@
 #ifndef __KERN_PROCESS_PROC_H__
 #define __KERN_PROCESS_PROC_H__
 
-#include <defs.h>
-#include <list.h>
-#include <trap.h>
-#include <memlayout.h>
-#include <skew_heap.h>
+#include "defs.h"
+#include "list.h"
+#include "trap.h"
+#include "memlayout.h"
+#include "skew_heap.h"
 
 
 // process's state in his life cycle

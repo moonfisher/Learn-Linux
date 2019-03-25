@@ -48,7 +48,7 @@ pgd_t pgd_kern[PGD_SIZE] __attribute__ ((aligned(PAGE_SIZE)));
 */
 
 // 内核页表起始 0xC0137000
-#if ASM_NO_XCODE
+#if ASM_NO_64
     static pte_t *pte_addr = (pte_t *)((uint32_t)kern_end + KERNBASE);
 #else
     static pte_t *pte_addr;

@@ -1,9 +1,9 @@
 #ifndef __KERN_SCHEDULE_SCHED_H__
 #define __KERN_SCHEDULE_SCHED_H__
 
-#include <defs.h>
-#include <list.h>
-#include <skew_heap.h>
+#include "defs.h"
+#include "list.h"
+#include "skew_heap.h"
 
 struct proc_struct;
 

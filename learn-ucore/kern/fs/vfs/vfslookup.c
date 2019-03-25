@@ -1,9 +1,9 @@
-#include <defs.h>
-#include <string.h>
-#include <vfs.h>
-#include <inode.h>
-#include <error.h>
-#include <assert.h>
+#include "defs.h"
+#include "string.h"
+#include "vfs.h"
+#include "inode.h"
+#include "error.h"
+#include "assert.h"
 
 /*
  * get_device- Common code to pull the device name, if any, off the front of a
