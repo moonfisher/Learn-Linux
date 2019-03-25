@@ -115,6 +115,8 @@ void task_run(struct task_struct *task)
     {
         struct task_struct *prev = current;
         struct task_struct *next = task;
+        
+        // 切换 task 需要先关闭中断，完成后再打开
         bool intr_flag = false;
         local_intr_store(intr_flag);
         {
@@ -177,8 +179,9 @@ static struct task_struct *alloc_task_struct(void)
 
 static int copy_mm(uint32_t clone_flags, struct task_struct *task)
 {
-    if (!clone_flags && !task) {
-            return -1;
+    if (!clone_flags && !task)
+    {
+        return -1;
     }
 
     return 0;

@@ -32,6 +32,7 @@ void schedule(void)
     struct task_struct *task_next = NULL;
     struct list_head *le = NULL, *last = NULL;
 
+    // task 调度前先关中断，调度完再开中断，防止中途打断出错
     bool intr_flag = false;
     local_intr_store(intr_flag);
     {

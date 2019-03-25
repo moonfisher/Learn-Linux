@@ -27,6 +27,7 @@ void mm_init(void)
     // 0xF8000000 - 0xC0000000 = 0x38000000
     vmm_init();
     
+    //slob 内存分配器
     slob_init();
 }
 
