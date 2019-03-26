@@ -12,8 +12,7 @@ gcc -o2 -o tools/sign tools/sign.c;
 tools/sign obj1/bootblock.out obj1/bootblock;
 
 rm -rf floppy.img;
-dd if=obj1/bootblock of=floppy.img conv=notrunc;
-dd if=bin/kernel of=floppy.img seek=1 conv=notrunc;
-
+dd if=obj1/bootblock of=floppy.img bs=512 count=1 conv=notrunc;
+dd if=bin/kernel of=floppy.img skip=1 seek=1 bs=512 count=1;
 
 
