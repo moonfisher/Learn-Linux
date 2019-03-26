@@ -1,8 +1,0 @@
-make clean;mkdir obj;mkdir obj/boot;
-gcc -o2 -o tools/sign tools/sign.c;
-i386-elf-gcc -Iboot/ -fno-builtin -fno-PIC -Wall -ggdb -m32 -gstabs -nostdinc  -fno-stack-protector -Ilibs/ -Os -nostdinc -c boot/bootasm.S -o obj/boot/bootasm.o
-i386-elf-gcc -Iboot/ -fno-builtin -fno-PIC -Wall -ggdb -m32 -gstabs -nostdinc  -fno-stack-protector -Ilibs/ -Os -nostdinc -c boot/bootmain.c -o obj/boot/bootmain.o
-i386-elf-ld -m elf_i386 -nostdlib -N -T tools/boot.ld obj/boot/bootasm.o obj/boot/bootmain.o -o obj/bootblock.elf
-i386-elf-objcopy -S -O binary obj/bootblock.elf obj/bootblock.out;
-tools/sign obj/bootblock.out obj/bootblock;
-
