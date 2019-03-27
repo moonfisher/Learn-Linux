@@ -7,6 +7,7 @@
 .globl kern_entry
 kern_entry:
     # load pa of boot pgdir
+    # 加载临时分页方案
     movl $REALLOC(__boot_pgdir), %eax
     movl %eax, %cr3
 
@@ -18,6 +19,7 @@ kern_entry:
 
     # update eip
     # now, eip = 0x1.....
+    # 分页开启之后，通过跳转指令重新设置 EIP 寄存器
     leal next, %eax
     # set eip = KERNBASE + 0x1.....
     jmp *%eax
@@ -50,14 +52,17 @@ bootstacktop:
 # kernel builtin pgdir
 # an initial page directory (Page Directory Table, PDT)
 # These page directory table and page table can be reused!
+# 内核基于 32 bit 编译，地址都是虚拟地址，运行内核前必须先设置好临时的内存分页，内核运行起来后重新再设置分页
 .section .data.pgdir
 .align PGSIZE
 __boot_pgdir:
 .globl __boot_pgdir
     # map va 0 ~ 4M to pa 0 ~ 4M (temporary)
+    # 虚拟地址 0 ~ 4M 映射到物理地址 0 ~ 4M，这里先临时映射 4M 就够用了，内核没那么大
     .long REALLOC(__boot_pt1) + (PTE_P | PTE_U | PTE_W)
     .space (KERNBASE >> PGSHIFT >> 10 << 2) - (. - __boot_pgdir) # pad to PDE of KERNBASE
     # map va KERNBASE + (0 ~ 4M) to pa 0 ~ 4M
+    # 虚拟地址 0xC0000000 ~ 0xC0400000 映射到物理地址 0 ~ 4M，这里先临时映射 4M 就够用了，内核没那么大
     .long REALLOC(__boot_pt1) + (PTE_P | PTE_U | PTE_W)
     .space PGSIZE - (. - __boot_pgdir) # pad to PGSIZE
 

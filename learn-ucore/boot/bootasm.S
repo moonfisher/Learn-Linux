@@ -43,6 +43,14 @@ seta20.2:
     movb $0xdf, %al                                 # 0xdf -> port 0x60
     outb %al, $0x60
 
+# 探测一个PC机内存的最好方法是通过调用 INT 0x15, eax = 0xe820 来实现
+# 当第一次调用这个函数时，将ES：EDI指向列表对应的目的缓冲区，清空EBX，设置EDX
+# 的值为0x534d4150,设置EAX的值为0xe820,设置ecx为24，之后就调用中断INT 0x15。
+# 如果此中断运行成功，那么eax的值将会被设置为0x534d4150,进位标志被清空，EBX被
+# 设置为非0值，这个值将会被保存，使用于下一个函数调用.结果是保存在ES：EDI位
+# 置的字节长度.为了给函数的后续调用，EDI的值将会以列表项长度增加.同时，重置eax的
+# 值为0xe820,ecx为24（ecx的值实际上就是sizeof(struct entryf)）,ebx也许会
+# 被设置为0。如果ebx的值被设置为0，那么将会结束函数的运行，否则将会继续进行探测。
 probe_memory:
     movl $0, 0x8000
     xorl %ebx, %ebx
@@ -66,6 +74,7 @@ finish_probe:
     # and segment translation that makes virtual addresses
     # identical to physical addresses, so that the
     # effective memory map does not change during the switch.
+    # 内核基于 32 bit 编译，地址都是虚拟地址，运行内核前必须先打开A20，CR0，进入保护模式
     lgdt gdtdesc
     movl %cr0, %eax
     orl $CR0_PE_ON, %eax

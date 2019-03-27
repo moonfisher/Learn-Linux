@@ -19,8 +19,8 @@ int kern_init(void) __attribute__((noreturn));
 static void lab1_switch_test(void);
 void grade_backtrace(void);
 
-int
-kern_init(void) {
+int kern_init(void)
+{
     extern char edata[], end[];
     memset(edata, 0, end - edata);
 
@@ -51,23 +51,23 @@ kern_init(void) {
 
     //LAB1: CAHLLENGE 1 If you try to do it, uncomment lab1_switch_test()
     // user/kernel mode switch test
-    //lab1_switch_test();
+    lab1_switch_test();
     
     cpu_idle();                 // run idle process
 }
 
-void __attribute__((noinline))
-grade_backtrace2(int arg0, int arg1, int arg2, int arg3) {
+void __attribute__((noinline)) grade_backtrace2(int arg0, int arg1, int arg2, int arg3)
+{
     mon_backtrace(0, NULL, NULL);
 }
 
-void __attribute__((noinline))
-grade_backtrace1(int arg0, int arg1) {
+void __attribute__((noinline)) grade_backtrace1(int arg0, int arg1)
+{
     grade_backtrace2(arg0, (int)&arg0, arg1, (int)&arg1);
 }
 
-void __attribute__((noinline))
-grade_backtrace0(int arg0, int arg1, int arg2) {
+void __attribute__((noinline)) grade_backtrace0(int arg0, int arg1, int arg2)
+{
     grade_backtrace1(arg0, arg2);
 }
 
@@ -76,8 +76,8 @@ void grade_backtrace(void)
     grade_backtrace0(0, (int)kern_init, 0xffff0000);
 }
 
-static void
-lab1_print_cur_status(void) {
+static void lab1_print_cur_status(void)
+{
     static int round = 0;
     uint16_t reg1, reg2, reg3, reg4;
     asm volatile (
@@ -94,18 +94,31 @@ lab1_print_cur_status(void) {
     round ++;
 }
 
-static void
-lab1_switch_to_user(void) {
+static void lab1_switch_to_user(void)
+{
     //LAB1 CHALLENGE 1 : TODO
+    asm volatile (
+        "sub $0x8, %%esp \n"
+        "int %0 \n"
+        "movl %%ebp, %%esp"
+        :
+        : "i"(T_SWITCH_TOU)
+    );
 }
 
-static void
-lab1_switch_to_kernel(void) {
+static void lab1_switch_to_kernel(void)
+{
     //LAB1 CHALLENGE 1 :  TODO
+    asm volatile (
+        "int %0 \n"
+        "movl %%ebp, %%esp \n"
+        :
+        : "i"(T_SWITCH_TOK)
+    );
 }
 
-static void
-lab1_switch_test(void) {
+static void lab1_switch_test(void)
+{
     lab1_print_cur_status();
     cprintf("+++ switch to  user  mode +++\n");
     lab1_switch_to_user();

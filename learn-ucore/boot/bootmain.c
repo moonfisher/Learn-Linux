@@ -87,7 +87,7 @@ void bootmain(void)
 {
     struct elfhdr *elfh = (struct elfhdr *)0x10000;
     
-    // read the 1st page off disk
+    // read the 1st page off disk 从硬盘上读取内核 4k 字节到物理地址 0x10000
     readseg((uintptr_t)elfh, SECTSIZE * 8, 0);
 
     // is this a valid ELF?
@@ -108,6 +108,7 @@ void bootmain(void)
 
     // call the entry point from the ELF header
     // note: does not return
+    // 找到内核入口地址（物理地址 0x10018）跳转执行，虚拟地址 0 ~ 4M 映射到物理地址 0 ~ 4M
     void (*kern_entry)(void);
     kern_entry = elfh->e_entry & 0xFFFFFF;
     kern_entry();

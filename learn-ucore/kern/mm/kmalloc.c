@@ -186,18 +186,19 @@ static void slob_free(void *block, int size)
 
 
 
-void check_slab(void) {
-  cprintf("check_slab() success\n");
+void check_slab(void)
+{
+    cprintf("check_slab() success\n");
 }
 
-void
-slab_init(void) {
-  cprintf("use SLOB allocator\n");
-  check_slab();
+void slab_init(void)
+{
+    cprintf("use SLOB allocator\n");
+    check_slab();
 }
 
-inline void 
-kmalloc_init(void) {
+inline void kmalloc_init(void)
+{
     slab_init();
     cprintf("kmalloc_init() succeeded!\n");
 }

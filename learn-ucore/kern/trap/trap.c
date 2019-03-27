@@ -19,7 +19,8 @@
 
 #define TICK_NUM 100
 
-static void print_ticks() {
+static void print_ticks()
+{
     cprintf("%d ticks\n",TICK_NUM);
 #ifdef DEBUG_GRADE
     cprintf("End of Test.\n");
@@ -42,8 +43,8 @@ static struct pseudodesc idt_pd;
 #endif
 
 /* idt_init - initialize IDT to each of the entry points in kern/trap/vectors.S */
-void
-idt_init(void) {
+void idt_init(void)
+{
      /* LAB1 YOUR CODE : STEP 2 */
      /* (1) Where are the entry addrs of each Interrupt Service Routine (ISR)?
       *     All ISR's entry addrs are stored in __vectors. where is uintptr_t __vectors[] ?
@@ -61,15 +62,16 @@ idt_init(void) {
      //so you should setup the syscall interrupt gate in here
     extern uintptr_t __vectors[];
     int i;
-    for (i = 0; i < sizeof(idt) / sizeof(struct gatedesc); i ++) {
+    for (i = 0; i < sizeof(idt) / sizeof(struct gatedesc); i ++)
+    {
         SETGATE(idt[i], 0, GD_KTEXT, __vectors[i], DPL_KERNEL);
     }
     SETGATE(idt[T_SYSCALL], 1, GD_KTEXT, __vectors[T_SYSCALL], DPL_USER);
     lidt(&idt_pd);
 }
 
-static const char *
-trapname(int trapno) {
+static const char *trapname(int trapno)
+{
     static const char * const excnames[] = {
         "Divide error",
         "Debug",
@@ -93,18 +95,20 @@ trapname(int trapno) {
         "SIMD Floating-Point Exception"
     };
 
-    if (trapno < sizeof(excnames)/sizeof(const char * const)) {
+    if (trapno < sizeof(excnames)/sizeof(const char * const))
+    {
         return excnames[trapno];
     }
-    if (trapno >= IRQ_OFFSET && trapno < IRQ_OFFSET + 16) {
+    if (trapno >= IRQ_OFFSET && trapno < IRQ_OFFSET + 16)
+    {
         return "Hardware Interrupt";
     }
     return "(unknown trap)";
 }
 
 /* trap_in_kernel - test if trap happened in kernel */
-bool
-trap_in_kernel(struct trapframe *tf) {
+bool trap_in_kernel(struct trapframe *tf)
+{
     return (tf->tf_cs == (uint16_t)KERNEL_CS);
 }
 
@@ -114,8 +118,8 @@ static const char *IA32flags[] = {
     "RF", "VM", "AC", "VIF", "VIP", "ID", NULL, NULL,
 };
 
-void
-print_trapframe(struct trapframe *tf) {
+void print_trapframe(struct trapframe *tf)
+{
     cprintf("trapframe at %p\n", tf);
     print_regs(&tf->tf_regs);
     cprintf("  ds   0x----%04x\n", tf->tf_ds);
@@ -129,21 +133,24 @@ print_trapframe(struct trapframe *tf) {
     cprintf("  flag 0x%08x ", tf->tf_eflags);
 
     int i, j;
-    for (i = 0, j = 1; i < sizeof(IA32flags) / sizeof(IA32flags[0]); i ++, j <<= 1) {
-        if ((tf->tf_eflags & j) && IA32flags[i] != NULL) {
+    for (i = 0, j = 1; i < sizeof(IA32flags) / sizeof(IA32flags[0]); i ++, j <<= 1)
+    {
+        if ((tf->tf_eflags & j) && IA32flags[i] != NULL)
+        {
             cprintf("%s,", IA32flags[i]);
         }
     }
     cprintf("IOPL=%d\n", (tf->tf_eflags & FL_IOPL_MASK) >> 12);
 
-    if (!trap_in_kernel(tf)) {
+    if (!trap_in_kernel(tf))
+    {
         cprintf("  esp  0x%08x\n", tf->tf_esp);
         cprintf("  ss   0x----%04x\n", tf->tf_ss);
     }
 }
 
-void
-print_regs(struct pushregs *regs) {
+void print_regs(struct pushregs *regs)
+{
     cprintf("  edi  0x%08x\n", regs->reg_edi);
     cprintf("  esi  0x%08x\n", regs->reg_esi);
     cprintf("  ebp  0x%08x\n", regs->reg_ebp);
@@ -154,8 +161,8 @@ print_regs(struct pushregs *regs) {
     cprintf("  eax  0x%08x\n", regs->reg_eax);
 }
 
-static inline void
-print_pgfault(struct trapframe *tf) {
+static inline void print_pgfault(struct trapframe *tf)
+{
     /* error_code:
      * bit 0 == 0 means no page found, 1 means protection fault
      * bit 1 == 0 means read, 1 means write
@@ -167,19 +174,24 @@ print_pgfault(struct trapframe *tf) {
             (tf->tf_err & 1) ? "protection fault" : "no page found");
 }
 
-static int
-pgfault_handler(struct trapframe *tf) {
+static int pgfault_handler(struct trapframe *tf)
+{
     extern struct mm_struct *check_mm_struct;
-    if(check_mm_struct !=NULL) { //used for test check_swap
-            print_pgfault(tf);
-        }
+    if (check_mm_struct !=NULL)
+    {
+        //used for test check_swap
+        print_pgfault(tf);
+    }
     struct mm_struct *mm;
-    if (check_mm_struct != NULL) {
+    if (check_mm_struct != NULL)
+    {
         assert(current == idleproc);
         mm = check_mm_struct;
     }
-    else {
-        if (current == NULL) {
+    else
+    {
+        if (current == NULL)
+        {
             print_trapframe(tf);
             print_pgfault(tf);
             panic("unhandled page fault.\n");
@@ -192,89 +204,115 @@ pgfault_handler(struct trapframe *tf) {
 static volatile int in_swap_tick_event = 0;
 extern struct mm_struct *check_mm_struct;
 
-static void
-trap_dispatch(struct trapframe *tf) {
+/* temporary trapframe or pointer to trapframe */
+struct trapframe switchk2u, *switchu2k;
+
+static void trap_dispatch(struct trapframe *tf)
+{
     char c;
+    int ret = 0;
 
-    int ret=0;
-
-    switch (tf->tf_trapno) {
-    case T_PGFLT:  //page fault
-        if ((ret = pgfault_handler(tf)) != 0) {
-            print_trapframe(tf);
-            if (current == NULL) {
-                panic("handle pgfault failed. ret=%d\n", ret);
-            }
-            else {
-                if (trap_in_kernel(tf)) {
-                    panic("handle pgfault failed in kernel mode. ret=%d\n", ret);
+    switch (tf->tf_trapno)
+    {
+        case T_PGFLT:  //page fault
+            if ((ret = pgfault_handler(tf)) != 0) {
+                print_trapframe(tf);
+                if (current == NULL) {
+                    panic("handle pgfault failed. ret=%d\n", ret);
                 }
-                cprintf("killed by kernel.\n");
-                panic("handle user mode pgfault failed. ret=%d\n", ret); 
+                else {
+                    if (trap_in_kernel(tf)) {
+                        panic("handle pgfault failed in kernel mode. ret=%d\n", ret);
+                    }
+                    cprintf("killed by kernel.\n");
+                    panic("handle user mode pgfault failed. ret=%d\n", ret);
+                    do_exit(-E_KILLED);
+                }
+            }
+            break;
+        case T_SYSCALL:
+            syscall();
+            break;
+        case IRQ_OFFSET + IRQ_TIMER:
+    #if 0
+        LAB3 : If some page replacement algorithm(such as CLOCK PRA) need tick to change the priority of pages,
+        then you can add code here.
+    #endif
+            /* LAB1 YOUR CODE : STEP 3 */
+            /* handle the timer interrupt */
+            /* (1) After a timer interrupt, you should record this event using a global variable (increase it), such as ticks in kern/driver/clock.c
+             * (2) Every TICK_NUM cycle, you can print some info using a funciton, such as print_ticks().
+             * (3) Too Simple? Yes, I think so!
+             */
+            /* LAB5 YOUR CODE */
+            /* you should upate you lab1 code (just add ONE or TWO lines of code):
+             *    Every TICK_NUM cycle, you should set current process's current->need_resched = 1
+             */
+            /* LAB6 YOUR CODE */
+            /* IMPORTANT FUNCTIONS:
+             * run_timer_list
+             *----------------------
+             * you should update your lab5 code (just add ONE or TWO lines of code):
+             *    Every tick, you should update the system time, iterate the timers, and trigger the timers which are end to call scheduler.
+             *    You can use one funcitons to finish all these things.
+             */
+            ticks ++;
+            assert(current != NULL);
+            run_timer_list();
+            break;
+        case IRQ_OFFSET + IRQ_COM1:
+            //c = cons_getc();
+            //cprintf("serial [%03d] %c\n", c, c);
+            //break;
+        case IRQ_OFFSET + IRQ_KBD:
+            c = cons_getc();
+            //cprintf("kbd [%03d] %c\n", c, c);
+            {
+              extern void dev_stdin_write(char c);
+              dev_stdin_write(c);
+            }
+            break;
+        //LAB1 CHALLENGE 1 : YOUR CODE you should modify below codes.
+        case T_SWITCH_TOU:
+            if (tf->tf_cs != USER_CS)
+            {
+                switchk2u = *tf;
+                switchk2u.tf_cs = USER_CS;
+                switchk2u.tf_ds = switchk2u.tf_es = switchk2u.tf_ss = USER_DS;
+                switchk2u.tf_esp = (uint32_t)tf + sizeof(struct trapframe) - 8;
+                
+                // set eflags, make sure ucore can use io under user mode.
+                // if CPL > IOPL, then cpu will generate a general protection.
+                switchk2u.tf_eflags |= FL_IOPL_MASK;
+                
+                // set temporary stack
+                // then iret will jump to the right stack
+                *((uint32_t *)tf - 1) = (uint32_t)&switchk2u;
+            }
+            break;
+        case T_SWITCH_TOK:
+            if (tf->tf_cs != KERNEL_CS)
+            {
+                tf->tf_cs = KERNEL_CS;
+                tf->tf_ds = tf->tf_es = KERNEL_DS;
+                tf->tf_eflags &= ~FL_IOPL_MASK;
+                switchu2k = (struct trapframe *)(tf->tf_esp - (sizeof(struct trapframe) - 8));
+                memmove(switchu2k, tf, sizeof(struct trapframe) - 8);
+                *((uint32_t *)tf - 1) = (uint32_t)switchu2k;
+            }
+            break;
+        case IRQ_OFFSET + IRQ_IDE1:
+        case IRQ_OFFSET + IRQ_IDE2:
+            /* do nothing */
+            break;
+        default:
+            print_trapframe(tf);
+            if (current != NULL) {
+                cprintf("unhandled trap.\n");
                 do_exit(-E_KILLED);
             }
-        }
-        break;
-    case T_SYSCALL:
-        syscall();
-        break;
-    case IRQ_OFFSET + IRQ_TIMER:
-#if 0
-    LAB3 : If some page replacement algorithm(such as CLOCK PRA) need tick to change the priority of pages, 
-    then you can add code here. 
-#endif
-        /* LAB1 YOUR CODE : STEP 3 */
-        /* handle the timer interrupt */
-        /* (1) After a timer interrupt, you should record this event using a global variable (increase it), such as ticks in kern/driver/clock.c
-         * (2) Every TICK_NUM cycle, you can print some info using a funciton, such as print_ticks().
-         * (3) Too Simple? Yes, I think so!
-         */
-        /* LAB5 YOUR CODE */
-        /* you should upate you lab1 code (just add ONE or TWO lines of code):
-         *    Every TICK_NUM cycle, you should set current process's current->need_resched = 1
-         */
-        /* LAB6 YOUR CODE */
-        /* IMPORTANT FUNCTIONS:
-	     * run_timer_list
-	     *----------------------
-	     * you should update your lab5 code (just add ONE or TWO lines of code):
-         *    Every tick, you should update the system time, iterate the timers, and trigger the timers which are end to call scheduler.
-         *    You can use one funcitons to finish all these things.
-         */
-        ticks ++;
-        assert(current != NULL);
-        run_timer_list();
-        break;
-    case IRQ_OFFSET + IRQ_COM1:
-        //c = cons_getc();
-        //cprintf("serial [%03d] %c\n", c, c);
-        //break;
-    case IRQ_OFFSET + IRQ_KBD:
-        c = cons_getc();
-        //cprintf("kbd [%03d] %c\n", c, c);
-        {
-          extern void dev_stdin_write(char c);
-          dev_stdin_write(c);
-        }
-        break;
-    //LAB1 CHALLENGE 1 : YOUR CODE you should modify below codes.
-    case T_SWITCH_TOU:
-    case T_SWITCH_TOK:
-        panic("T_SWITCH_** ??\n");
-        break;
-    case IRQ_OFFSET + IRQ_IDE1:
-    case IRQ_OFFSET + IRQ_IDE2:
-        /* do nothing */
-        break;
-    default:
-        print_trapframe(tf);
-        if (current != NULL) {
-            cprintf("unhandled trap.\n");
-            do_exit(-E_KILLED);
-        }
-        // in kernel, it must be a mistake
-        panic("unexpected trap in kernel.\n");
-
+            // in kernel, it must be a mistake
+            panic("unexpected trap in kernel.\n");
     }
 }
 
@@ -283,14 +321,17 @@ trap_dispatch(struct trapframe *tf) {
  * the code in kern/trap/trapentry.S restores the old CPU state saved in the
  * trapframe and then uses the iret instruction to return from the exception.
  * */
-void
-trap(struct trapframe *tf) {
+// 参数 tf 在汇编函数 __alltraps 里设置好，再调用 c 函数 trap
+void trap(struct trapframe *tf)
+{
     // dispatch based on what type of trap occurred
     // used for previous projects
-    if (current == NULL) {
+    if (current == NULL)
+    {
         trap_dispatch(tf);
     }
-    else {
+    else
+    {
         // keep a trapframe chain in stack
         struct trapframe *otf = current->tf;
         current->tf = tf;
@@ -300,11 +341,14 @@ trap(struct trapframe *tf) {
         trap_dispatch(tf);
     
         current->tf = otf;
-        if (!in_kernel) {
-            if (current->flags & PF_EXITING) {
+        if (!in_kernel)
+        {
+            if (current->flags & PF_EXITING)
+            {
                 do_exit(-E_KILLED);
             }
-            if (current->need_resched) {
+            if (current->need_resched)
+            {
                 schedule();
             }
         }
