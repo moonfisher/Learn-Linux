@@ -31,7 +31,6 @@
  * */
 
 #define SECTSIZE        512
-#define ELFHDR          ((struct elfhdr *)0x10000)      // scratch space
 
 /* waitdisk - wait for disk ready */
 static void waitdisk(void)
@@ -86,11 +85,13 @@ static void readseg(uintptr_t va, uint32_t count, uint32_t offset)
 /* bootmain - the entry of bootloader */
 void bootmain(void)
 {
+    struct elfhdr *elfh = (struct elfhdr *)0x10000;
+    
     // read the 1st page off disk
-    readseg((uintptr_t)ELFHDR, SECTSIZE * 8, 0);
+    readseg((uintptr_t)elfh, SECTSIZE * 8, 0);
 
     // is this a valid ELF?
-    if (ELFHDR->e_magic != ELF_MAGIC)
+    if (elfh->e_magic != ELF_MAGIC)
     {
         goto bad;
     }
@@ -98,8 +99,8 @@ void bootmain(void)
     struct proghdr *ph, *eph;
 
     // load each program segment (ignores ph flags)
-    ph = (struct proghdr *)((uintptr_t)ELFHDR + ELFHDR->e_phoff);
-    eph = ph + ELFHDR->e_phnum;
+    ph = (struct proghdr *)((uintptr_t)elfh + elfh->e_phoff);
+    eph = ph + elfh->e_phnum;
     for (; ph < eph; ph ++)
     {
         readseg(ph->p_va & 0xFFFFFF, ph->p_memsz, ph->p_offset);
@@ -107,7 +108,9 @@ void bootmain(void)
 
     // call the entry point from the ELF header
     // note: does not return
-    ((void (*)(void))(ELFHDR->e_entry & 0xFFFFFF))();
+    void (*kern_entry)(void);
+    kern_entry = elfh->e_entry & 0xFFFFFF;
+    kern_entry();
     
 bad:
     outw(0x8A00, 0x8A00);
