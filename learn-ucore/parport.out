@@ -1,0 +1,66 @@
+(THU.CST) os is loading ...
+
+Special kernel symbols:
+  entry  0xc0100036 (phys)
+  etext  0xc0114139 (phys)
+  edata  0xc0157000 (phys)
+  end    0xc015b324 (phys)
+Kernel executable memory footprint: 365KB
+ebp:0xc0153f48 eip:0xc0100b6b args:0xc0100300 0xffff6ad9 0xc0153f78 0xc01000d2 
+    kern/debug/kdebug.c:350: print_stackframe+28
+ebp:0xc0153f58 eip:0xc0100e59 args:0x00000000 0x00000000 0x00000000 0xc0114161 
+    kern/debug/kmonitor.c:129: mon_backtrace+10
+ebp:0xc0153f78 eip:0xc01000d2 args:0x00000000 0xc0153fa0 0xffff0000 0xc0153fa4 
+    kern/init/init.c:61: grade_backtrace2+19
+ebp:0xc0153f98 eip:0xc01000f4 args:0x00000000 0xffff0000 0xc0153fc4 0x0000002a 
+    kern/init/init.c:66: grade_backtrace1+27
+ebp:0xc0153fb8 eip:0xc0100111 args:0x00000000 0xc0100036 0xffff0000 0xc0100075 
+    kern/init/init.c:71: grade_backtrace0+19
+ebp:0xc0153fd8 eip:0xc0100132 args:0x00000000 0x00000000 0x00000000 0xc0114140 
+    kern/init/init.c:76: grade_backtrace+26
+ebp:0xc0153ff8 eip:0xc0100082 args:0xc01142f0 0xc01142f8 0xc0100de3 0xc0114317 
+    kern/init/init.c:34: kern_init+75
+memory management: default_pmm_manager
+e820map:
+  memory: 0009f000, [00000000, 0009efff], type = 1.
+  memory: 00001000, [0009f000, 0009ffff], type = 2.
+  memory: 00018000, [000e8000, 000fffff], type = 2.
+  memory: 01ef0000, [00100000, 01feffff], type = 1.
+  memory: 00010000, [01ff0000, 01ffffff], type = 3.
+  memory: 00040000, [fffc0000, ffffffff], type = 2.
+check_alloc_page() succeeded!
+check_pgdir() succeeded!
+check_boot_pgdir() succeeded!
+-------------------- BEGIN --------------------
+PDE(0e0) c0000000-f8000000 38000000 urw
+  |-- PTE(38000) c0000000-f8000000 38000000 -rw
+PDE(001) fac00000-fb000000 00400000 -rw
+  |-- PTE(000e0) faf00000-fafe0000 000e0000 urw
+  |-- PTE(00001) fafeb000-fafec000 00001000 -rw
+--------------------- END ---------------------
+use SLOB allocator
+check_slab() success
+kmalloc_init() succeeded!
+check_vma_struct() succeeded!
+kernel panic at kern/mm/default_pmm.c:157:
+    assertion failed: !PageReserved(p) && !PageProperty(p)
+stack trackback:
+ebp:0xc0153e78 eip:0xc0100b6b args:0x00000000 0x03fd200a 0xc0153ec8 0xc0153eac 
+    kern/debug/kdebug.c:350: print_stackframe+28
+ebp:0xc0153e98 eip:0xc0100ecc args:0xc0114a8b 0x0000009d 0xc0114a76 0xc0114ab4 
+    kern/debug/panic.c:27: __panic+107
+ebp:0xc0153f38 eip:0xc010389a args:0xc015c000 0x00000001 0xc0153f68 0xc010502e 
+    kern/mm/default_pmm.c:157: default_free_pages+163
+ebp:0xc0153f68 eip:0xc0105044 args:0xc015c000 0x00000001 0x00000002 0xc0108379 
+    kern/mm/pmm.c:188: free_pages+32
+ebp:0xc0153fa8 eip:0xc0108502 args:0x00210400 0x002103e3 0x00a011d8 0x00001d6d 
+    kern/mm/vmm.c:360: check_pgfault+411
+ebp:0xc0153fc8 eip:0xc0107f5e args:0xc0154560 0x00000100 0xc0153ff8 0xc0100096 
+    kern/mm/vmm.c:258: check_vmm+23
+ebp:0xc0153fd8 eip:0xc0107f43 args:0x00000000 0x00000000 0x00000000 0xc0114140 
+    kern/mm/vmm.c:249: vmm_init+10
+ebp:0xc0153ff8 eip:0xc0100096 args:0xc01142f0 0xc01142f8 0xc0100de3 0xc0114317 
+    kern/init/init.c:41: kern_init+95
+Welcome to the kernel debug monitor!!
+Type 'help' for a list of commands.
+K> 

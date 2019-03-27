@@ -727,6 +727,7 @@ ata3: enabled=0, ioaddr1=0x168, ioaddr2=0x360, irq=9
 #ata0-slave: type=cdrom, path=/dev/cdrom, status=inserted
 #ata0-slave: type=cdrom, path="drive", status=inserted
 #ata0-slave: type=cdrom, path=/dev/rcd0d, status=inserted 
+ata0-master: type=disk, mode=flat, path="disk.img"
 
 #=======================================================================
 # BOOT:
@@ -739,8 +740,8 @@ ata3: enabled=0, ioaddr1=0x168, ioaddr2=0x360, irq=9
 #   boot: network, disk
 #   boot: cdrom, floppy, disk
 #=======================================================================
-boot: floppy
-#boot: disk
+#boot: floppy
+boot: disk
 
 #=======================================================================
 # FLOPPY_BOOTSIG_CHECK: disabled=[0|1]
