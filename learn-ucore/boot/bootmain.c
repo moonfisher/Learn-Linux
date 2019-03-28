@@ -108,9 +108,10 @@ void bootmain(void)
 
     // call the entry point from the ELF header
     // note: does not return
-    // 找到内核入口地址（物理地址 0x10018）跳转执行，虚拟地址 0 ~ 4M 映射到物理地址 0 ~ 4M
+    // 找到内核入口地址，虚拟地址 elfh->e_entry = 0xC0100000，此时还没开启分页，实际物理地址 0x00100000
     void (*kern_entry)(void);
-    kern_entry = elfh->e_entry & 0xFFFFFF;
+    //kern_entry = elfh->e_entry & 0xFFFFFF;
+    kern_entry = elfh->e_entry - 0xC0000000;
     kern_entry();
     
 bad:
