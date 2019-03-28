@@ -29,8 +29,7 @@ unsigned int swap_in_seq_no[MAX_SEQ_NO],swap_out_seq_no[MAX_SEQ_NO];
 
 static void check_swap(void);
 
-int
-swap_init(void)
+int swap_init(void)
 {
      swapfs_init();
 
@@ -38,37 +37,33 @@ swap_init(void)
      {
           panic("bad max_swap_offset %08x.\n", max_swap_offset);
      }
-     
 
      sm = &swap_manager_fifo;
      int r = sm->init();
      
      if (r == 0)
      {
-          swap_init_ok = 1;
-          cprintf("SWAP: manager = %s\n", sm->name);
-          check_swap();
+        swap_init_ok = 1;
+        cprintf("SWAP: manager = %s\n", sm->name);
+        check_swap();
      }
 
      return r;
 }
 
-int
-swap_init_mm(struct mm_struct *mm)
+int swap_init_mm(struct mm_struct *mm)
 {
-     return sm->init_mm(mm);
+    return sm->init_mm(mm);
 }
 
-int
-swap_tick_event(struct mm_struct *mm)
+int swap_tick_event(struct mm_struct *mm)
 {
-     return sm->tick_event(mm);
+    return sm->tick_event(mm);
 }
 
-int
-swap_map_swappable(struct mm_struct *mm, uintptr_t addr, struct Page *page, int swap_in)
+int swap_map_swappable(struct mm_struct *mm, uintptr_t addr, struct Page *page, int swap_in)
 {
-     return sm->map_swappable(mm, addr, page, swap_in);
+    return sm->map_swappable(mm, addr, page, swap_in);
 }
 
 int

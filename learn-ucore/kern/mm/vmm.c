@@ -40,8 +40,8 @@ static void check_vma_struct(void);
 static void check_pgfault(void);
 
 // mm_create -  alloc a mm_struct & initialize it.
-struct mm_struct *
-mm_create(void) {
+struct mm_struct *mm_create(void)
+{
     struct mm_struct *mm = kmalloc(sizeof(struct mm_struct));
 
     if (mm != NULL) {
@@ -60,8 +60,8 @@ mm_create(void) {
 }
 
 // vma_create - alloc a vma_struct & initialize it. (addr range: vm_start~vm_end)
-struct vma_struct *
-vma_create(uintptr_t vm_start, uintptr_t vm_end, uint32_t vm_flags) {
+struct vma_struct *vma_create(uintptr_t vm_start, uintptr_t vm_end, uint32_t vm_flags)
+{
     struct vma_struct *vma = kmalloc(sizeof(struct vma_struct));
 
     if (vma != NULL) {
@@ -74,8 +74,8 @@ vma_create(uintptr_t vm_start, uintptr_t vm_end, uint32_t vm_flags) {
 
 
 // find_vma - find a vma  (vma->vm_start <= addr <= vma_vm_end)
-struct vma_struct *
-find_vma(struct mm_struct *mm, uintptr_t addr) {
+struct vma_struct *find_vma(struct mm_struct *mm, uintptr_t addr)
+{
     struct vma_struct *vma = NULL;
     if (mm != NULL) {
         vma = mm->mmap_cache;
@@ -102,8 +102,8 @@ find_vma(struct mm_struct *mm, uintptr_t addr) {
 
 
 // check_vma_overlap - check if vma1 overlaps vma2 ?
-static inline void
-check_vma_overlap(struct vma_struct *prev, struct vma_struct *next) {
+static inline void check_vma_overlap(struct vma_struct *prev, struct vma_struct *next)
+{
     assert(prev->vm_start < prev->vm_end);
     assert(prev->vm_end <= next->vm_start);
     assert(next->vm_start < next->vm_end);
@@ -111,8 +111,8 @@ check_vma_overlap(struct vma_struct *prev, struct vma_struct *next) {
 
 
 // insert_vma_struct -insert vma in mm's list link
-void
-insert_vma_struct(struct mm_struct *mm, struct vma_struct *vma) {
+void insert_vma_struct(struct mm_struct *mm, struct vma_struct *vma)
+{
     assert(vma->vm_start < vma->vm_end);
     list_entry_t *list = &(mm->mmap_list);
     list_entry_t *le_prev = list, *le_next;
@@ -143,8 +143,8 @@ insert_vma_struct(struct mm_struct *mm, struct vma_struct *vma) {
 }
 
 // mm_destroy - free mm and mm internal fields
-void
-mm_destroy(struct mm_struct *mm) {
+void mm_destroy(struct mm_struct *mm)
+{
     assert(mm_count(mm) == 0);
 
     list_entry_t *list = &(mm->mmap_list), *le;
@@ -156,9 +156,9 @@ mm_destroy(struct mm_struct *mm) {
     mm=NULL;
 }
 
-int
-mm_map(struct mm_struct *mm, uintptr_t addr, size_t len, uint32_t vm_flags,
-       struct vma_struct **vma_store) {
+int mm_map(struct mm_struct *mm, uintptr_t addr, size_t len, uint32_t vm_flags,
+       struct vma_struct **vma_store)
+{
     uintptr_t start = ROUNDDOWN(addr, PGSIZE), end = ROUNDUP(addr + len, PGSIZE);
     if (!USER_ACCESS(start, end)) {
         return -E_INVAL;
@@ -187,8 +187,8 @@ out:
     return ret;
 }
 
-int
-dup_mmap(struct mm_struct *to, struct mm_struct *from) {
+int dup_mmap(struct mm_struct *to, struct mm_struct *from)
+{
     assert(to != NULL && from != NULL);
     list_entry_t *list = &(from->mmap_list), *le = list;
     while ((le = list_prev(le)) != list) {
@@ -209,8 +209,8 @@ dup_mmap(struct mm_struct *to, struct mm_struct *from) {
     return 0;
 }
 
-void
-exit_mmap(struct mm_struct *mm) {
+void exit_mmap(struct mm_struct *mm)
+{
     assert(mm != NULL && mm_count(mm) == 0);
     pde_t *pgdir = mm->pgdir;
     list_entry_t *list = &(mm->mmap_list), *le = list;
@@ -224,18 +224,20 @@ exit_mmap(struct mm_struct *mm) {
     }
 }
 
-bool
-copy_from_user(struct mm_struct *mm, void *dst, const void *src, size_t len, bool writable) {
-    if (!user_mem_check(mm, (uintptr_t)src, len, writable)) {
+bool copy_from_user(struct mm_struct *mm, void *dst, const void *src, size_t len, bool writable)
+{
+    if (!user_mem_check(mm, (uintptr_t)src, len, writable))
+    {
         return 0;
     }
     memcpy(dst, src, len);
     return 1;
 }
 
-bool
-copy_to_user(struct mm_struct *mm, void *dst, const void *src, size_t len) {
-    if (!user_mem_check(mm, (uintptr_t)dst, len, 1)) {
+bool copy_to_user(struct mm_struct *mm, void *dst, const void *src, size_t len)
+{
+    if (!user_mem_check(mm, (uintptr_t)dst, len, 1))
+    {
         return 0;
     }
     memcpy(dst, src, len);
@@ -244,14 +246,14 @@ copy_to_user(struct mm_struct *mm, void *dst, const void *src, size_t len) {
 
 // vmm_init - initialize virtual memory management
 //          - now just call check_vmm to check correctness of vmm
-void
-vmm_init(void) {
+void vmm_init(void)
+{
     check_vmm();
 }
 
 // check_vmm - check correctness of vmm
-static void
-check_vmm(void) {
+static void check_vmm(void)
+{
     size_t nr_free_pages_store = nr_free_pages();
     
     check_vma_struct();
@@ -262,8 +264,8 @@ check_vmm(void) {
     cprintf("check_vmm() succeeded.\n");
 }
 
-static void
-check_vma_struct(void) {
+static void check_vma_struct(void)
+{
     size_t nr_free_pages_store = nr_free_pages();
 
     struct mm_struct *mm = mm_create();
@@ -327,8 +329,8 @@ check_vma_struct(void) {
 struct mm_struct *check_mm_struct;
 
 // check_pgfault - check correctness of pgfault handler
-static void
-check_pgfault(void) {
+static void check_pgfault(void)
+{
     size_t nr_free_pages_store = nr_free_pages();
 
     check_mm_struct = mm_create();
@@ -369,7 +371,7 @@ check_pgfault(void) {
     cprintf("check_pgfault() succeeded!\n");
 }
 //page fault number
-volatile unsigned int pgfault_num=0;
+volatile unsigned int pgfault_num = 0;
 
 /* do_pgfault - interrupt handler to process the page fault execption
  * @mm         : the control struct for a set of vma using the same PDT
@@ -392,8 +394,8 @@ volatile unsigned int pgfault_num=0;
  *         -- The U/S flag (bit 2) indicates whether the processor was executing at user mode (1)
  *            or supervisor mode (0) at the time of the exception.
  */
-int
-do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
+int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr)
+{
     int ret = -E_INVAL;
     //try to find a vma which include addr
     struct vma_struct *vma = find_vma(mm, addr);
@@ -543,8 +545,8 @@ failed:
     return ret;
 }
 
-bool
-user_mem_check(struct mm_struct *mm, uintptr_t addr, size_t len, bool write) {
+bool user_mem_check(struct mm_struct *mm, uintptr_t addr, size_t len, bool write)
+{
     if (mm != NULL) {
         if (!USER_ACCESS(addr, addr + len)) {
             return 0;
@@ -570,8 +572,8 @@ user_mem_check(struct mm_struct *mm, uintptr_t addr, size_t len, bool write) {
     return KERN_ACCESS(addr, addr + len);
 }
 
-bool
-copy_string(struct mm_struct *mm, char *dst, const char *src, size_t maxn) {
+bool copy_string(struct mm_struct *mm, char *dst, const char *src, size_t maxn)
+{
     size_t alen, part = ROUNDDOWN((uintptr_t)src + PGSIZE, PGSIZE) - (uintptr_t)src;
     while (1) {
         if (part > maxn) {

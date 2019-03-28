@@ -8,18 +8,20 @@
 #include "atomic.h"
 #include "sched.h"
 
-static inline bool
-__intr_save(void) {
-    if (read_eflags() & FL_IF) {
+static inline bool __intr_save(void)
+{
+    if (read_eflags() & FL_IF)
+    {
         intr_disable();
         return 1;
     }
     return 0;
 }
 
-static inline void
-__intr_restore(bool flag) {
-    if (flag) {
+static inline void __intr_restore(bool flag)
+{
+    if (flag)
+    {
         intr_enable();
     }
 }

@@ -12,8 +12,7 @@
 
 /* The compare function for two skew_heap_node_t's and the
  * corresponding procs*/
-static int
-proc_stride_comp_f(void *a, void *b)
+static int proc_stride_comp_f(void *a, void *b)
 {
      struct proc_struct *p = le2proc(a, lab6_run_pool);
      struct proc_struct *q = le2proc(b, lab6_run_pool);
@@ -34,8 +33,8 @@ proc_stride_comp_f(void *a, void *b)
  *
  * hint: see proj13.1/libs/list.h for routines of the list structures.
  */
-static void
-stride_init(struct run_queue *rq) {
+static void stride_init(struct run_queue *rq)
+{
      /* LAB6: YOUR CODE */
      list_init(&(rq->run_list));
      rq->lab6_run_pool = NULL;
@@ -55,8 +54,8 @@ stride_init(struct run_queue *rq) {
  * hint: see proj13.1/libs/skew_heap.h for routines of the priority
  * queue structures.
  */
-static void
-stride_enqueue(struct run_queue *rq, struct proc_struct *proc) {
+static void stride_enqueue(struct run_queue *rq, struct proc_struct *proc)
+{
      /* LAB6: YOUR CODE */
 #if USE_SKEW_HEAP
      rq->lab6_run_pool =
@@ -80,8 +79,8 @@ stride_enqueue(struct run_queue *rq, struct proc_struct *proc) {
  * hint: see proj13.1/libs/skew_heap.h for routines of the priority
  * queue structures.
  */
-static void
-stride_dequeue(struct run_queue *rq, struct proc_struct *proc) {
+static void stride_dequeue(struct run_queue *rq, struct proc_struct *proc)
+{
      /* LAB6: YOUR CODE */
 #if USE_SKEW_HEAP
      rq->lab6_run_pool =
@@ -105,8 +104,8 @@ stride_dequeue(struct run_queue *rq, struct proc_struct *proc) {
  * hint: see proj13.1/libs/skew_heap.h for routines of the priority
  * queue structures.
  */
-static struct proc_struct *
-stride_pick_next(struct run_queue *rq) {
+static struct proc_struct *stride_pick_next(struct run_queue *rq)
+{
      /* LAB6: YOUR CODE */
 #if USE_SKEW_HEAP
      if (rq->lab6_run_pool == NULL) return NULL;
@@ -141,8 +140,8 @@ stride_pick_next(struct run_queue *rq) {
  * process. proc->need_resched is the flag variable for process
  * switching.
  */
-static void
-stride_proc_tick(struct run_queue *rq, struct proc_struct *proc) {
+static void stride_proc_tick(struct run_queue *rq, struct proc_struct *proc)
+{
      /* LAB6: YOUR CODE */
      if (proc->time_slice > 0) {
           proc->time_slice --;

@@ -8,7 +8,7 @@
  * which generates interruptes on IRQ-0.
  * */
 
-#define IO_TIMER1           0x040               // 8253 Timer #1
+#define IO_TIMER1       0x040               // 8253 Timer #1
 
 /* *
  * Frequency of all three count-down timers; (TIMER_FREQ/freq)
@@ -25,7 +25,8 @@
 
 volatile size_t ticks;
 
-long SYSTEM_READ_TIMER( void ){
+long SYSTEM_READ_TIMER(void)
+{
     return ticks;
 }
 
@@ -33,8 +34,8 @@ long SYSTEM_READ_TIMER( void ){
  * clock_init - initialize 8253 clock to interrupt 100 times per second,
  * and then enable IRQ_TIMER.
  * */
-void
-clock_init(void) {
+void clock_init(void)
+{
     // set 8253 timer-chip
     outb(TIMER_MODE, TIMER_SEL0 | TIMER_RATEGEN | TIMER_16BIT);
     outb(IO_TIMER1, TIMER_DIV(100) % 256);
