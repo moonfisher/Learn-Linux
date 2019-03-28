@@ -103,6 +103,8 @@ void bootmain(void)
     eph = ph + elfh->e_phnum;
     for (; ph < eph; ph ++)
     {
+        // 内核代码段根据 elf 里的虚拟地址加载到对应的物理地址上，但此时没有启用分页，先减去 0xC0000000
+        // ph->p_va = 0xC0100000, ph->p_va & 0xFFFFFF = 0x00100000
         readseg(ph->p_va & 0xFFFFFF, ph->p_memsz, ph->p_offset);
     }
 
