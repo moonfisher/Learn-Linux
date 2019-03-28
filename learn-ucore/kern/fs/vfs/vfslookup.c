@@ -10,8 +10,8 @@
  *             path and choose the inode to begin the name lookup relative to.
  */
 
-static int
-get_device(char *path, char **subpath, struct inode **node_store) {
+static int get_device(char *path, char **subpath, struct inode **node_store)
+{
     int i, slash = -1, colon = -1;
     for (i = 0; path[i] != '\0'; i ++) {
         if (path[i] == ':') { colon = i; break; }
@@ -68,8 +68,8 @@ get_device(char *path, char **subpath, struct inode **node_store) {
 /*
  * vfs_lookup - get the inode according to the path filename
  */
-int
-vfs_lookup(char *path, struct inode **node_store) {
+int vfs_lookup(char *path, struct inode **node_store)
+{
     int ret;
     struct inode *node;
     if ((ret = get_device(path, &path, &node)) != 0) {
@@ -88,8 +88,8 @@ vfs_lookup(char *path, struct inode **node_store) {
  * vfs_lookup_parent - Name-to-vnode translation.
  *  (In BSD, both of these are subsumed by namei().)
  */
-int
-vfs_lookup_parent(char *path, struct inode **node_store, char **endp){
+int vfs_lookup_parent(char *path, struct inode **node_store, char **endp)
+{
     int ret;
     struct inode *node;
     if ((ret = get_device(path, &path, &node)) != 0) {

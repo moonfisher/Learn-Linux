@@ -38,8 +38,8 @@ failed_cleanup:
 }
 
 /* sysfile_open - open file */
-int
-sysfile_open(const char *__path, uint32_t open_flags) {
+int sysfile_open(const char *__path, uint32_t open_flags)
+{
     int ret;
     char *path;
     if ((ret = copy_path(&path, __path)) != 0) {
@@ -51,14 +51,14 @@ sysfile_open(const char *__path, uint32_t open_flags) {
 }
 
 /* sysfile_close - close file */
-int
-sysfile_close(int fd) {
+int sysfile_close(int fd)
+{
     return file_close(fd);
 }
 
 /* sysfile_read - read file */
-int
-sysfile_read(int fd, void *base, size_t len) {
+int sysfile_read(int fd, void *base, size_t len)
+{
     struct mm_struct *mm = current->mm;
     if (len == 0) {
         return 0;
@@ -81,11 +81,13 @@ sysfile_read(int fd, void *base, size_t len) {
         if (alen != 0) {
             lock_mm(mm);
             {
-                if (copy_to_user(mm, base, buffer, alen)) {
+                if (copy_to_user(mm, base, buffer, alen))
+                {
                     assert(len >= alen);
                     base += alen, len -= alen, copied += alen;
                 }
-                else if (ret == 0) {
+                else if (ret == 0)
+                {
                     ret = -E_INVAL;
                 }
             }
@@ -153,14 +155,14 @@ out:
 }
 
 /* sysfile_seek - seek file */
-int
-sysfile_seek(int fd, off_t pos, int whence) {
+int sysfile_seek(int fd, off_t pos, int whence)
+{
     return file_seek(fd, pos, whence);
 }
 
 /* sysfile_fstat - stat file */
-int
-sysfile_fstat(int fd, struct stat *__stat) {
+int sysfile_fstat(int fd, struct stat *__stat)
+{
     struct mm_struct *mm = current->mm;
     int ret;
     struct stat __local_stat, *stat = &__local_stat;
@@ -179,14 +181,14 @@ sysfile_fstat(int fd, struct stat *__stat) {
 }
 
 /* sysfile_fsync - sync file */
-int
-sysfile_fsync(int fd) {
+int sysfile_fsync(int fd)
+{
     return file_fsync(fd);
 }
 
 /* sysfile_chdir - change dir */
-int
-sysfile_chdir(const char *__path) {
+int sysfile_chdir(const char *__path)
+{
     int ret;
     char *path;
     if ((ret = copy_path(&path, __path)) != 0) {

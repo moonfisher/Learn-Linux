@@ -830,7 +830,8 @@ int do_execve(const char *name, int argc, const char **argv)
 {
     static_assert(EXEC_MAX_ARG_LEN >= FS_MAX_FPATH_LEN);
     struct mm_struct *mm = current->mm;
-    if (!(argc >= 1 && argc <= EXEC_MAX_ARG_NUM)) {
+    if (!(argc >= 1 && argc <= EXEC_MAX_ARG_NUM))
+    {
         return -E_INVAL;
     }
 
@@ -843,16 +844,21 @@ int do_execve(const char *name, int argc, const char **argv)
     int ret = -E_INVAL;
     
     lock_mm(mm);
-    if (name == NULL) {
+    if (name == NULL)
+    {
         snprintf(local_name, sizeof(local_name), "<null> %d", current->pid);
     }
-    else {
-        if (!copy_string(mm, local_name, name, sizeof(local_name))) {
+    else
+    {
+        if (!copy_string(mm, local_name, name, sizeof(local_name)))
+        {
             unlock_mm(mm);
             return ret;
         }
     }
-    if ((ret = copy_kargv(mm, argc, kargv, argv)) != 0) {
+    
+    if ((ret = copy_kargv(mm, argc, kargv, argv)) != 0)
+    {
         unlock_mm(mm);
         return ret;
     }
@@ -862,10 +868,13 @@ int do_execve(const char *name, int argc, const char **argv)
 
     /* sysfile_open will check the first argument path, thus we have to use a user-space pointer, and argv[0] may be incorrect */    
     int fd;
-    if ((ret = fd = sysfile_open(path, O_RDONLY)) < 0) {
+    if ((ret = fd = sysfile_open(path, O_RDONLY)) < 0)
+    {
         goto execve_exit;
     }
-    if (mm != NULL) {
+    
+    if (mm != NULL)
+    {
         lcr3(boot_cr3);
         if (mm_count_dec(mm) == 0) {
             exit_mmap(mm);
@@ -874,8 +883,9 @@ int do_execve(const char *name, int argc, const char **argv)
         }
         current->mm = NULL;
     }
-    ret= -E_NO_MEM;;
-    if ((ret = load_icode(fd, argc, kargv)) != 0) {
+    ret = -E_NO_MEM;;
+    if ((ret = load_icode(fd, argc, kargv)) != 0)
+    {
         goto execve_exit;
     }
     put_kargv(argc, kargv);
@@ -979,7 +989,8 @@ int do_kill(int pid)
 static int kernel_execve(const char *name, const char **argv)
 {
     int argc = 0, ret;
-    while (argv[argc] != NULL) {
+    while (argv[argc] != NULL)
+    {
         argc ++;
     }
     asm volatile (

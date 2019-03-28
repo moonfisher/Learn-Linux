@@ -46,7 +46,8 @@
 #define T_SWITCH_TOK                121    // user/kernel switch
 
 /* registers as pushed by pushal */
-struct pushregs {
+struct pushregs
+{
     uint32_t reg_edi;
     uint32_t reg_esi;
     uint32_t reg_ebp;
@@ -57,7 +58,8 @@ struct pushregs {
     uint32_t reg_eax;
 };
 
-struct trapframe {
+struct trapframe
+{
     struct pushregs tf_regs;
     uint16_t tf_gs;
     uint16_t tf_padding0;

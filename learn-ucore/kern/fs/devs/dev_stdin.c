@@ -18,10 +18,11 @@ static char stdin_buffer[STDIN_BUFSIZE];
 static off_t p_rpos, p_wpos;
 static wait_queue_t __wait_queue, *wait_queue = &__wait_queue;
 
-void
-dev_stdin_write(char c) {
+void dev_stdin_write(char c)
+{
     bool intr_flag;
-    if (c != '\0') {
+    if (c != '\0')
+    {
         local_intr_save(intr_flag);
         {
             stdin_buffer[p_wpos % STDIN_BUFSIZE] = c;
@@ -36,8 +37,8 @@ dev_stdin_write(char c) {
     }
 }
 
-static int
-dev_stdin_read(char *buf, size_t len) {
+static int dev_stdin_read(char *buf, size_t len)
+{
     int ret = 0;
     bool intr_flag;
     local_intr_save(intr_flag);
@@ -67,21 +68,21 @@ dev_stdin_read(char *buf, size_t len) {
     return ret;
 }
 
-static int
-stdin_open(struct device *dev, uint32_t open_flags) {
+static int stdin_open(struct device *dev, uint32_t open_flags)
+{
     if (open_flags != O_RDONLY) {
         return -E_INVAL;
     }
     return 0;
 }
 
-static int
-stdin_close(struct device *dev) {
+static int stdin_close(struct device *dev)
+{
     return 0;
 }
 
-static int
-stdin_io(struct device *dev, struct iobuf *iob, bool write) {
+static int stdin_io(struct device *dev, struct iobuf *iob, bool write)
+{
     if (!write) {
         int ret;
         if ((ret = dev_stdin_read(iob->io_base, iob->io_resid)) > 0) {
@@ -92,13 +93,13 @@ stdin_io(struct device *dev, struct iobuf *iob, bool write) {
     return -E_INVAL;
 }
 
-static int
-stdin_ioctl(struct device *dev, int op, void *data) {
+static int stdin_ioctl(struct device *dev, int op, void *data)
+{
     return -E_INVAL;
 }
 
-static void
-stdin_device_init(struct device *dev) {
+static void stdin_device_init(struct device *dev)
+{
     dev->d_blocks = 0;
     dev->d_blocksize = 1;
     dev->d_open = stdin_open;
@@ -110,8 +111,8 @@ stdin_device_init(struct device *dev) {
     wait_queue_init(wait_queue);
 }
 
-void
-dev_init_stdin(void) {
+void dev_init_stdin(void)
+{
     struct inode *node;
     if ((node = dev_create_inode()) == NULL) {
         panic("stdin: dev_create_node.\n");

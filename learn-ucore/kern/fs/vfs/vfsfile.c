@@ -8,18 +8,19 @@
 
 
 // open file in vfs, get/create inode for file with filename path.
-int
-vfs_open(char *path, uint32_t open_flags, struct inode **node_store) {
+int vfs_open(char *path, uint32_t open_flags, struct inode **node_store)
+{
     bool can_write = 0;
-    switch (open_flags & O_ACCMODE) {
-    case O_RDONLY:
-        break;
-    case O_WRONLY:
-    case O_RDWR:
-        can_write = 1;
-        break;
-    default:
-        return -E_INVAL;
+    switch (open_flags & O_ACCMODE)
+    {
+        case O_RDONLY:
+            break;
+        case O_WRONLY:
+        case O_RDWR:
+            can_write = 1;
+            break;
+        default:
+            return -E_INVAL;
     }
 
     if (open_flags & O_TRUNC) {

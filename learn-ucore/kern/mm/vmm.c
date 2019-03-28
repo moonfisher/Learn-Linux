@@ -547,8 +547,10 @@ failed:
 
 bool user_mem_check(struct mm_struct *mm, uintptr_t addr, size_t len, bool write)
 {
-    if (mm != NULL) {
-        if (!USER_ACCESS(addr, addr + len)) {
+    if (mm != NULL)
+    {
+        if (!USER_ACCESS(addr, addr + len))
+        {
             return 0;
         }
         struct vma_struct *vma;

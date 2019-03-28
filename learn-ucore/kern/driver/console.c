@@ -56,8 +56,8 @@ static uint16_t addr_6845;
 
 /* TEXT-mode CGA/VGA display output */
 
-static void
-cga_init(void) {
+static void cga_init(void)
+{
     volatile uint16_t *cp = (uint16_t *)(CGA_BUF + KERNBASE);
     uint16_t was = *cp;
     *cp = (uint16_t) 0xA55A;
@@ -82,8 +82,8 @@ cga_init(void) {
 
 static bool serial_exists = 0;
 
-static void
-serial_init(void) {
+static void serial_init(void)
+{
     // Turn off the FIFO
     outb(COM1 + COM_FCR, 0);
 
@@ -399,32 +399,33 @@ kbd_proc_data(void) {
 }
 
 /* kbd_intr - try to feed input characters from keyboard */
-static void
-kbd_intr(void) {
+static void kbd_intr(void)
+{
     cons_intr(kbd_proc_data);
 }
 
-static void
-kbd_init(void) {
+static void kbd_init(void)
+{
     // drain the kbd buffer
     kbd_intr();
     pic_enable(IRQ_KBD);
 }
 
 /* cons_init - initializes the console devices */
-void
-cons_init(void) {
+void cons_init(void)
+{
     cga_init();
     serial_init();
     kbd_init();
-    if (!serial_exists) {
+    if (!serial_exists)
+    {
         cprintf("serial port does not exist!!\n");
     }
 }
 
 /* cons_putc - print a single character @c to console devices */
-void
-cons_putc(int c) {
+void cons_putc(int c)
+{
     bool intr_flag;
     local_intr_save(intr_flag);
     {

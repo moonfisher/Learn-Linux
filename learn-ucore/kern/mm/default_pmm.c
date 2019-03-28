@@ -98,14 +98,14 @@ free_area_t free_area;
 #define free_list (free_area.free_list)
 #define nr_free (free_area.nr_free)
 
-static void
-default_init(void) {
+static void default_init(void)
+{
     list_init(&free_list);
     nr_free = 0;
 }
 
-static void
-default_init_memmap(struct Page *base, size_t n) {
+static void default_init_memmap(struct Page *base, size_t n)
+{
     assert(n > 0);
     struct Page *p = base;
     for (; p != base + n; p ++) {
@@ -119,8 +119,8 @@ default_init_memmap(struct Page *base, size_t n) {
     list_add_before(&free_list, &(base->page_link));
 }
 
-static struct Page *
-default_alloc_pages(size_t n) {
+static struct Page *default_alloc_pages(size_t n)
+{
     assert(n > 0);
     if (n > nr_free) {
         return NULL;
@@ -149,8 +149,8 @@ default_alloc_pages(size_t n) {
     return page;
 }
 
-static void
-default_free_pages(struct Page *base, size_t n) {
+static void default_free_pages(struct Page *base, size_t n)
+{
     assert(n > 0);
     struct Page *p = base;
     for (; p != base + n; p ++) {
@@ -190,13 +190,13 @@ default_free_pages(struct Page *base, size_t n) {
     list_add_before(le, &(base->page_link));
 }
 
-static size_t
-default_nr_free_pages(void) {
+static size_t default_nr_free_pages(void)
+{
     return nr_free;
 }
 
-static void
-basic_check(void) {
+static void basic_check(void)
+{
     struct Page *p0, *p1, *p2;
     p0 = p1 = p2 = NULL;
     assert((p0 = alloc_page()) != NULL);
@@ -248,8 +248,8 @@ basic_check(void) {
 
 // LAB2: below code is used to check the first fit allocation algorithm (your EXERCISE 1) 
 // NOTICE: You SHOULD NOT CHANGE basic_check, default_check functions!
-static void
-default_check(void) {
+static void default_check(void)
+{
     int count = 0, total = 0;
     list_entry_t *le = &free_list;
     while ((le = list_next(le)) != &free_list) {

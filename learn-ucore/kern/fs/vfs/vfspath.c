@@ -11,38 +11,38 @@
 /*
  * get_cwd_nolock - retrieve current process's working directory. without lock protect
  */
-static struct inode *
-get_cwd_nolock(void) {
+static struct inode *get_cwd_nolock(void)
+{
     return current->filesp->pwd;
 }
 /*
  * set_cwd_nolock - set current working directory.
  */
-static void
-set_cwd_nolock(struct inode *pwd) {
+static void set_cwd_nolock(struct inode *pwd)
+{
     current->filesp->pwd = pwd;
 }
 
 /*
  * lock_cfs - lock the fs related process on current process 
  */
-static void
-lock_cfs(void) {
+static void lock_cfs(void)
+{
     lock_files(current->filesp);
 }
 /*
  * unlock_cfs - unlock the fs related process on current process 
  */
-static void
-unlock_cfs(void) {
+static void unlock_cfs(void)
+{
     unlock_files(current->filesp);
 }
 
 /*
  *  vfs_get_curdir - Get current directory as a inode.
  */
-int
-vfs_get_curdir(struct inode **dir_store) {
+int vfs_get_curdir(struct inode **dir_store)
+{
     struct inode *node;
     if ((node = get_cwd_nolock()) != NULL) {
         vop_ref_inc(node);

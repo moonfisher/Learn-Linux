@@ -64,8 +64,8 @@ vfs_cleanup(void) {
  * vfs_get_root - Given a device name (stdin, stdout, etc.), hand
  *                back an appropriate inode.
  */
-int
-vfs_get_root(const char *devname, struct inode **node_store) {
+int vfs_get_root(const char *devname, struct inode **node_store)
+{
     assert(devname != NULL);
     int ret = -E_NO_DEV;
     if (!list_empty(&vdev_list)) {

@@ -33,8 +33,8 @@ fd_array_init(struct file *fd_array) {
 }
 
 // fs_array_alloc - allocate a free file item (with FD_NONE status) in open files table
-static int
-fd_array_alloc(int fd, struct file **file_store) {
+static int fd_array_alloc(int fd, struct file **file_store)
+{
 //    panic("debug");
     struct file *file = get_fd_array();
     if (fd == NO_FD) {
@@ -80,8 +80,8 @@ fd_array_acquire(struct file *file) {
 }
 
 // fd_array_release - file's open_count--; if file's open_count-- == 0 , then call fd_array_free to free this file item
-static void
-fd_array_release(struct file *file) {
+static void fd_array_release(struct file *file)
+{
     assert(file->status == FD_OPENED || file->status == FD_CLOSED);
     assert(fopen_count(file) > 0);
     if (fopen_count_dec(file) == 0) {
@@ -90,16 +90,16 @@ fd_array_release(struct file *file) {
 }
 
 // fd_array_open - file's open_count++, set status to FD_OPENED
-void
-fd_array_open(struct file *file) {
+void fd_array_open(struct file *file)
+{
     assert(file->status == FD_INIT && file->node != NULL);
     file->status = FD_OPENED;
     fopen_count_inc(file);
 }
 
 // fd_array_close - file's open_count--; if file's open_count-- == 0 , then call fd_array_free to free this file item
-void
-fd_array_close(struct file *file) {
+void fd_array_close(struct file *file)
+{
     assert(file->status == FD_OPENED);
     assert(fopen_count(file) > 0);
     file->status = FD_CLOSED;
@@ -109,8 +109,8 @@ fd_array_close(struct file *file) {
 }
 
 //fs_array_dup - duplicate file 'from'  to file 'to'
-void
-fd_array_dup(struct file *to, struct file *from) {
+void fd_array_dup(struct file *to, struct file *from)
+{
     //cprintf("[fd_array_dup]from fd=%d, to fd=%d\n",from->fd, to->fd);
     assert(to->status == FD_INIT && from->status == FD_OPENED);
     to->pos = from->pos;
@@ -123,8 +123,8 @@ fd_array_dup(struct file *to, struct file *from) {
 }
 
 // fd2file - use fd as index of fd_array, return the array item (file)
-static inline int
-fd2file(int fd, struct file **file_store) {
+static inline int fd2file(int fd, struct file **file_store)
+{
     if (testfd(fd)) {
         struct file *file = get_fd_array() + fd;
         if (file->status == FD_OPENED && file->fd == fd) {
@@ -136,8 +136,8 @@ fd2file(int fd, struct file **file_store) {
 }
 
 // file_testfd - test file is readble or writable?
-bool
-file_testfd(int fd, bool readable, bool writable) {
+bool file_testfd(int fd, bool readable, bool writable)
+{
     int ret;
     struct file *file;
     if ((ret = fd2file(fd, &file)) != 0) {
@@ -153,8 +153,8 @@ file_testfd(int fd, bool readable, bool writable) {
 }
 
 // open file
-int
-file_open(char *path, uint32_t open_flags) {
+int file_open(char *path, uint32_t open_flags)
+{
     bool readable = 0, writable = 0;
     switch (open_flags & O_ACCMODE) {
     case O_RDONLY: readable = 1; break;
@@ -209,8 +209,8 @@ file_close(int fd) {
 }
 
 // read file
-int
-file_read(int fd, void *base, size_t len, size_t *copied_store) {
+int file_read(int fd, void *base, size_t len, size_t *copied_store)
+{
     int ret;
     struct file *file;
     *copied_store = 0;

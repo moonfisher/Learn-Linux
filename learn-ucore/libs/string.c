@@ -337,14 +337,15 @@ memmove(void *dst, const void *src, size_t n) {
  * by both @src and @dst, should be at least @n bytes, and should not overlap
  * (for overlapping memory area, memmove is a safer approach).
  * */
-void *
-memcpy(void *dst, const void *src, size_t n) {
+void *memcpy(void *dst, const void *src, size_t n)
+{
 #ifdef __HAVE_ARCH_MEMCPY
     return __memcpy(dst, src, n);
 #else
     const char *s = src;
     char *d = dst;
-    while (n -- > 0) {
+    while (n -- > 0)
+    {
         *d ++ = *s ++;
     }
     return dst;

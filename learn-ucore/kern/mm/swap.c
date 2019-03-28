@@ -66,16 +66,14 @@ int swap_map_swappable(struct mm_struct *mm, uintptr_t addr, struct Page *page, 
     return sm->map_swappable(mm, addr, page, swap_in);
 }
 
-int
-swap_set_unswappable(struct mm_struct *mm, uintptr_t addr)
+int swap_set_unswappable(struct mm_struct *mm, uintptr_t addr)
 {
-     return sm->set_unswappable(mm, addr);
+    return sm->set_unswappable(mm, addr);
 }
 
 volatile unsigned int swap_out_num=0;
 
-int
-swap_out(struct mm_struct *mm, int n, int in_tick)
+int swap_out(struct mm_struct *mm, int n, int in_tick)
 {
      int i;
      for (i = 0; i != n; ++ i)
@@ -86,8 +84,8 @@ swap_out(struct mm_struct *mm, int n, int in_tick)
           // cprintf("i %d, SWAP: call swap_out_victim\n",i);
           int r = sm->swap_out_victim(mm, &page, in_tick);
           if (r != 0) {
-                    cprintf("i %d, swap_out: call swap_out_victim failed\n",i);
-                  break;
+            cprintf("i %d, swap_out: call swap_out_victim failed\n",i);
+              break;
           }          
           //assert(!PageReserved(page));
 
@@ -113,8 +111,7 @@ swap_out(struct mm_struct *mm, int n, int in_tick)
      return i;
 }
 
-int
-swap_in(struct mm_struct *mm, uintptr_t addr, struct Page **ptr_result)
+int swap_in(struct mm_struct *mm, uintptr_t addr, struct Page **ptr_result)
 {
      struct Page *result = alloc_page();
      assert(result!=NULL);
@@ -132,10 +129,7 @@ swap_in(struct mm_struct *mm, uintptr_t addr, struct Page **ptr_result)
      return 0;
 }
 
-
-
-static inline void
-check_content_set(void)
+static inline void check_content_set(void)
 {
      *(unsigned char *)0x1000 = 0x0a;
      assert(pgfault_num==1);
@@ -155,8 +149,7 @@ check_content_set(void)
      assert(pgfault_num==4);
 }
 
-static inline int
-check_content_access(void)
+static inline int check_content_access(void)
 {
     int ret = sm->check_swap();
     return ret;
@@ -171,8 +164,7 @@ extern free_area_t free_area;
 #define free_list (free_area.free_list)
 #define nr_free (free_area.nr_free)
 
-static void
-check_swap(void)
+static void check_swap(void)
 {
     //backup mem env
      int ret, count = 0, total = 0, i;
