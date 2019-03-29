@@ -73,9 +73,85 @@ list_entry_t proc_list;
 static list_entry_t hash_list[HASH_LIST_SIZE];
 
 // idle proc 内核加载之后运行的第一个进程，没有父进程
-struct proc_struct *idleproc = NULL;
+/*
+{
+    state = 0x2,
+    pid = 0x0,
+    runs = 0x0,
+    kstack = 0xc0152000,
+    need_resched = 0x1,
+    parent = 0x0,
+    mm = 0x0,
+    context = {
+        eip = 0x0,
+        esp = 0x0,
+        ebx = 0x0,
+        ecx = 0x0,
+        edx = 0x0,
+        esi = 0x0,
+        edi = 0x0,
+        ebp = 0x0
+    },
+    tf = 0x0,
+    cr3 = 0x155000,
+    flags = 0x0,
+    name = {0x0 <repeats 50 times>, 0x35},
+    list_link = {prev = 0x28, next = 0x2a},
+    hash_link = {prev = 0x0, next = 0xc035b008},
+    exit_code = 0xc035b070,
+    wait_state = 0x0,
+    cptr = 0x0,
+    yptr = 0x0, optr = 0x0, rq = 0x0,
+    run_link = {prev = 0xc035b0ac, next = 0xc035b0ac},
+    time_slice = 0x0,
+    lab6_run_pool = {parent = 0x0, left = 0x0, right = 0x0},
+    lab6_stride = 0x0,
+    lab6_priority = 0x0,
+    filesp = 0xc035c000
+}
+*/
+struct proc_struct *idleproc = NULL;    //0xc035b008
 // init proc
-struct proc_struct *initproc = NULL;
+/*
+{
+    state = 0x2,
+    pid = 0x1,
+    runs = 0x0,
+    kstack = 0xc035d000,
+    need_resched = 0x0,
+    parent = 0xc035b008,
+    mm = 0x0,
+    context = {
+        eip = 0xc010baa3,
+        esp = 0xc035efb4,
+        ebx = 0x0,
+        ecx = 0x0,
+        edx = 0x0,
+        esi = 0x0,
+        edi = 0x0,
+        ebp = 0x0
+    },
+    tf = 0xc035efb4,
+    cr3 = 0x155000,
+    flags = 0x0,
+    name = {0x69, 0x6e, 0x69, 0x74, 0x0, 0x0, 0x0, 0x69, 0x64, 0x6c, 0x65, 0x70, 0x72, 0x6f, 0x63, 0x20, 0x21, 0x3d, 0x20, 0x4e, 0x55, 0x4c, 0x4c, 0x20, 0x26, 0x26, 0x20, 0x69, 0x64, 0x6c, 0x65, 0x70, 0x72, 0x6f, 0x63, 0x2d, 0x3e, 0x70, 0x69, 0x64, 0x20, 0x3d, 0x3d, 0x20, 0x30, 0x0, 0x0, 0x69, 0x6e, 0x69, 0x0},
+    list_link = {prev = 0xc015b37c, next = 0xc015b37c},
+    hash_link = {prev = 0xc0159420, next = 0xc0159420},
+    exit_code = 0xc035b150,
+    wait_state = 0x0,
+    cptr = 0x0,
+    yptr = 0x0,
+    optr = 0x0,
+    rq = 0xc015a0c4,
+    run_link = {prev = 0xc035b18c, next = 0xc035b18c},
+    time_slice = 0x5,
+    lab6_run_pool = {parent = 0x0, left = 0x0, right = 0x0},
+    lab6_stride = 0x0,
+    lab6_priority = 0x0,
+    filesp = 0xc035f000
+ }
+ */
+struct proc_struct *initproc = NULL;    // 0xc035b0e8
 // current proc
 struct proc_struct *current = NULL;
 
@@ -122,7 +198,7 @@ static struct proc_struct *alloc_proc(void)
         proc->mm = NULL;
         memset(&(proc->context), 0, sizeof(struct context));
         proc->tf = NULL;
-        proc->cr3 = boot_cr3;
+        proc->cr3 = boot_cr3;   //0x155000
         proc->flags = 0;
         memset(proc->name, 0, PROC_NAME_LEN);
         proc->wait_state = 0;
@@ -291,7 +367,7 @@ int kernel_thread(int (*fn)(void *), void *arg, uint32_t clone_flags)
     // 参数，调度之前参数的地址存于 edx
     tf.tf_regs.reg_edx = (uint32_t)arg;
     // 下次进程运行的位置
-    tf.tf_eip = (uint32_t)kernel_thread_entry;
+    tf.tf_eip = (uint32_t)kernel_thread_entry;  // 0xc010b37b
     return do_fork(clone_flags | CLONE_VM, 0, &tf);
 }
 
@@ -1087,9 +1163,10 @@ void proc_init(void)
         panic("cannot alloc idleproc.\n");
     }
 
+    // idleproc = 0xc035b008
     idleproc->pid = 0;
     idleproc->state = PROC_RUNNABLE;
-    idleproc->kstack = (uintptr_t)bootstack;
+    idleproc->kstack = (uintptr_t)bootstack;    //0xc0152000
     idleproc->need_resched = 1;
     
     if ((idleproc->filesp = files_create()) == NULL)

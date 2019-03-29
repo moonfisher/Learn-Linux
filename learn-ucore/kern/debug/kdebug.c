@@ -77,9 +77,9 @@ struct userstabdata {
  *      stab_binsearch(stabs, &left, &right, N_SO, 0xf0100184);
  * will exit setting left = 118, right = 554.
  * */
-static void
-stab_binsearch(const struct stab *stabs, int *region_left, int *region_right,
-           int type, uintptr_t addr) {
+static void stab_binsearch(const struct stab *stabs, int *region_left, int *region_right,
+           int type, uintptr_t addr)
+{
     int l = *region_left, r = *region_right, any_matches = 0;
 
     while (l <= r) {
@@ -129,8 +129,8 @@ stab_binsearch(const struct stab *stabs, int *region_left, int *region_right,
  * was found, and negative if not.  But even if it returns negative it
  * has stored some information into '*info'.
  * */
-int
-debuginfo_eip(uintptr_t addr, struct eipdebuginfo *info) {
+int debuginfo_eip(uintptr_t addr, struct eipdebuginfo *info)
+{
     const struct stab *stabs, *stab_end;
     const char *stabstr, *stabstr_end;
 
@@ -259,8 +259,15 @@ debuginfo_eip(uintptr_t addr, struct eipdebuginfo *info) {
  * of kernel entry, the start addresses of data and text segements, the start
  * address of free memory and how many memory that kernel has used.
  * */
-void
-print_kerninfo(void) {
+/*
+    entry  0xc0100036 (phys)
+    etext  0xc0114233 (phys)
+    edata  0xc0157000 (phys)
+    end    0xc015b384 (phys)
+    Kernel executable memory footprint: 365KB
+ */
+void print_kerninfo(void)
+{
     extern char etext[], edata[], end[], kern_init[];
     cprintf("Special kernel symbols:\n");
     cprintf("  entry  0x%08x (phys)\n", kern_init);
@@ -274,8 +281,8 @@ print_kerninfo(void) {
  * print_debuginfo - read and print the stat information for the address @eip,
  * and info.eip_fn_addr should be the first address of the related function.
  * */
-void
-print_debuginfo(uintptr_t eip) {
+void print_debuginfo(uintptr_t eip)
+{
     struct eipdebuginfo info;
     if (debuginfo_eip(eip, &info) != 0) {
         cprintf("    <unknow>: -- 0x%08x --\n", eip);

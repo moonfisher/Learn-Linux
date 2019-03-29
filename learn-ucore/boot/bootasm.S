@@ -95,8 +95,8 @@ protcseg:
     movw %ax, %ss                                   # -> SS: Stack Segment
 
     # Set up the stack pointer and call into C. The stack region is from 0--start(0x7c00)
-    movl $0x0, %ebp
-    movl $start, %esp
+    movl $0x0, %ebp     
+    movl $start, %esp   
     call bootmain
 
     # If bootmain returns (it shouldn't), loop.

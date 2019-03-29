@@ -39,10 +39,10 @@ struct Page *pages;
 // amount of physical memory (in pages)
 size_t npage = 0;
 
-// virtual address of boot-time page directory
+// virtual address of boot-time page directory 0xc0155000
 extern pde_t __boot_pgdir;
 pde_t *boot_pgdir = &__boot_pgdir;
-// physical address of boot-time page directory
+// physical address of boot-time page directory 0x155000
 uintptr_t boot_cr3;
 
 // physical memory management
@@ -206,6 +206,15 @@ size_t nr_free_pages(void)
 }
 
 /* pmm_init - initialize the physical memory management */
+/*
+ e820map:
+    memory: 0009fc00, [00000000, 0009fbff], type = 1.
+    memory: 00000400, [0009fc00, 0009ffff], type = 2.
+    memory: 00010000, [000f0000, 000fffff], type = 2.
+    memory: 07ee0000, [00100000, 07fdffff], type = 1.
+    memory: 00020000, [07fe0000, 07ffffff], type = 2.
+    memory: 00040000, [fffc0000, ffffffff], type = 2.
+ */
 static void page_init(void)
 {
     //可用内存的数据结构在启动时通过 probe_memory 函数探测得来，结果存放在 0x8000 处
@@ -292,11 +301,16 @@ static void *boot_alloc_page(void)
     return page2kva(p);
 }
 
-//pmm_init - setup a pmm to manage physical memory, build PDT&PT to setup paging mechanism 
+static void extracted() {
+    check_boot_pgdir();
+}
+
+//pmm_init - setup a pmm to manage physical memory, build PDT&PT to setup paging mechanism
 //         - check the correctness of pmm & paging mechanism, print PDT&PT
 void pmm_init(void)
 {
     // We've already enabled paging 进入内核之前临时设置的页表
+    // 0x155000 = PADDR(0xc0155000)
     boot_cr3 = PADDR(boot_pgdir);
 
     //We need to alloc/free the physical memory (granularity is 4KB or other size). 
@@ -334,7 +348,7 @@ void pmm_init(void)
 
     //now the basic virtual memory map(see memalyout.h) is established.
     //check the correctness of the basic virtual memory map.
-    check_boot_pgdir();
+    extracted();
 
     print_pgdir();
     
@@ -755,6 +769,15 @@ static int get_pgtable_items(size_t left, size_t right, size_t start, uintptr_t 
 }
 
 //print_pgdir - print the PDT&PT
+/*
+    -------------------- BEGIN --------------------
+    PDE(0e0) c0000000-f8000000 38000000 urw
+    |-- PTE(38000) c0000000-f8000000 38000000 -rw
+    PDE(001) fac00000-fb000000 00400000 -rw
+    |-- PTE(000e0) faf00000-fafe0000 000e0000 urw
+    |-- PTE(00001) fafeb000-fafec000 00001000 -rw
+    --------------------- END ---------------------
+ */
 void print_pgdir(void)
 {
     cprintf("-------------------- BEGIN --------------------\n");

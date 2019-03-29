@@ -30,10 +30,10 @@ next:
     movl %eax, __boot_pgdir
 
     # set ebp, esp
-    movl $0x0, %ebp
+    movl $0x0, %ebp             # mov ebp, 0x00000000
     # the kernel stack region is from bootstack -- bootstacktop,
     # the kernel stack size is KSTACKSIZE (8KB)defined in memlayout.h
-    movl $bootstacktop, %esp
+    movl $bootstacktop, %esp    # mov esp, 0xc0154000
     # now kernel stack is ready , call the first C function
     call kern_init
 

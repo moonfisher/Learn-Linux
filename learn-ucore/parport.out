@@ -33,4 +33,26 @@ check_pgdir() succeeded!
 check_boot_pgdir() succeeded!
 -------------------- BEGIN --------------------
 PDE(0e0) c0000000-f8000000 38000000 urw
-  |-- PTE(
+  |-- PTE(38000) c0000000-f8000000 38000000 -rw
+PDE(001) fac00000-fb000000 00400000 -rw
+  |-- PTE(000e0) faf00000-fafe0000 000e0000 urw
+  |-- PTE(00001) fafeb000-fafec000 00001000 -rw
+--------------------- END ---------------------
+use SLOB allocator
+check_slab() success
+kmalloc_init() succeeded!
+check_vma_struct() succeeded!
+kernel panic at kern/mm/default_pmm.c:157:
+    assertion failed: !PageReserved(p) && !PageProperty(p)
+stack trackback:
+ebp:0xc0153e78 eip:0xc0100b7b args:0x00000000 0x03fd200a 0xc0153ec8 0xc0153eac 
+    kern/debug/kdebug.c:350: print_stackframe+28
+ebp:0xc0153e98 eip:0xc0100edc args:0xc0114b6b 0x0000009d 0xc0114b56 0xc0114b94 
+    kern/debug/panic.c:27: __panic+107
+ebp:0xc0153f38 eip:0xc0103997 args:0xc015c000 0x00000001 0xc0153f68 0xc010512b 
+    kern/mm/default_pmm.c:157: default_free_pages+163
+ebp:0xc0153f68 eip:0xc0105141 args:0xc015c000 0x00000001 0x00000002 0xc0108473 
+    kern/mm/pmm.c:189: free_pages+32
+ebp:0xc0153fa8 eip:0xc01085fc args:0x00210400 0x002103e3 0x00a011d8 0x00001d6d 
+    kern/mm/vmm.c:362: check_pgfault+411
+ebp:0xc0153fc8 eip:0xc0108058 args:0xc0154560 0x00000100 0x
