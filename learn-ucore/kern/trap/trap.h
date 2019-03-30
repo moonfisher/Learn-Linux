@@ -58,9 +58,11 @@ struct pushregs
     uint32_t reg_eax;
 };
 
+// 在 __alltraps 函数里通过压栈的方式构造 trapframe 结构给 c 函数传参
+// 这里面有很多 padding 字段，是为了占位，__alltraps 通过 pushl 来压栈参数，一次压栈4字节，但实际只有2字节是有用的
 struct trapframe
 {
-    struct pushregs tf_regs;
+    struct pushregs tf_regs;    // pushal 压栈的参数
     uint16_t tf_gs;
     uint16_t tf_padding0;
     uint16_t tf_fs;
@@ -69,8 +71,14 @@ struct trapframe
     uint16_t tf_padding2;
     uint16_t tf_ds;
     uint16_t tf_padding3;
-    uint32_t tf_trapno;
+    uint32_t tf_trapno;         // 本次中断中断号
     /* below here defined by x86 hardware */
+    // 下面5个参数，是在 cpu 执行 int x 中断，跳转到中断函数入口之前，往堆栈里压的数据
+    // cpu 只负责压栈了 cs，eip，eflags 这些，其余寄存器的当前状态由中断程序去保存并恢复
+    // 指的是CPU跳转到interrupt gate里的地址时，在将EFLAGS保存到栈上之后，清除EFLAGS里的IF位，以避免重复触发中断。
+    // 在中断处理例程里，操作系统可以将EFLAGS里的IF设上
+    // ,从而允许嵌套中断。但是必须在此之前做好处理嵌套中断的必要准备，如保存必要的寄存器等。
+    // 二在ucore中访问Trap Gate的目的是为了实现系统调用=.
     uint32_t tf_err;
     uintptr_t tf_eip;
     uint16_t tf_cs;
