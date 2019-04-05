@@ -66,7 +66,11 @@ void idt_init(void)
     {
         SETGATE(idt[i], 0, GD_KTEXT, __vectors[i], DPL_KERNEL);
     }
+    
+    // T_SYSCALL = int 0x80，80 中断设置的权限是 DPL_USER，用户进程可以执行跳转执行的代码，否则没权限
     SETGATE(idt[T_SYSCALL], 1, GD_KTEXT, __vectors[T_SYSCALL], DPL_USER);
+    // set for switch from user to kernel
+    SETGATE(idt[T_SWITCH_TOK], 0, GD_KTEXT, __vectors[T_SWITCH_TOK], DPL_USER);
     lidt(&idt_pd);
 }
 
@@ -215,22 +219,23 @@ static void trap_dispatch(struct trapframe *tf)
     switch (tf->tf_trapno)
     {
         case T_PGFLT:  //page fault
-            if ((ret = pgfault_handler(tf)) != 0) {
-                print_trapframe(tf);
-                if (current == NULL) {
-                    panic("handle pgfault failed. ret=%d\n", ret);
-                }
-                else {
-                    if (trap_in_kernel(tf)) {
-                        panic("handle pgfault failed in kernel mode. ret=%d\n", ret);
-                    }
-                    cprintf("killed by kernel.\n");
-                    panic("handle user mode pgfault failed. ret=%d\n", ret);
-                    do_exit(-E_KILLED);
-                }
-            }
+//            if ((ret = pgfault_handler(tf)) != 0) {
+//                print_trapframe(tf);
+//                if (current == NULL) {
+//                    panic("handle pgfault failed. ret=%d\n", ret);
+//                }
+//                else {
+//                    if (trap_in_kernel(tf)) {
+//                        panic("handle pgfault failed in kernel mode. ret=%d\n", ret);
+//                    }
+//                    cprintf("killed by kernel.\n");
+//                    panic("handle user mode pgfault failed. ret=%d\n", ret);
+//                    do_exit(-E_KILLED);
+//                }
+//            }
             break;
         case T_SYSCALL:
+            print_trapframe(tf);
             syscall();
             break;
         case IRQ_OFFSET + IRQ_TIMER:
@@ -259,23 +264,29 @@ static void trap_dispatch(struct trapframe *tf)
             ticks++;
             assert(current != NULL);
             run_timer_list();
+            if (ticks % TICK_NUM == 0)
+            {
+                print_ticks();
+            }
             break;
         case IRQ_OFFSET + IRQ_COM1:
-            //c = cons_getc();
-            //cprintf("serial [%03d] %c\n", c, c);
-            //break;
+            c = cons_getc();
+            cprintf("serial [%03d] %c\n", c, c);
+            break;
         case IRQ_OFFSET + IRQ_KBD:
             c = cons_getc();
-            //cprintf("kbd [%03d] %c\n", c, c);
+            cprintf("kbd [%03d] %c\n", c, c);
             {
-              extern void dev_stdin_write(char c);
-              dev_stdin_write(c);
+                extern void dev_stdin_write(char c);
+                dev_stdin_write(c);
             }
             break;
         //LAB1 CHALLENGE 1 : YOUR CODE you should modify below codes.
         case T_SWITCH_TOU:
+            print_trapframe(tf);
             if (tf->tf_cs != USER_CS)
             {
+                // 当前在内核态，需要建立切换到用户态所需要的trapframe
                 switchk2u = *tf;
                 switchk2u.tf_cs = USER_CS;
                 switchk2u.tf_ds = switchk2u.tf_es = switchk2u.tf_ss = USER_DS;
@@ -283,19 +294,28 @@ static void trap_dispatch(struct trapframe *tf)
                 
                 // set eflags, make sure ucore can use io under user mode.
                 // if CPL > IOPL, then cpu will generate a general protection.
+                // 设置 EFLAG 的 I/O 特权位，使得在用户态可使用 in/out 指令
                 switchk2u.tf_eflags |= FL_IOPL_MASK;
                 
                 // set temporary stack
                 // then iret will jump to the right stack
+                // 设置临时栈，指向 switchk2u，这样 iret 返回时，cpu 会从 switchk2u 恢复数据，
+                // 而不是从现有栈恢复数据
                 *((uint32_t *)tf - 1) = (uint32_t)&switchk2u;
             }
             break;
         case T_SWITCH_TOK:
+            print_trapframe(tf);
             if (tf->tf_cs != KERNEL_CS)
             {
+                // 发出中断时，cpu 处于用户态，我们希望处理完中断后，cpu 能运行在内核态
+                // 所以把 cs 和 ds 都设置为内核代码段和内核数据段
                 tf->tf_cs = KERNEL_CS;
                 tf->tf_ds = tf->tf_es = KERNEL_DS;
+                // 设置 EFLAGS，让用户态不能执行 in/out 指令
                 tf->tf_eflags &= ~FL_IOPL_MASK;
+                // 设置临时栈，指向 switchk2u，这样 iret 返回时，cpu 会从 switchk2u 恢复数据，
+                // 而不是从现有栈恢复数据
                 switchu2k = (struct trapframe *)(tf->tf_esp - (sizeof(struct trapframe) - 8));
                 memmove(switchu2k, tf, sizeof(struct trapframe) - 8);
                 *((uint32_t *)tf - 1) = (uint32_t)switchu2k;

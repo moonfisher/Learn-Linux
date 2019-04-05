@@ -21,6 +21,7 @@ void grade_backtrace(void);
 
 int kern_init(void)
 {
+    // 对于位于BSS段中未初始化的全局变量，需要初始化为0，确保代码能正确执行
     extern char edata[], end[];
     memset(edata, 0, end - edata);
 
@@ -38,13 +39,13 @@ int kern_init(void)
     pic_init();                 // init interrupt controller
     idt_init();                 // init interrupt descriptor table
 
-    vmm_init();                 // init virtual memory management
-    sched_init();               // init scheduler
-    proc_init();                // init process table
-
-    ide_init();                 // init ide devices
-    swap_init();                // init swap
-    fs_init();                  // init fs
+//    vmm_init();                 // init virtual memory management
+//    sched_init();               // init scheduler
+//    proc_init();                // init process table
+//
+//    ide_init();                 // init ide devices
+//    swap_init();                // init swap
+//    fs_init();                  // init fs
     
     clock_init();               // init clock interrupt
     intr_enable();              // enable irq interrupt

@@ -260,21 +260,25 @@ int debuginfo_eip(uintptr_t addr, struct eipdebuginfo *info)
  * address of free memory and how many memory that kernel has used.
  * */
 /*
-    entry  0xC0100036 (phys)
-    etext  0xC0114233 (phys)
-    edata  0xC0157000 (phys)
-    end    0xC015b384 (phys)
+    entry           0xC0100036 (phys)
+    etext           0xC0114233 (phys)
+    bootstack       0xC0152000 (phys)
+    bootstacktop    0xC0154000 (phys)
+    edata           0xC0157000 (phys)
+    end             0xC015b384 (phys)
     Kernel executable memory footprint: 365KB
  */
 void print_kerninfo(void)
 {
-    extern char etext[], edata[], end[], kern_init[];
+    extern char etext[], edata[], end[], kern_init[], bootstack[], bootstacktop[];
     cprintf("Special kernel symbols:\n");
-    cprintf("  entry  0x%08x (phys)\n", kern_init);
-    cprintf("  etext  0x%08x (phys)\n", etext);
-    cprintf("  edata  0x%08x (phys)\n", edata);
-    cprintf("  end    0x%08x (phys)\n", end);
-    cprintf("Kernel executable memory footprint: %dKB\n", (end - kern_init + 1023)/1024);
+    cprintf("  entry        0x%08x (phys)\n", kern_init);
+    cprintf("  etext        0x%08x (phys)\n", etext);
+    cprintf("  bootstack    0x%08x (phys)\n", bootstack);
+    cprintf("  bootstacktop 0x%08x (phys)\n", bootstacktop);
+    cprintf("  edata        0x%08x (phys)\n", edata);
+    cprintf("  end          0x%08x (phys)\n", end);
+    cprintf("  Kernel executable memory footprint: %dKB\n", (end - kern_init + 1023)/1024);
 }
 
 /* *
