@@ -46,11 +46,12 @@ seta20.2:
 # 探测一个PC机内存的最好方法是通过调用 INT 0x15, eax = 0xe820 来实现
 # 当第一次调用这个函数时，将ES：EDI指向列表对应的目的缓冲区，清空EBX，设置EDX
 # 的值为0x534d4150,设置EAX的值为0xe820,设置ecx为24，之后就调用中断INT 0x15。
-# 如果此中断运行成功，那么eax的值将会被设置为0x534d4150,进位标志被清空，EBX被
-# 设置为非0值，这个值将会被保存，使用于下一个函数调用.结果是保存在ES：EDI位
+# 如果此中断运行成功，那么eax的值将会被设置为0x534d4150，进位标志被清空，EBX被
+# 设置为非0值，这个值将会被保存，使用于下一个函数调用结果是保存在ES：EDI位
 # 置的字节长度.为了给函数的后续调用，EDI的值将会以列表项长度增加.同时，重置eax的
 # 值为0xe820,ecx为24（ecx的值实际上就是sizeof(struct entryf)）,ebx也许会
 # 被设置为0。如果ebx的值被设置为0，那么将会结束函数的运行，否则将会继续进行探测。
+# 探测结果存放在 0x8000 处
 probe_memory:
     movl $0, 0x8000
     xorl %ebx, %ebx
@@ -82,7 +83,7 @@ finish_probe:
 
     # Jump to next instruction, but in 32-bit code segment.
     # Switches processor into 32-bit mode.
-    ljmp $PROT_MODE_CSEG, $protcseg
+    ljmp $PROT_MODE_CSEG, $protcseg # jmpf 0x0008:7c6d
 
 .code32                                             # Assemble for 32-bit mode
 protcseg:
@@ -95,8 +96,11 @@ protcseg:
     movw %ax, %ss                                   # -> SS: Stack Segment
 
     # Set up the stack pointer and call into C. The stack region is from 0--start(0x7c00)
+    # 由于start位置（0x7c00）前的地址空间空闲，可以拿来用作临时栈，栈是向下生长的，不会破坏到start后面的代码
+    # 此时只是临时栈，也不能一直往里压数据到太低端的地址，0x0~0x1000的空间里还有bios设置的中断数据 
+    # 如果不设置栈，当前的栈还是 bios 设置的栈
     movl $0x0, %ebp     
-    movl $start, %esp   
+    movl $start, %esp   # mov sp, 0x7c00
     call bootmain
 
     # If bootmain returns (it shouldn't), loop.

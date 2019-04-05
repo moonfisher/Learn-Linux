@@ -33,8 +33,8 @@
 #define N_PSYM      0xa0    // parameter variable
 #define N_EINCL     0xa2    // include file end
 #define N_ENTRY     0xa4    // alternate entry point
-#define N_LBRAC     0xc0    // left bracket
-#define N_EXCL      0xc2    // deleted include file
+#define N_LBRAC     0xC0    // left bracket
+#define N_EXCL      0xC2    // deleted include file
 #define N_RBRAC     0xe0    // right bracket
 #define N_BCOMM     0xe2    // begin common
 #define N_ECOMM     0xe4    // end common

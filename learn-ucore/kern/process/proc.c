@@ -78,7 +78,7 @@ static list_entry_t hash_list[HASH_LIST_SIZE];
     state = 0x2,
     pid = 0x0,
     runs = 0x0,
-    kstack = 0xc0152000,
+    kstack = 0xC0152000,
     need_resched = 0x1,
     parent = 0x0,
     mm = 0x0,
@@ -97,33 +97,33 @@ static list_entry_t hash_list[HASH_LIST_SIZE];
     flags = 0x0,
     name = {0x0 <repeats 50 times>, 0x35},
     list_link = {prev = 0x28, next = 0x2a},
-    hash_link = {prev = 0x0, next = 0xc035b008},
-    exit_code = 0xc035b070,
+    hash_link = {prev = 0x0, next = 0xC035b008},
+    exit_code = 0xC035b070,
     wait_state = 0x0,
     cptr = 0x0,
     yptr = 0x0, optr = 0x0, rq = 0x0,
-    run_link = {prev = 0xc035b0ac, next = 0xc035b0ac},
+    run_link = {prev = 0xC035b0ac, next = 0xC035b0ac},
     time_slice = 0x0,
     lab6_run_pool = {parent = 0x0, left = 0x0, right = 0x0},
     lab6_stride = 0x0,
     lab6_priority = 0x0,
-    filesp = 0xc035c000
+    filesp = 0xC035c000
 }
 */
-struct proc_struct *idleproc = NULL;    //0xc035b008
+struct proc_struct *idleproc = NULL;    //0xC035b008
 // init proc
 /*
 {
     state = 0x2,
     pid = 0x1,
     runs = 0x0,
-    kstack = 0xc035d000,
+    kstack = 0xC035d000,
     need_resched = 0x0,
-    parent = 0xc035b008,
+    parent = 0xC035b008,
     mm = 0x0,
     context = {
-        eip = 0xc010baa3,
-        esp = 0xc035efb4,
+        eip = 0xC010baa3,
+        esp = 0xC035efb4,
         ebx = 0x0,
         ecx = 0x0,
         edx = 0x0,
@@ -131,27 +131,27 @@ struct proc_struct *idleproc = NULL;    //0xc035b008
         edi = 0x0,
         ebp = 0x0
     },
-    tf = 0xc035efb4,
+    tf = 0xC035efb4,
     cr3 = 0x155000,
     flags = 0x0,
     name = {0x69, 0x6e, 0x69, 0x74, 0x0, 0x0, 0x0, 0x69, 0x64, 0x6c, 0x65, 0x70, 0x72, 0x6f, 0x63, 0x20, 0x21, 0x3d, 0x20, 0x4e, 0x55, 0x4c, 0x4c, 0x20, 0x26, 0x26, 0x20, 0x69, 0x64, 0x6c, 0x65, 0x70, 0x72, 0x6f, 0x63, 0x2d, 0x3e, 0x70, 0x69, 0x64, 0x20, 0x3d, 0x3d, 0x20, 0x30, 0x0, 0x0, 0x69, 0x6e, 0x69, 0x0},
-    list_link = {prev = 0xc015b37c, next = 0xc015b37c},
-    hash_link = {prev = 0xc0159420, next = 0xc0159420},
-    exit_code = 0xc035b150,
+    list_link = {prev = 0xC015b37c, next = 0xC015b37c},
+    hash_link = {prev = 0xC0159420, next = 0xC0159420},
+    exit_code = 0xC035b150,
     wait_state = 0x0,
     cptr = 0x0,
     yptr = 0x0,
     optr = 0x0,
-    rq = 0xc015a0c4,
-    run_link = {prev = 0xc035b18c, next = 0xc035b18c},
+    rq = 0xC015a0c4,
+    run_link = {prev = 0xC035b18c, next = 0xC035b18c},
     time_slice = 0x5,
     lab6_run_pool = {parent = 0x0, left = 0x0, right = 0x0},
     lab6_stride = 0x0,
     lab6_priority = 0x0,
-    filesp = 0xc035f000
+    filesp = 0xC035f000
  }
  */
-struct proc_struct *initproc = NULL;    // 0xc035b0e8
+struct proc_struct *initproc = NULL;    // 0xC035b0e8
 // current proc
 struct proc_struct *current = NULL;
 
@@ -367,7 +367,7 @@ int kernel_thread(int (*fn)(void *), void *arg, uint32_t clone_flags)
     // 参数，调度之前参数的地址存于 edx
     tf.tf_regs.reg_edx = (uint32_t)arg;
     // 下次进程运行的位置
-    tf.tf_eip = (uint32_t)kernel_thread_entry;  // 0xc010b37b
+    tf.tf_eip = (uint32_t)kernel_thread_entry;  // 0xC010b37b
     return do_fork(clone_flags | CLONE_VM, 0, &tf);
 }
 
@@ -1163,10 +1163,10 @@ void proc_init(void)
         panic("cannot alloc idleproc.\n");
     }
 
-    // idleproc = 0xc035b008
+    // idleproc = 0xC035b008
     idleproc->pid = 0;
     idleproc->state = PROC_RUNNABLE;
-    idleproc->kstack = (uintptr_t)bootstack;    //0xc0152000
+    idleproc->kstack = (uintptr_t)bootstack;    //0xC0152000
     idleproc->need_resched = 1;
     
     if ((idleproc->filesp = files_create()) == NULL)

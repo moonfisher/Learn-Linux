@@ -39,7 +39,7 @@ struct Page *pages;
 // amount of physical memory (in pages)
 size_t npage = 0;
 
-// virtual address of boot-time page directory 0xc0155000
+// virtual address of boot-time page directory 0xC0155000
 extern pde_t __boot_pgdir;
 pde_t *boot_pgdir = &__boot_pgdir;
 // physical address of boot-time page directory 0x155000
@@ -310,7 +310,7 @@ static void extracted() {
 void pmm_init(void)
 {
     // We've already enabled paging 进入内核之前临时设置的页表
-    // 0x155000 = PADDR(0xc0155000)
+    // 0x155000 = PADDR(0xC0155000)
     boot_cr3 = PADDR(boot_pgdir);
 
     //We need to alloc/free the physical memory (granularity is 4KB or other size). 

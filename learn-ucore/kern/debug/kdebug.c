@@ -260,10 +260,10 @@ int debuginfo_eip(uintptr_t addr, struct eipdebuginfo *info)
  * address of free memory and how many memory that kernel has used.
  * */
 /*
-    entry  0xc0100036 (phys)
-    etext  0xc0114233 (phys)
-    edata  0xc0157000 (phys)
-    end    0xc015b384 (phys)
+    entry  0xC0100036 (phys)
+    etext  0xC0114233 (phys)
+    edata  0xC0157000 (phys)
+    end    0xC015b384 (phys)
     Kernel executable memory footprint: 365KB
  */
 void print_kerninfo(void)

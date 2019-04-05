@@ -5,10 +5,10 @@
 
 .text
 .globl kern_entry
-kern_entry:
+kern_entry: # 0x00100000
     # load pa of boot pgdir
-    # 加载临时分页方案
-    movl $REALLOC(__boot_pgdir), %eax
+    # 加载临时分页方案, __boot_pgdir 编译的虚拟地址是 0xC0155000，但此时还没开启分页，需要减去 KERNBASE
+    movl $REALLOC(__boot_pgdir), %eax # mov eax, 0x00155000
     movl %eax, %cr3
 
     # enable paging
@@ -33,7 +33,8 @@ next:
     movl $0x0, %ebp             # mov ebp, 0x00000000
     # the kernel stack region is from bootstack -- bootstacktop,
     # the kernel stack size is KSTACKSIZE (8KB)defined in memlayout.h
-    movl $bootstacktop, %esp    # mov esp, 0xc0154000
+    # 重新设置内核栈空间，当前栈空间还是 bootloader 设置的，现在分页开启之后，可以重新规划栈空间，这里规划了8k
+    movl $bootstacktop, %esp    # mov esp, 0xC0154000
     # now kernel stack is ready , call the first C function
     call kern_init
 
@@ -44,10 +45,10 @@ spin:
 .data
 .align PGSIZE
     .globl bootstack
-bootstack:
-    .space KSTACKSIZE
+bootstack: # 0xC0152000
+    .space KSTACKSIZE # (KSTACKPAGE * PGSIZE) = 8k = 0x2000
     .globl bootstacktop
-bootstacktop:
+bootstacktop: # 0xC0154000
 
 # kernel builtin pgdir
 # an initial page directory (Page Directory Table, PDT)
@@ -63,6 +64,7 @@ __boot_pgdir:
     .space (KERNBASE >> PGSHIFT >> 10 << 2) - (. - __boot_pgdir) # pad to PDE of KERNBASE
     # map va KERNBASE + (0 ~ 4M) to pa 0 ~ 4M
     # 虚拟地址 0xC0000000 ~ 0xC0400000 映射到物理地址 0 ~ 4M，这里先临时映射 4M 就够用了，内核没那么大
+    # 内核代码在物理内存的低端地址上，但映射到了虚拟地址空间的高端内存上
     .long REALLOC(__boot_pt1) + (PTE_P | PTE_U | PTE_W)
     .space PGSIZE - (. - __boot_pgdir) # pad to PGSIZE
 
