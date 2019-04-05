@@ -299,8 +299,8 @@ static void trap_dispatch(struct trapframe *tf)
                 
                 // set temporary stack
                 // then iret will jump to the right stack
-                // 设置临时栈，指向 switchk2u，这样 iret 返回时，cpu 会从 switchk2u 恢复数据，
-                // 而不是从现有栈恢复数据
+                // 设置临时栈，指向 switchk2u，这样当 trap() 返回时，cpu 会从 switchk2u 恢复数据，
+                // 而不是从现有栈恢复数据，tf - 1 = pushl %esp
                 *((uint32_t *)tf - 1) = (uint32_t)&switchk2u;
             }
             break;
@@ -314,8 +314,8 @@ static void trap_dispatch(struct trapframe *tf)
                 tf->tf_ds = tf->tf_es = KERNEL_DS;
                 // 设置 EFLAGS，让用户态不能执行 in/out 指令
                 tf->tf_eflags &= ~FL_IOPL_MASK;
-                // 设置临时栈，指向 switchk2u，这样 iret 返回时，cpu 会从 switchk2u 恢复数据，
-                // 而不是从现有栈恢复数据
+                // 设置临时栈，指向 switchk2u，这样 trap() 返回时，cpu 会从 switchk2u 恢复数据，
+                // 而不是从现有栈恢复数据，tf - 1 = pushl %esp
                 switchu2k = (struct trapframe *)(tf->tf_esp - (sizeof(struct trapframe) - 8));
                 memmove(switchu2k, tf, sizeof(struct trapframe) - 8);
                 *((uint32_t *)tf - 1) = (uint32_t)switchu2k;
