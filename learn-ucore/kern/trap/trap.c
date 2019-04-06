@@ -290,6 +290,7 @@ static void trap_dispatch(struct trapframe *tf)
                 switchk2u = *tf;
                 switchk2u.tf_cs = USER_CS;
                 switchk2u.tf_ds = switchk2u.tf_es = switchk2u.tf_ss = USER_DS;
+                // 找到 int x 中断执行之前的 esp 地址，中断执行完之后还要回到之前的堆栈
                 switchk2u.tf_esp = (uint32_t)tf + sizeof(struct trapframe) - 8;
                 
                 // set eflags, make sure ucore can use io under user mode.

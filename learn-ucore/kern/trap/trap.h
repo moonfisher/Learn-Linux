@@ -72,19 +72,20 @@ struct trapframe
     uint16_t tf_ds;
     uint16_t tf_padding3;
     uint32_t tf_trapno;         // 本次中断中断号
+    uint32_t tf_err;
     /* below here defined by x86 hardware */
-    // 下面5个参数，是在 cpu 执行 int x 中断，跳转到中断函数入口之前，往堆栈里压的数据
+    // 下面3个参数，是在 cpu 执行 int x 中断，跳转到中断函数入口之前，往堆栈里压的数据
     // cpu 只负责压栈了 cs，eip，eflags 这些，其余寄存器的当前状态由中断程序去保存并恢复
     // 指的是CPU跳转到interrupt gate里的地址时，在将EFLAGS保存到栈上之后，清除EFLAGS里的IF位，以避免重复触发中断。
     // 在中断处理例程里，操作系统可以将EFLAGS里的IF设上
-    // ,从而允许嵌套中断。但是必须在此之前做好处理嵌套中断的必要准备，如保存必要的寄存器等。
-    // 二在ucore中访问Trap Gate的目的是为了实现系统调用=.
-    uint32_t tf_err;
+    // 从而允许嵌套中断。但是必须在此之前做好处理嵌套中断的必要准备，如保存必要的寄存器等。
+    // 在ucore中访问Trap Gate的目的是为了实现系统调用.
     uintptr_t tf_eip;
     uint16_t tf_cs;
     uint16_t tf_padding4;
     uint32_t tf_eflags;
     /* below here only when crossing rings, such as from user to kernel */
+    // 下面2个参数，记录 int x 中断执行之前的 esp 地址，中断执行完之后还要回到之前的堆栈
     uintptr_t tf_esp;
     uint16_t tf_ss;
     uint16_t tf_padding5;

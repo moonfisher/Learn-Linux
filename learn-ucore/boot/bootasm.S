@@ -83,6 +83,7 @@ finish_probe:
 
     # Jump to next instruction, but in 32-bit code segment.
     # Switches processor into 32-bit mode.
+    # 这步执行之后，cs 寄存器就指向内核代码段 0x8
     ljmp $PROT_MODE_CSEG, $protcseg # jmpf 0x0008:7c6d
 
 .code32                                             # Assemble for 32-bit mode

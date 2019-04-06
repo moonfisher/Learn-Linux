@@ -42,6 +42,7 @@ __trapret:
     popl %ds
 
     # get rid of the trap number and error code
+    # 这里 add 0x8 是跳过之前压栈的中断码和错误码
     addl $0x8, %esp
     iret
 
