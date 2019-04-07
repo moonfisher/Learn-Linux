@@ -39,13 +39,13 @@ int kern_init(void)
     pic_init();                 // init interrupt controller
     idt_init();                 // init interrupt descriptor table
 
-//    vmm_init();                 // init virtual memory management
-//    sched_init();               // init scheduler
-//    proc_init();                // init process table
-//
-//    ide_init();                 // init ide devices
-//    swap_init();                // init swap
-//    fs_init();                  // init fs
+    vmm_init();                 // init virtual memory management
+    sched_init();               // init scheduler
+    proc_init();                // init process table
+
+    ide_init();                 // init ide devices
+    swap_init();                // init swap
+    fs_init();                  // init fs
     
     clock_init();               // init clock interrupt
     intr_enable();              // enable irq interrupt
@@ -98,6 +98,11 @@ static void lab1_print_cur_status(void)
 static void lab1_switch_to_user(void)
 {
     //LAB1 CHALLENGE 1 : TODO
+    /*
+     转向用户态时，我们需要预留出8个字节来存放 iret 的返回，在调用中断之前先修改 esp，
+     原因是切换特权级时，iret指令会额外弹出 ss 和 esp，但调用中断时并未产生特权级切换，
+     因此并未压入对应 ss 和 esp。需要预先留出空间防止代码出错。
+     */
     asm volatile (
         "sub $0x8, %%esp \n"
         "int %0 \n"

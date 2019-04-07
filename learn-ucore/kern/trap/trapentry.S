@@ -13,6 +13,7 @@ __alltraps:
     pushal
 
     # load GD_KDATA into %ds and %es to set up data segments for kernel
+    # 中断服务都是内核提供，这里把数据段设置为内核段
     movl $GD_KDATA, %eax
     movw %ax, %ds
     movw %ax, %es

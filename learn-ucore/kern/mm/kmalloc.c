@@ -80,24 +80,24 @@ static bigblock_t *bigblocks;
 
 static void* __slob_get_free_pages(gfp_t gfp, int order)
 {
-  struct Page * page = alloc_pages(1 << order);
-  if(!page)
-    return NULL;
-  return page2kva(page);
+    struct Page * page = alloc_pages(1 << order);
+    if(!page)
+        return NULL;
+    return page2kva(page);
 }
 
 #define __slob_get_free_page(gfp) __slob_get_free_pages(gfp, 0)
 
 static inline void __slob_free_pages(unsigned long kva, int order)
 {
-  free_pages(kva2page(kva), 1 << order);
+    free_pages(kva2page(kva), 1 << order);
 }
 
 static void slob_free(void *b, int size);
 
 static void *slob_alloc(size_t size, gfp_t gfp, int align)
 {
-  assert( (size + SLOB_UNIT) < PAGE_SIZE );
+    assert( (size + SLOB_UNIT) < PAGE_SIZE );
 
 	slob_t *prev, *cur, *aligned = 0;
 	int delta = 0, units = SLOB_UNITS(size);
@@ -184,8 +184,6 @@ static void slob_free(void *block, int size)
 	spin_unlock_irqrestore(&slob_lock, flags);
 }
 
-
-
 void check_slab(void)
 {
     cprintf("check_slab() success\n");
@@ -203,14 +201,14 @@ inline void kmalloc_init(void)
     cprintf("kmalloc_init() succeeded!\n");
 }
 
-size_t
-slab_allocated(void) {
-  return 0;
+size_t slab_allocated(void)
+{
+    return 0;
 }
 
-size_t
-kallocated(void) {
-   return slab_allocated();
+size_t kallocated(void)
+{
+    return slab_allocated();
 }
 
 static int find_order(int size)
@@ -251,12 +249,10 @@ static void *__kmalloc(size_t size, gfp_t gfp)
 	return 0;
 }
 
-void *
-kmalloc(size_t size)
+void *kmalloc(size_t size)
 {
-  return __kmalloc(size, 0);
+    return __kmalloc(size, 0);
 }
-
 
 void kfree(void *block)
 {
@@ -284,7 +280,6 @@ void kfree(void *block)
 	slob_free((slob_t *)block - 1, 0);
 	return;
 }
-
 
 unsigned int ksize(const void *block)
 {

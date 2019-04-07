@@ -86,6 +86,7 @@ struct trapframe
     uint32_t tf_eflags;
     /* below here only when crossing rings, such as from user to kernel */
     // 下面2个参数，记录 int x 中断执行之前的 esp 地址，中断执行完之后还要回到之前的堆栈
+    // 这2个只在用户态切换到内核态，发生特权转换的时候才会用到，由 cpu 压入堆栈
     uintptr_t tf_esp;
     uint16_t tf_ss;
     uint16_t tf_padding5;

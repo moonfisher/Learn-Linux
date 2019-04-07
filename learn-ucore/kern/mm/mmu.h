@@ -62,7 +62,8 @@
 #include "defs.h"
 
 /* Gate descriptors for interrupts and traps */
-struct gatedesc {
+struct gatedesc
+{
     unsigned gd_off_15_0 : 16;      // low 16 bits of offset in segment
     unsigned gd_ss : 16;            // segment selector
     unsigned gd_args : 5;           // # args, 0 for interrupt/trap gates
@@ -109,7 +110,8 @@ struct gatedesc {
     }
 
 /* segment descriptors */
-struct segdesc {
+struct segdesc
+{
     unsigned sd_lim_15_0 : 16;      // low bits of segment limit
     unsigned sd_base_15_0 : 16;     // low bits of segment base address
     unsigned sd_base_23_16 : 8;     // middle bits of segment base address
@@ -145,7 +147,8 @@ struct segdesc {
     }
 
 /* task state segment format (as described by the Pentium architecture book) */
-struct taskstate {
+struct taskstate
+{
     uint32_t ts_link;       // old ts selector
     uintptr_t ts_esp0;      // stack pointers and segment selectors
     uint16_t ts_ss0;        // after an increase in privilege level
