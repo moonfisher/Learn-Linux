@@ -9,7 +9,8 @@
 
 
 // process's state in his life cycle
-enum proc_state {
+enum proc_state
+{
     PROC_UNINIT = 0,  // uninitialized
     PROC_SLEEPING,    // sleeping
     PROC_RUNNABLE,    // runnable(maybe running)
@@ -23,7 +24,8 @@ enum proc_state {
 // which are caller save, but not the return register %eax.
 // (Not saving %eax just simplifies the switching code.)
 // The layout of context must match code in switch.S.
-struct context {
+struct context
+{
     uint32_t eip;
     uint32_t esp;
     uint32_t ebx;

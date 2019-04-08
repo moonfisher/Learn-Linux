@@ -219,20 +219,24 @@ static void trap_dispatch(struct trapframe *tf)
     switch (tf->tf_trapno)
     {
         case T_PGFLT:  //page fault
-//            if ((ret = pgfault_handler(tf)) != 0) {
-//                print_trapframe(tf);
-//                if (current == NULL) {
-//                    panic("handle pgfault failed. ret=%d\n", ret);
-//                }
-//                else {
-//                    if (trap_in_kernel(tf)) {
-//                        panic("handle pgfault failed in kernel mode. ret=%d\n", ret);
-//                    }
-//                    cprintf("killed by kernel.\n");
-//                    panic("handle user mode pgfault failed. ret=%d\n", ret);
-//                    do_exit(-E_KILLED);
-//                }
-//            }
+            if ((ret = pgfault_handler(tf)) != 0)
+            {
+                print_trapframe(tf);
+                if (current == NULL)
+                {
+                    panic("handle pgfault failed. ret=%d\n", ret);
+                }
+                else
+                {
+                    if (trap_in_kernel(tf))
+                    {
+                        panic("handle pgfault failed in kernel mode. ret=%d\n", ret);
+                    }
+                    cprintf("killed by kernel.\n");
+                    panic("handle user mode pgfault failed. ret=%d\n", ret);
+                    do_exit(-E_KILLED);
+                }
+            }
             break;
         case T_SYSCALL:
             print_trapframe(tf);
@@ -286,7 +290,8 @@ static void trap_dispatch(struct trapframe *tf)
             print_trapframe(tf);
             if (tf->tf_cs != USER_CS)
             {
-                // 当前在内核态，需要建立切换到用户态所需要的trapframe
+                // 当前在内核态，需要建立切换到用户态所需要的 trapframe，通过中断返回切换到用户态
+                // 这里构造 switchk2u 模拟用户态的堆栈
                 switchk2u = *tf;
                 switchk2u.tf_cs = USER_CS;
                 switchk2u.tf_ds = switchk2u.tf_es = switchk2u.tf_ss = USER_DS;
@@ -301,7 +306,8 @@ static void trap_dispatch(struct trapframe *tf)
                 // set temporary stack
                 // then iret will jump to the right stack
                 // 设置临时栈，指向 switchk2u，这样当 trap() 返回时，cpu 会从 switchk2u 恢复数据，
-                // 而不是从现有栈恢复数据，tf - 1 = pushl %esp
+                // 而不是从现有 tf 栈恢复数据，相当于用 switchk2u 替换了 tf 的内容。
+                // tf - 1 = pushl %esp
                 *((uint32_t *)tf - 1) = (uint32_t)&switchk2u;
             }
             break;
@@ -313,9 +319,10 @@ static void trap_dispatch(struct trapframe *tf)
                 // 所以把 cs 和 ds 都设置为内核代码段和内核数据段
                 tf->tf_cs = KERNEL_CS;
                 tf->tf_ds = tf->tf_es = KERNEL_DS;
-                // 设置 EFLAGS，让用户态不能执行 in/out 指令
                 tf->tf_eflags &= ~FL_IOPL_MASK;
-                // 设置临时栈，指向 switchk2u，这样 trap() 返回时，cpu 会从 switchk2u 恢复数据，
+                // 从用户态切换到内核态时，cpu 已经根据 tss 内容切换到了内核堆栈，tf 结构在内核栈空间，
+                // tf_esp 指向 int x 执行之前的用户栈顶 ，现在需要在用户栈空间也构造 trapframe
+                // 这样
                 // 而不是从现有栈恢复数据，tf - 1 = pushl %esp
                 switchu2k = (struct trapframe *)(tf->tf_esp - (sizeof(struct trapframe) - 8));
                 memmove(switchu2k, tf, sizeof(struct trapframe) - 8);

@@ -72,7 +72,9 @@ list_entry_t proc_list;
 // has list for process set based on pid
 static list_entry_t hash_list[HASH_LIST_SIZE];
 
-// idle proc 内核加载之后运行的第一个进程，没有父进程
+// idle 进程 pid = 0，是系统创建的第一个进程（也是内核线程），没有父进程，
+// 也是唯一一个没有通过 fork 或者 kernel_thread 产生的进程。没有函数入口。
+// idle 创建之后，很快用 kernel_thread 创建了 pid = 1 的 init 内核线程
 /*
 {
     state = 0x2,
@@ -111,7 +113,9 @@ static list_entry_t hash_list[HASH_LIST_SIZE];
 }
 */
 struct proc_struct *idleproc = NULL;    //0xC035b008
-// init proc
+
+// init 进程 pid = 1，是系统创建的第二个进程（也是内核线程），父进程是 idle，
+// init 入口函数是 init_main，内核初始化完成后，init 负责进程调度，交换，其余进程退出后清理资源等
 /*
 {
     state = 0x2,
@@ -152,7 +156,7 @@ struct proc_struct *idleproc = NULL;    //0xC035b008
  }
  */
 struct proc_struct *initproc = NULL;    // 0xC035b0e8
-// current proc
+// current proc 标记当前正在运行的进程
 struct proc_struct *current = NULL;
 
 static int nr_process = 0;
@@ -234,11 +238,12 @@ static void set_links(struct proc_struct *proc)
 {
     list_add(&proc_list, &(proc->list_link));
     proc->yptr = NULL;
-    if ((proc->optr = proc->parent->cptr) != NULL) {
+    if ((proc->optr = proc->parent->cptr) != NULL)
+    {
         proc->optr->yptr = proc;
     }
     proc->parent->cptr = proc;
-    nr_process ++;
+    nr_process++;
 }
 
 // remove_links - clean the relation links of process
@@ -296,10 +301,13 @@ static int get_pid(void)
 // NOTE: before call switch_to, should load  base addr of "proc"'s new PDT
 /*
  让 current 指向 next 内核线程 initproc；
- 设置任务状态段* ts* 中特权态 0 下的栈顶指针 esp0为 next 内核线程* initproc* 的内核栈的栈顶，即next->kstack + KSTACKSIZE；
- 设置 CR3 寄存器的值为* next* 内核线程* initproc* 的页目录表起始地址 next->cr3，这实际上是完成进程间的页表切换；
- 由switch_to函数完成具体的两个线程的执行现场切换，即切换各个寄存器，当 switch_to函数执行完“ret”指令后，就切换到initproc执行了。
-   在页表设置方面，考虑到以后的进程有各自的页表，其起始地址各不相同，只有完成页表切换，才能确保新的进程能够正确执行。
+ 设置任务状态段* ts* 中特权态 0 下的栈顶指针 esp0为 next 内核线程* initproc* 的内核栈的栈顶，
+ 即next->kstack + KSTACKSIZE；
+ 设置 CR3 寄存器的值为* next* 内核线程* initproc* 的页目录表起始地址 next->cr3，
+ 这实际上是完成进程间的页表切换；
+ 由switch_to函数完成具体的两个线程的执行现场切换，即切换各个寄存器，当 switch_to函数执行完“ret”指令后，
+ 就切换到initproc执行了。
+ 在页表设置方面，考虑到以后的进程有各自的页表，其起始地址各不相同，只有完成页表切换，才能确保新的进程能够正确执行。
  */
 void proc_run(struct proc_struct *proc)
 {
@@ -375,7 +383,8 @@ int kernel_thread(int (*fn)(void *), void *arg, uint32_t clone_flags)
 static int setup_kstack(struct proc_struct *proc)
 {
     struct Page *page = alloc_pages(KSTACKPAGE);
-    if (page != NULL) {
+    if (page != NULL)
+    {
         proc->kstack = (uintptr_t)page2kva(page);
         return 0;
     }
@@ -618,17 +627,21 @@ bad_fork_cleanup_proc:
 //   3. call scheduler to switch to other process
 int do_exit(int error_code)
 {
-    if (current == idleproc) {
+    if (current == idleproc)
+    {
         panic("idleproc exit.\n");
     }
-    if (current == initproc) {
+    if (current == initproc)
+    {
         panic("initproc exit.\n");
     }
     
     struct mm_struct *mm = current->mm;
-    if (mm != NULL) {
+    if (mm != NULL)
+    {
         lcr3(boot_cr3);
-        if (mm_count_dec(mm) == 0) {
+        if (mm_count_dec(mm) == 0)
+        {
             exit_mmap(mm);
             put_pgdir(mm);
             mm_destroy(mm);
@@ -644,21 +657,28 @@ int do_exit(int error_code)
     local_intr_save(intr_flag);
     {
         proc = current->parent;
-        if (proc->wait_state == WT_CHILD) {
+        // 如果父进程在等待子进程退出，就唤醒父进程
+        if (proc->wait_state == WT_CHILD)
+        {
             wakeup_proc(proc);
         }
-        while (current->cptr != NULL) {
+        while (current->cptr != NULL)
+        {
             proc = current->cptr;
             current->cptr = proc->optr;
     
             proc->yptr = NULL;
-            if ((proc->optr = initproc->cptr) != NULL) {
+            if ((proc->optr = initproc->cptr) != NULL)
+            {
                 initproc->cptr->yptr = proc;
             }
+            // 进程退出之后，会被 init 进程接管，随后 init 进程被唤醒来释放进程相关资源
             proc->parent = initproc;
             initproc->cptr = proc;
-            if (proc->state == PROC_ZOMBIE) {
-                if (initproc->wait_state == WT_CHILD) {
+            if (proc->state == PROC_ZOMBIE)
+            {
+                if (initproc->wait_state == WT_CHILD)
+                {
                     wakeup_proc(initproc);
                 }
             }
@@ -674,10 +694,12 @@ int do_exit(int error_code)
 static int load_icode_read(int fd, void *buf, size_t len, off_t offset)
 {
     int ret;
-    if ((ret = sysfile_seek(fd, offset, LSEEK_SET)) != 0) {
+    if ((ret = sysfile_seek(fd, offset, LSEEK_SET)) != 0)
+    {
         return ret;
     }
-    if ((ret = sysfile_read(fd, buf, len)) != len) {
+    if ((ret = sysfile_read(fd, buf, len)) != len)
+    {
         return (ret < 0) ? ret : -1;
     }
     return 0;
@@ -713,46 +735,56 @@ static int load_icode(int fd, int argc, char **kargv)
      */
     assert(argc >= 0 && argc <= EXEC_MAX_ARG_NUM);
 
-    if (current->mm != NULL) {
+    if (current->mm != NULL)
+    {
         panic("load_icode: current->mm must be empty.\n");
     }
 
     int ret = -E_NO_MEM;
     struct mm_struct *mm;
-    if ((mm = mm_create()) == NULL) {
+    if ((mm = mm_create()) == NULL)
+    {
         goto bad_mm;
     }
-    if (setup_pgdir(mm) != 0) {
+    if (setup_pgdir(mm) != 0)
+    {
         goto bad_pgdir_cleanup_mm;
     }
 
     struct Page *page;
 
     struct elfhdr __elf, *elf = &__elf;
-    if ((ret = load_icode_read(fd, elf, sizeof(struct elfhdr), 0)) != 0) {
+    if ((ret = load_icode_read(fd, elf, sizeof(struct elfhdr), 0)) != 0)
+    {
         goto bad_elf_cleanup_pgdir;
     }
 
-    if (elf->e_magic != ELF_MAGIC) {
+    if (elf->e_magic != ELF_MAGIC)
+    {
         ret = -E_INVAL_ELF;
         goto bad_elf_cleanup_pgdir;
     }
 
     struct proghdr __ph, *ph = &__ph;
     uint32_t vm_flags, perm, phnum;
-    for (phnum = 0; phnum < elf->e_phnum; phnum ++) {
+    for (phnum = 0; phnum < elf->e_phnum; phnum ++)
+    {
         off_t phoff = elf->e_phoff + sizeof(struct proghdr) * phnum;
-        if ((ret = load_icode_read(fd, ph, sizeof(struct proghdr), phoff)) != 0) {
+        if ((ret = load_icode_read(fd, ph, sizeof(struct proghdr), phoff)) != 0)
+        {
             goto bad_cleanup_mmap;
         }
-        if (ph->p_type != ELF_PT_LOAD) {
+        if (ph->p_type != ELF_PT_LOAD)
+        {
             continue ;
         }
-        if (ph->p_filesz > ph->p_memsz) {
+        if (ph->p_filesz > ph->p_memsz)
+        {
             ret = -E_INVAL_ELF;
             goto bad_cleanup_mmap;
         }
-        if (ph->p_filesz == 0) {
+        if (ph->p_filesz == 0)
+        {
             continue ;
         }
         vm_flags = 0, perm = PTE_U;
@@ -760,7 +792,8 @@ static int load_icode(int fd, int argc, char **kargv)
         if (ph->p_flags & ELF_PF_W) vm_flags |= VM_WRITE;
         if (ph->p_flags & ELF_PF_R) vm_flags |= VM_READ;
         if (vm_flags & VM_WRITE) perm |= PTE_W;
-        if ((ret = mm_map(mm, ph->p_va, ph->p_memsz, vm_flags, NULL)) != 0) {
+        if ((ret = mm_map(mm, ph->p_va, ph->p_memsz, vm_flags, NULL)) != 0)
+        {
             goto bad_cleanup_mmap;
         }
         off_t offset = ph->p_offset;
@@ -770,42 +803,52 @@ static int load_icode(int fd, int argc, char **kargv)
         ret = -E_NO_MEM;
 
         end = ph->p_va + ph->p_filesz;
-        while (start < end) {
-            if ((page = pgdir_alloc_page(mm->pgdir, la, perm)) == NULL) {
+        while (start < end)
+        {
+            if ((page = pgdir_alloc_page(mm->pgdir, la, perm)) == NULL)
+            {
                 ret = -E_NO_MEM;
                 goto bad_cleanup_mmap;
             }
             off = start - la, size = PGSIZE - off, la += PGSIZE;
-            if (end < la) {
+            if (end < la)
+            {
                 size -= la - end;
             }
-            if ((ret = load_icode_read(fd, page2kva(page) + off, size, offset)) != 0) {
+            if ((ret = load_icode_read(fd, page2kva(page) + off, size, offset)) != 0)
+            {
                 goto bad_cleanup_mmap;
             }
             start += size, offset += size;
         }
         end = ph->p_va + ph->p_memsz;
 
-        if (start < la) {
+        if (start < la)
+        {
             /* ph->p_memsz == ph->p_filesz */
-            if (start == end) {
+            if (start == end)
+            {
                 continue ;
             }
             off = start + PGSIZE - la, size = PGSIZE - off;
-            if (end < la) {
+            if (end < la)
+            {
                 size -= la - end;
             }
             memset(page2kva(page) + off, 0, size);
             start += size;
             assert((end < la && start == end) || (end >= la && start == la));
         }
-        while (start < end) {
-            if ((page = pgdir_alloc_page(mm->pgdir, la, perm)) == NULL) {
+        while (start < end)
+        {
+            if ((page = pgdir_alloc_page(mm->pgdir, la, perm)) == NULL)
+            {
                 ret = -E_NO_MEM;
                 goto bad_cleanup_mmap;
             }
             off = start - la, size = PGSIZE - off, la += PGSIZE;
-            if (end < la) {
+            if (end < la)
+            {
                 size -= la - end;
             }
             memset(page2kva(page) + off, 0, size);
@@ -815,13 +858,14 @@ static int load_icode(int fd, int argc, char **kargv)
     sysfile_close(fd);
 
     vm_flags = VM_READ | VM_WRITE | VM_STACK;
-    if ((ret = mm_map(mm, USTACKTOP - USTACKSIZE, USTACKSIZE, vm_flags, NULL)) != 0) {
+    if ((ret = mm_map(mm, USTACKTOP - USTACKSIZE, USTACKSIZE, vm_flags, NULL)) != 0)
+    {
         goto bad_cleanup_mmap;
     }
-    assert(pgdir_alloc_page(mm->pgdir, USTACKTOP-PGSIZE , PTE_USER) != NULL);
-    assert(pgdir_alloc_page(mm->pgdir, USTACKTOP-2*PGSIZE , PTE_USER) != NULL);
-    assert(pgdir_alloc_page(mm->pgdir, USTACKTOP-3*PGSIZE , PTE_USER) != NULL);
-    assert(pgdir_alloc_page(mm->pgdir, USTACKTOP-4*PGSIZE , PTE_USER) != NULL);
+    assert(pgdir_alloc_page(mm->pgdir, USTACKTOP - PGSIZE , PTE_USER) != NULL);
+    assert(pgdir_alloc_page(mm->pgdir, USTACKTOP - 2 * PGSIZE , PTE_USER) != NULL);
+    assert(pgdir_alloc_page(mm->pgdir, USTACKTOP - 3 * PGSIZE , PTE_USER) != NULL);
+    assert(pgdir_alloc_page(mm->pgdir, USTACKTOP - 4 * PGSIZE , PTE_USER) != NULL);
     
     mm_count_inc(mm);
     current->mm = mm;
@@ -829,23 +873,27 @@ static int load_icode(int fd, int argc, char **kargv)
     lcr3(PADDR(mm->pgdir));
 
     //setup argc, argv
-    uint32_t argv_size=0, i;
-    for (i = 0; i < argc; i ++) {
-        argv_size += strnlen(kargv[i],EXEC_MAX_ARG_LEN + 1)+1;
+    uint32_t argv_size = 0, i;
+    for (i = 0; i < argc; i ++)
+    {
+        argv_size += strnlen(kargv[i], EXEC_MAX_ARG_LEN + 1) + 1;
     }
 
-    uintptr_t stacktop = USTACKTOP - (argv_size/sizeof(long)+1)*sizeof(long);
-    char** uargv=(char **)(stacktop  - argc * sizeof(char *));
+    // 用户进程的用户态堆栈地址，是根据虚拟空间地址规划出来的
+    uintptr_t stacktop = USTACKTOP - (argv_size / sizeof(long) + 1) * sizeof(long);
+    char **uargv = (char **)(stacktop  - argc * sizeof(char *));
     
     argv_size = 0;
-    for (i = 0; i < argc; i ++) {
-        uargv[i] = strcpy((char *)(stacktop + argv_size ), kargv[i]);
-        argv_size +=  strnlen(kargv[i],EXEC_MAX_ARG_LEN + 1)+1;
+    for (i = 0; i < argc; i ++)
+    {
+        uargv[i] = strcpy((char *)(stacktop + argv_size), kargv[i]);
+        argv_size += strnlen(kargv[i], EXEC_MAX_ARG_LEN + 1) + 1;
     }
     
     stacktop = (uintptr_t)uargv - sizeof(int);
     *(int *)stacktop = argc;
     
+    // 这里中断桢设置的是 USER_CS 和 USER_DS，所以进程运行起来后直接是用户态
     struct trapframe *tf = current->tf;
     memset(tf, 0, sizeof(struct trapframe));
     tf->tf_cs = USER_CS;
@@ -952,7 +1000,8 @@ int do_execve(const char *name, int argc, const char **argv)
     if (mm != NULL)
     {
         lcr3(boot_cr3);
-        if (mm_count_dec(mm) == 0) {
+        if (mm_count_dec(mm) == 0)
+        {
             exit_mmap(mm);
             put_pgdir(mm);
             mm_destroy(mm);
@@ -987,8 +1036,10 @@ int do_yield(void)
 int do_wait(int pid, int *code_store)
 {
     struct mm_struct *mm = current->mm;
-    if (code_store != NULL) {
-        if (!user_mem_check(mm, (uintptr_t)code_store, sizeof(int), 1)) {
+    if (code_store != NULL)
+    {
+        if (!user_mem_check(mm, (uintptr_t)code_store, sizeof(int), 1))
+        {
             return -E_INVAL;
         }
     }
@@ -997,29 +1048,37 @@ int do_wait(int pid, int *code_store)
     bool intr_flag, haskid;
 repeat:
     haskid = 0;
-    if (pid != 0) {
+    if (pid != 0)
+    {
         proc = find_proc(pid);
-        if (proc != NULL && proc->parent == current) {
+        if (proc != NULL && proc->parent == current)
+        {
             haskid = 1;
-            if (proc->state == PROC_ZOMBIE) {
+            if (proc->state == PROC_ZOMBIE)
+            {
                 goto found;
             }
         }
     }
-    else {
+    else
+    {
         proc = current->cptr;
-        for (; proc != NULL; proc = proc->optr) {
+        for (; proc != NULL; proc = proc->optr)
+        {
             haskid = 1;
-            if (proc->state == PROC_ZOMBIE) {
+            if (proc->state == PROC_ZOMBIE)
+            {
                 goto found;
             }
         }
     }
-    if (haskid) {
+    if (haskid)
+    {
         current->state = PROC_SLEEPING;
         current->wait_state = WT_CHILD;
         schedule();
-        if (current->flags & PF_EXITING) {
+        if (current->flags & PF_EXITING)
+        {
             do_exit(-E_KILLED);
         }
         goto repeat;
@@ -1027,10 +1086,12 @@ repeat:
     return -E_BAD_PROC;
 
 found:
-    if (proc == idleproc || proc == initproc) {
+    if (proc == idleproc || proc == initproc)
+    {
         panic("wait idleproc or initproc.\n");
     }
-    if (code_store != NULL) {
+    if (code_store != NULL)
+    {
         *code_store = proc->exit_code;
     }
     local_intr_save(intr_flag);
@@ -1093,6 +1154,7 @@ const char *argv[] = {path, ##__VA_ARGS__, NULL};       \
 #define KERNEL_EXECVE3(x, s, ...)               __KERNEL_EXECVE3(x, s, ##__VA_ARGS__)
 
 // user_main - kernel thread used to exec a user program
+// 通过内核线程来执行一个用户程序，并切换到用户态
 static int user_main(void *arg)
 {
 #ifdef TEST
@@ -1102,7 +1164,10 @@ static int user_main(void *arg)
     KERNEL_EXECVE2(TEST);
 #endif
 #else
-    KERNEL_EXECVE(sh);
+//    KERNEL_EXECVE(sh);
+    const char *argv[] = {"sh", NULL};
+    cprintf("kernel_execve: pid = %d, name = \"%s\".\n", current->pid, "sh");
+    kernel_execve("sh", argv);
 #endif
     panic("user_main execve failed.\n");
 }
@@ -1119,6 +1184,7 @@ static int init_main(void *arg)
     size_t nr_free_pages_store = nr_free_pages();
     size_t kernel_allocated_store = kallocated();
 
+    // 通过 user_main 内核线程来启动用户进程（shell），并切换到用户态
     int pid = kernel_thread(user_main, NULL, 0);
     if (pid <= 0)
     {
@@ -1176,7 +1242,7 @@ void proc_init(void)
     files_count_inc(idleproc->filesp);
     
     set_proc_name(idleproc, "idle");
-    nr_process ++;
+    nr_process++;
 
     current = idleproc;
 

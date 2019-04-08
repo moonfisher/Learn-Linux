@@ -85,30 +85,31 @@ struct proc_struct *philosopher_proc_sema[N];
 
 void phi_test_sema(i) /* i：哲学家号码从0到N-1 */
 { 
-    if(state_sema[i]==HUNGRY&&state_sema[LEFT]!=EATING
-            &&state_sema[RIGHT]!=EATING)
+    if (state_sema[i] == HUNGRY
+        && state_sema[LEFT] != EATING
+            && state_sema[RIGHT] != EATING)
     {
-        state_sema[i]=EATING;
+        state_sema[i] = EATING;
         up(&s[i]);
     }
 }
 
 void phi_take_forks_sema(int i) /* i：哲学家号码从0到N-1 */
 { 
-        down(&mutex); /* 进入临界区 */
-        state_sema[i]=HUNGRY; /* 记录下哲学家i饥饿的事实 */
-        phi_test_sema(i); /* 试图得到两只叉子 */
-        up(&mutex); /* 离开临界区 */
-        down(&s[i]); /* 如果得不到叉子就阻塞 */
+    down(&mutex); /* 进入临界区 */
+    state_sema[i]=HUNGRY; /* 记录下哲学家i饥饿的事实 */
+    phi_test_sema(i); /* 试图得到两只叉子 */
+    up(&mutex); /* 离开临界区 */
+    down(&s[i]); /* 如果得不到叉子就阻塞 */
 }
 
 void phi_put_forks_sema(int i) /* i：哲学家号码从0到N-1 */
 { 
-        down(&mutex); /* 进入临界区 */
-        state_sema[i]=THINKING; /* 哲学家进餐结束 */
-        phi_test_sema(LEFT); /* 看一下左邻居现在是否能进餐 */
-        phi_test_sema(RIGHT); /* 看一下右邻居现在是否能进餐 */
-        up(&mutex); /* 离开临界区 */
+    down(&mutex); /* 进入临界区 */
+    state_sema[i]=THINKING; /* 哲学家进餐结束 */
+    phi_test_sema(LEFT); /* 看一下左邻居现在是否能进餐 */
+    phi_test_sema(RIGHT); /* 看一下右邻居现在是否能进餐 */
+    up(&mutex); /* 离开临界区 */
 }
 
 int philosopher_using_semaphore(void * arg) /* i：哲学家号码，从0到N-1 */
@@ -169,9 +170,12 @@ struct proc_struct *philosopher_proc_condvar[N]; // N philosopher
 int state_condvar[N];                            // the philosopher's state: EATING, HUNGARY, THINKING  
 monitor_t mt, *mtp=&mt;                          // monitor
 
-void phi_test_condvar (i) { 
-    if(state_condvar[i]==HUNGRY&&state_condvar[LEFT]!=EATING
-            &&state_condvar[RIGHT]!=EATING) {
+void phi_test_condvar (i)
+{
+    if (state_condvar[i] == HUNGRY
+        && state_condvar[LEFT] != EATING
+        && state_condvar[RIGHT] != EATING)
+    {
         cprintf("phi_test_condvar: state_condvar[%d] will eating\n",i);
         state_condvar[i] = EATING ;
         cprintf("phi_test_condvar: signal self_cv[%d] \n",i);
@@ -179,8 +183,8 @@ void phi_test_condvar (i) {
     }
 }
 
-
-void phi_take_forks_condvar(int i) {
+void phi_take_forks_condvar(int i)
+{
      down(&(mtp->mutex));
 //--------into routine in monitor--------------
      // LAB7 EXERCISE1: YOUR CODE
@@ -201,7 +205,8 @@ void phi_take_forks_condvar(int i) {
          up(&(mtp->mutex));
 }
 
-void phi_put_forks_condvar(int i) {
+void phi_put_forks_condvar(int i)
+{
      down(&(mtp->mutex));
 
 //--------into routine in monitor--------------
@@ -221,8 +226,9 @@ void phi_put_forks_condvar(int i) {
 }
 
 //---------- philosophers using monitor (condition variable) ----------------------
-int philosopher_using_condvar(void * arg) { /* arg is the No. of philosopher 0~N-1*/
-  
+int philosopher_using_condvar(void * arg)
+{
+    /* arg is the No. of philosopher 0~N-1*/
     int i, iter=0;
     i=(int)arg;
     cprintf("I am No.%d philosopher_condvar\n",i);
@@ -241,8 +247,8 @@ int philosopher_using_condvar(void * arg) { /* arg is the No. of philosopher 0~N
     return 0;    
 }
 
-void check_sync(void){
-
+void check_sync(void)
+{
     int i;
 
     //check semaphore

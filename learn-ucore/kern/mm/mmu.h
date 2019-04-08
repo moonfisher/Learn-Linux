@@ -147,6 +147,7 @@ struct segdesc
     }
 
 /* task state segment format (as described by the Pentium architecture book) */
+// 这个结构根据 tss 来定义
 struct taskstate
 {
     uint32_t ts_link;       // old ts selector

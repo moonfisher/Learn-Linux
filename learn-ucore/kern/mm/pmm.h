@@ -10,7 +10,8 @@
 // pmm_manager is a physical memory management class. A special pmm manager - XXX_pmm_manager
 // only needs to implement the methods in pmm_manager class, then XXX_pmm_manager can be used
 // by ucore to manage the total physical memory space.
-struct pmm_manager {
+struct pmm_manager
+{
     const char *name;                                 // XXX_pmm_manager's name
     void (*init)(void);                               // initialize internal description&management data structure
                                                       // (free block list, number of free block) of XXX_pmm_manager 
@@ -78,69 +79,70 @@ void print_pgdir(void);
 extern struct Page *pages;
 extern size_t npage;
 
-static inline ppn_t
-page2ppn(struct Page *page) {
+static inline ppn_t page2ppn(struct Page *page)
+{
     return page - pages;
 }
 
-static inline uintptr_t
-page2pa(struct Page *page) {
+static inline uintptr_t page2pa(struct Page *page)
+{
     return page2ppn(page) << PGSHIFT;
 }
 
-static inline struct Page *
-pa2page(uintptr_t pa) {
+static inline struct Page *pa2page(uintptr_t pa)
+{
     if (PPN(pa) >= npage) {
         panic("pa2page called with invalid pa");
     }
     return &pages[PPN(pa)];
 }
 
-static inline void *
-page2kva(struct Page *page) {
+static inline void *page2kva(struct Page *page)
+{
     return KADDR(page2pa(page));
 }
 
-static inline struct Page *
-kva2page(void *kva) {
+static inline struct Page *kva2page(void *kva)
+{
     return pa2page(PADDR(kva));
 }
 
-static inline struct Page *
-pte2page(pte_t pte) {
+static inline struct Page *pte2page(pte_t pte)
+{
     if (!(pte & PTE_P)) {
         panic("pte2page called with invalid pte");
     }
     return pa2page(PTE_ADDR(pte));
 }
 
-static inline struct Page *
-pde2page(pde_t pde) {
+static inline struct Page *pde2page(pde_t pde)
+{
     return pa2page(PDE_ADDR(pde));
 }
 
-static inline int
-page_ref(struct Page *page) {
+static inline int page_ref(struct Page *page)
+{
     return page->ref;
 }
 
-static inline void
-set_page_ref(struct Page *page, int val) {
+static inline void set_page_ref(struct Page *page, int val)
+{
     page->ref = val;
 }
 
-static inline int
-page_ref_inc(struct Page *page) {
+static inline int page_ref_inc(struct Page *page)
+{
     page->ref += 1;
     return page->ref;
 }
 
-static inline int
-page_ref_dec(struct Page *page) {
+static inline int page_ref_dec(struct Page *page)
+{
     page->ref -= 1;
     return page->ref;
 }
 
+// 内核栈，内核栈顶
 extern char bootstack[], bootstacktop[];
 
 #endif /* !__KERN_MM_PMM_H__ */

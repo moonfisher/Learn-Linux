@@ -11,19 +11,19 @@
 #define SEG_TSS     5
 
 /* global descrptor numbers */
-#define GD_KTEXT    ((SEG_KTEXT) << 3)      // kernel text
-#define GD_KDATA    ((SEG_KDATA) << 3)      // kernel data
-#define GD_UTEXT    ((SEG_UTEXT) << 3)      // user text
-#define GD_UDATA    ((SEG_UDATA) << 3)      // user data
-#define GD_TSS      ((SEG_TSS) << 3)        // task segment selector
+#define GD_KTEXT    ((SEG_KTEXT) << 3)      // kernel text              0x8
+#define GD_KDATA    ((SEG_KDATA) << 3)      // kernel data              0x10
+#define GD_UTEXT    ((SEG_UTEXT) << 3)      // user text                0x18
+#define GD_UDATA    ((SEG_UDATA) << 3)      // user data                0x20
+#define GD_TSS      ((SEG_TSS) << 3)        // task segment selector    0x28
 
 #define DPL_KERNEL  (0)
 #define DPL_USER    (3)
 
-#define KERNEL_CS   ((GD_KTEXT) | DPL_KERNEL)
-#define KERNEL_DS   ((GD_KDATA) | DPL_KERNEL)
-#define USER_CS     ((GD_UTEXT) | DPL_USER)
-#define USER_DS     ((GD_UDATA) | DPL_USER)
+#define KERNEL_CS   ((GD_KTEXT) | DPL_KERNEL)   // 0x8
+#define KERNEL_DS   ((GD_KDATA) | DPL_KERNEL)   // 0x10
+#define USER_CS     ((GD_UTEXT) | DPL_USER)     // 0x1B
+#define USER_DS     ((GD_UDATA) | DPL_USER)     // 0x23
 
 /* *
  * Virtual memory map:                                          Permissions
@@ -112,9 +112,11 @@ typedef pte_t swap_entry_t; //the pte can also be a swap entry
 #define E820_ARM            1       // address range memory
 #define E820_ARR            2       // address range reserved
 
-struct e820map {
+struct e820map
+{
     int nr_map;
-    struct {
+    struct
+    {
         uint64_t addr;
         uint64_t size;
         uint32_t type;
@@ -126,7 +128,8 @@ struct e820map {
  * physical page. In kern/mm/pmm.h, you can find lots of useful functions
  * that convert Page to other data types, such as phyical address.
  * */
-struct Page {
+struct Page
+{
     int ref;                        // page frame's reference counter
     uint32_t flags;                 // array of flags that describe the status of the page frame
     unsigned int property;          // used in buddy system, stores the order (the X in 2^X) of the continuous memory block
@@ -152,7 +155,8 @@ struct Page {
     to_struct((le), struct Page, member)
 
 /* free_area_t - maintains a doubly linked list to record free (unused) pages */
-typedef struct {
+typedef struct
+{
     list_entry_t free_list;         // the list header
     unsigned int nr_free;           // # of free pages in this free list
 } free_area_t;

@@ -100,8 +100,8 @@ static void lab1_switch_to_user(void)
     //LAB1 CHALLENGE 1 : TODO
     /*
      转向用户态时，我们需要预留出8个字节来存放 iret 的返回，在调用中断之前先修改 esp，
-     原因是切换特权级时，iret指令会额外弹出 ss 和 esp，但调用中断时并未产生特权级切换，
-     因此并未压入对应 ss 和 esp。需要预先留出空间防止代码出错。
+     原因是切换特权级时，iret 指令会额外弹出 ss 和 esp，但实际在从内核态转向用户态的时候，
+     调用中断时并未产生特权级切换，因此并未压入对应 ss 和 esp。这里需要预先留出空间防止代码出错。
      */
     asm volatile (
         "sub $0x8, %%esp \n"
@@ -115,6 +115,10 @@ static void lab1_switch_to_user(void)
 static void lab1_switch_to_kernel(void)
 {
     //LAB1 CHALLENGE 1 :  TODO
+    /*
+     转向内核态时，cpu 会将当前程序使用的用户态的 ss 和 esp 压到新的内核栈中保存起来。
+     内核栈的地址通过 tss 获取
+     */
     asm volatile (
         "int %0 \n"
         "movl %%ebp, %%esp \n"

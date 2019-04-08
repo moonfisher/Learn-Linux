@@ -12,7 +12,8 @@
 struct mm_struct;
 
 // the virtual continuous memory area(vma)
-struct vma_struct {
+struct vma_struct
+{
     struct mm_struct *vm_mm; // the set of vma using the same PDT 
     uintptr_t vm_start;      //    start addr of vma    
     uintptr_t vm_end;        // end addr of vma
@@ -29,7 +30,8 @@ struct vma_struct {
 #define VM_STACK                0x00000008
 
 // the control struct for a set of vma using the same PDT
-struct mm_struct {
+struct mm_struct
+{
     list_entry_t mmap_list;        // linear list link which sorted by start addr of vma
     struct vma_struct *mmap_cache; // current accessed vma, used for speed purpose
     pde_t *pgdir;                  // the PDT of these vma
@@ -38,7 +40,6 @@ struct mm_struct {
     int mm_count;                  // the number ofprocess which shared the mm
     semaphore_t mm_sem;            // mutex for using dup_mmap fun to duplicat the mm 
     int locked_by;                 // the lock owner process's pid
-
 };
 
 struct vma_struct *find_vma(struct mm_struct *mm, uintptr_t addr);
@@ -67,41 +68,44 @@ bool copy_from_user(struct mm_struct *mm, void *dst, const void *src, size_t len
 bool copy_to_user(struct mm_struct *mm, void *dst, const void *src, size_t len);
 bool copy_string(struct mm_struct *mm, char *dst, const char *src, size_t maxn);
 
-static inline int
-mm_count(struct mm_struct *mm) {
+static inline int mm_count(struct mm_struct *mm)
+{
     return mm->mm_count;
 }
 
-static inline void
-set_mm_count(struct mm_struct *mm, int val) {
+static inline void set_mm_count(struct mm_struct *mm, int val)
+{
     mm->mm_count = val;
 }
 
-static inline int
-mm_count_inc(struct mm_struct *mm) {
+static inline int mm_count_inc(struct mm_struct *mm)
+{
     mm->mm_count += 1;
     return mm->mm_count;
 }
 
-static inline int
-mm_count_dec(struct mm_struct *mm) {
+static inline int mm_count_dec(struct mm_struct *mm)
+{
     mm->mm_count -= 1;
     return mm->mm_count;
 }
 
-static inline void
-lock_mm(struct mm_struct *mm) {
-    if (mm != NULL) {
+static inline void lock_mm(struct mm_struct *mm)
+{
+    if (mm != NULL)
+    {
         down(&(mm->mm_sem));
-        if (current != NULL) {
+        if (current != NULL)
+        {
             mm->locked_by = current->pid;
         }
     }
 }
 
-static inline void
-unlock_mm(struct mm_struct *mm) {
-    if (mm != NULL) {
+static inline void unlock_mm(struct mm_struct *mm)
+{
+    if (mm != NULL)
+    {
         up(&(mm->mm_sem));
         mm->locked_by = 0;
     }

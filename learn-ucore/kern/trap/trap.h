@@ -58,8 +58,10 @@ struct pushregs
     uint32_t reg_eax;
 };
 
+// 中断桢 trapframe 很重要，无论是中断，还是进程切换，还是用户态和内核态的切换都是通过更新中断桢来实现的
 // 在 __alltraps 函数里通过压栈的方式构造 trapframe 结构给 c 函数传参
-// 这里面有很多 padding 字段，是为了占位，__alltraps 通过 pushl 来压栈参数，一次压栈4字节，但实际只有2字节是有用的
+// 这里面有很多 padding 字段，是为了占位，__alltraps 通过 pushl 来压栈参数，
+// 一次压栈4字节，但实际只有2字节是有用的
 struct trapframe
 {
     struct pushregs tf_regs;    // pushal 压栈的参数
@@ -86,7 +88,9 @@ struct trapframe
     uint32_t tf_eflags;
     /* below here only when crossing rings, such as from user to kernel */
     // 下面2个参数，记录 int x 中断执行之前的 esp 地址，中断执行完之后还要回到之前的堆栈
-    // 这2个只在用户态切换到内核态，发生特权转换的时候才会用到，由 cpu 压入堆栈
+    // 这2个只在用户态切换到内核态，发生特权转换的时候才会用到，此时 cpu 会把用户栈切换为内核栈，
+    // 并将当前程序使用的用户态的 ss 和 esp 压到新的内核栈中保存起来。内核栈的地址通过全局 tss 获取
+    // 但从内核态转向用户态的时候并未产生特权级切换，因此 cpu 并未压入对应 ss 和 esp，这2个参数没用
     uintptr_t tf_esp;
     uint16_t tf_ss;
     uint16_t tf_padding5;

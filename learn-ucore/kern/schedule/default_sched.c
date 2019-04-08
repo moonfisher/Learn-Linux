@@ -143,10 +143,12 @@ static struct proc_struct *stride_pick_next(struct run_queue *rq)
 static void stride_proc_tick(struct run_queue *rq, struct proc_struct *proc)
 {
      /* LAB6: YOUR CODE */
-     if (proc->time_slice > 0) {
+     if (proc->time_slice > 0)
+     {
           proc->time_slice --;
      }
-     if (proc->time_slice == 0) {
+     if (proc->time_slice == 0)
+     {
           proc->need_resched = 1;
      }
 }
