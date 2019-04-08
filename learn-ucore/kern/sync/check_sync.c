@@ -112,23 +112,23 @@ void phi_put_forks_sema(int i) /* i：哲学家号码从0到N-1 */
     up(&mutex); /* 离开临界区 */
 }
 
-int philosopher_using_semaphore(void * arg) /* i：哲学家号码，从0到N-1 */
+int philosopher_using_semaphore(void *arg) /* i：哲学家号码，从0到N-1 */
 {
-    int i, iter=0;
-    i=(int)arg;
+    int i, iter = 0;
+    i = (int)arg;
     cprintf("I am No.%d philosopher_sema\n",i);
-    while(iter++<TIMES)
+    while(iter++ < TIMES)
     { /* 无限循环 */
-        cprintf("Iter %d, No.%d philosopher_sema is thinking\n",iter,i); /* 哲学家正在思考 */
+        cprintf("Iter %d, No.%d philosopher_sema is thinking\n", iter, i); /* 哲学家正在思考 */
         do_sleep(SLEEP_TIME);
         phi_take_forks_sema(i); 
         /* 需要两只叉子，或者阻塞 */
-        cprintf("Iter %d, No.%d philosopher_sema is eating\n",iter,i); /* 进餐 */
+        cprintf("Iter %d, No.%d philosopher_sema is eating\n", iter, i); /* 进餐 */
         do_sleep(SLEEP_TIME);
         phi_put_forks_sema(i); 
         /* 把两把叉子同时放回桌子 */
     }
-    cprintf("No.%d philosopher_sema quit\n",i);
+    cprintf("No.%d philosopher_sema quit\n", i);
     return 0;    
 }
 
@@ -168,7 +168,7 @@ int philosopher_using_semaphore(void * arg) /* i：哲学家号码，从0到N-1 
 
 struct proc_struct *philosopher_proc_condvar[N]; // N philosopher
 int state_condvar[N];                            // the philosopher's state: EATING, HUNGARY, THINKING  
-monitor_t mt, *mtp=&mt;                          // monitor
+monitor_t mt, *mtp = &mt;                          // monitor
 
 void phi_test_condvar (i)
 {
@@ -176,9 +176,9 @@ void phi_test_condvar (i)
         && state_condvar[LEFT] != EATING
         && state_condvar[RIGHT] != EATING)
     {
-        cprintf("phi_test_condvar: state_condvar[%d] will eating\n",i);
+        cprintf("phi_test_condvar: state_condvar[%d] will eating\n", i);
         state_condvar[i] = EATING ;
-        cprintf("phi_test_condvar: signal self_cv[%d] \n",i);
+        cprintf("phi_test_condvar: signal self_cv[%d] \n", i);
         cond_signal(&mtp->cv[i]) ;
     }
 }
@@ -191,15 +191,16 @@ void phi_take_forks_condvar(int i)
      // I am hungry
      // try to get fork
       // I am hungry
-      state_condvar[i]=HUNGRY; 
+      state_condvar[i] = HUNGRY;
       // try to get fork
       phi_test_condvar(i); 
-      if (state_condvar[i] != EATING) {
+      if (state_condvar[i] != EATING)
+      {
           cprintf("phi_take_forks_condvar: %d didn't get fork and will wait\n",i);
           cond_wait(&mtp->cv[i]);
       }
 //--------leave routine in monitor--------------
-      if(mtp->next_count>0)
+      if (mtp->next_count > 0)
          up(&(mtp->next));
       else
          up(&(mtp->mutex));
@@ -214,36 +215,36 @@ void phi_put_forks_condvar(int i)
      // I ate over
      // test left and right neighbors
       // I ate over 
-      state_condvar[i]=THINKING;
+      state_condvar[i] = THINKING;
       // test left and right neighbors
       phi_test_condvar(LEFT);
       phi_test_condvar(RIGHT);
 //--------leave routine in monitor--------------
-     if(mtp->next_count>0)
+     if (mtp->next_count > 0)
         up(&(mtp->next));
      else
         up(&(mtp->mutex));
 }
 
 //---------- philosophers using monitor (condition variable) ----------------------
-int philosopher_using_condvar(void * arg)
+int philosopher_using_condvar(void *arg)
 {
     /* arg is the No. of philosopher 0~N-1*/
-    int i, iter=0;
-    i=(int)arg;
-    cprintf("I am No.%d philosopher_condvar\n",i);
-    while(iter++<TIMES)
+    int i, iter = 0;
+    i = (int)arg;
+    cprintf("I am No.%d philosopher_condvar\n", i);
+    while(iter++ < TIMES)
     { /* iterate*/
-        cprintf("Iter %d, No.%d philosopher_condvar is thinking\n",iter,i); /* thinking*/
+        cprintf("Iter %d, No.%d philosopher_condvar is thinking\n", iter, i); /* thinking*/
         do_sleep(SLEEP_TIME);
         phi_take_forks_condvar(i); 
         /* need two forks, maybe blocked */
-        cprintf("Iter %d, No.%d philosopher_condvar is eating\n",iter,i); /* eating*/
+        cprintf("Iter %d, No.%d philosopher_condvar is eating\n", iter, i); /* eating*/
         do_sleep(SLEEP_TIME);
         phi_put_forks_condvar(i); 
         /* return two forks back*/
     }
-    cprintf("No.%d philosopher_condvar quit\n",i);
+    cprintf("No.%d philosopher_condvar quit\n", i);
     return 0;    
 }
 
@@ -253,10 +254,12 @@ void check_sync(void)
 
     //check semaphore
     sem_init(&mutex, 1);
-    for(i=0;i<N;i++){
+    for (i = 0; i < N; i++)
+    {
         sem_init(&s[i], 0);
         int pid = kernel_thread(philosopher_using_semaphore, (void *)i, 0);
-        if (pid <= 0) {
+        if (pid <= 0)
+        {
             panic("create No.%d philosopher_using_semaphore failed.\n");
         }
         philosopher_proc_sema[i] = find_proc(pid);
@@ -265,10 +268,12 @@ void check_sync(void)
 
     //check condition variable
     monitor_init(&mt, N);
-    for(i=0;i<N;i++){
-        state_condvar[i]=THINKING;
+    for (i = 0; i < N; i++)
+    {
+        state_condvar[i] = THINKING;
         int pid = kernel_thread(philosopher_using_condvar, (void *)i, 0);
-        if (pid <= 0) {
+        if (pid <= 0)
+        {
             panic("create No.%d philosopher_using_condvar failed.\n");
         }
         philosopher_proc_condvar[i] = find_proc(pid);

@@ -313,6 +313,9 @@ void proc_run(struct proc_struct *proc)
 {
     if (proc != current)
     {
+        char *name = get_proc_name(proc);
+        cprintf("proc_run: pid = %d, name = \"%s\".\n", proc->pid, name);
+        
         bool intr_flag;
         struct proc_struct *prev = current, *next = proc;
         local_intr_save(intr_flag);
@@ -1192,7 +1195,7 @@ static int init_main(void *arg)
     }
     
     extern void check_sync(void);
-    check_sync();                // check philosopher sync problem
+//    check_sync();                // check philosopher sync problem
 
     while (do_wait(0, NULL) == 0)
     {

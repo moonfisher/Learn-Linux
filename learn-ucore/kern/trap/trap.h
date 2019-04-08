@@ -62,6 +62,20 @@ struct pushregs
 // 在 __alltraps 函数里通过压栈的方式构造 trapframe 结构给 c 函数传参
 // 这里面有很多 padding 字段，是为了占位，__alltraps 通过 pushl 来压栈参数，
 // 一次压栈4字节，但实际只有2字节是有用的
+/*
+ CF(Carry Flag)：    进位标志位；
+ PF(Parity Flag)：   奇偶标志位；
+ AF(Assistant Flag)：辅助进位标志位；
+ ZF(Zero Flag)：     零标志位；
+ SF(Singal Flag)：   符号标志位；
+ IF(Interrupt Flag)：中断允许标志位,由CLI，STI两条指令来控制；设置IF位使CPU可识别外部（可屏蔽）中断请求，
+                     复位IF位则禁止中断，IF位对不可屏蔽外部中断和故障中断的识别没有任何作用；
+ DF(Direction Flag)：向量标志位，由CLD，STD两条指令来控制；
+ OF(Overflow Flag)： 溢出标志位；
+ IOPL(I/O Privilege Level)：I/O特权级字段，它的宽度为2位,它指定了I/O指令的特权级。如果当前的特权级别在数值上小于或等于IOPL，那么I/O指令可执行。否则，将发生一个保护性故障中断；
+ NT(Nested Task)：   控制中断返回指令IRET，它宽度为1位。若NT=0，则用堆栈中保存的值恢复EFLAGS，
+                    CS和EIP从而实现中断返回；若NT=1，则通过任务切换实现中断返回。在ucore中，设置NT为0。
+ */
 struct trapframe
 {
     struct pushregs tf_regs;    // pushal 压栈的参数

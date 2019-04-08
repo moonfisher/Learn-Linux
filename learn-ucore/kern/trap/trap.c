@@ -291,11 +291,15 @@ static void trap_dispatch(struct trapframe *tf)
             if (tf->tf_cs != USER_CS)
             {
                 // 当前在内核态，需要建立切换到用户态所需要的 trapframe，通过中断返回切换到用户态
-                // 这里构造 switchk2u 模拟用户态的堆栈
+                // 这里只是模拟进入用户态，真正内核初始化完是需要运行一个用户进程来进入用户态
+                // 但实际上最后本质都是通过中断，构造中断桢来修改 cpu 寄存器来实现状态切换
                 switchk2u = *tf;
                 switchk2u.tf_cs = USER_CS;
                 switchk2u.tf_ds = switchk2u.tf_es = switchk2u.tf_ss = USER_DS;
-                // 找到 int x 中断执行之前的 esp 地址，中断执行完之后还要回到之前的堆栈
+                
+                // 如果是通过执行用户进程切换到用户态，这里 tf_esp 应该指向用户进程空间的堆栈地址，堆栈切换
+                // 这里只是模拟，把内核代码切换到用户态，所以直接找到 int x 中断执行之前的 esp 地址，
+                // 中断执行完之后还是直接用之前的内核堆栈，不切换堆栈
                 switchk2u.tf_esp = (uint32_t)tf + sizeof(struct trapframe) - 8;
                 
                 // set eflags, make sure ucore can use io under user mode.
@@ -320,10 +324,11 @@ static void trap_dispatch(struct trapframe *tf)
                 tf->tf_cs = KERNEL_CS;
                 tf->tf_ds = tf->tf_es = KERNEL_DS;
                 tf->tf_eflags &= ~FL_IOPL_MASK;
-                // 从用户态切换到内核态时，cpu 已经根据 tss 内容切换到了内核堆栈，tf 结构在内核栈空间，
-                // tf_esp 指向 int x 执行之前的用户栈顶 ，现在需要在用户栈空间也构造 trapframe
-                // 这样
-                // 而不是从现有栈恢复数据，tf - 1 = pushl %esp
+                
+                // 从用户态切换到内核态时，发生特权变更，cpu 已经根据 tss 内容把堆栈从用户空间堆栈
+                // 切换到了内核堆栈，tf 结构现在在内核栈空间，但 tf_esp 还是指向 int x 执行之前的
+                // 用户堆栈栈顶 ，现在需要在用户栈空间也构造 trapframe，所以把 tf 的内容先修改下
+                // 然后复制到用户栈空间里，再返回让 cpu 从用户栈空间恢复数据来实现切换状态
                 switchu2k = (struct trapframe *)(tf->tf_esp - (sizeof(struct trapframe) - 8));
                 memmove(switchu2k, tf, sizeof(struct trapframe) - 8);
                 *((uint32_t *)tf - 1) = (uint32_t)switchu2k;
