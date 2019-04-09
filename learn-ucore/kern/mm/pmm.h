@@ -10,6 +10,7 @@
 // pmm_manager is a physical memory management class. A special pmm manager - XXX_pmm_manager
 // only needs to implement the methods in pmm_manager class, then XXX_pmm_manager can be used
 // by ucore to manage the total physical memory space.
+// 内存管理器，代码模块化，组件化
 struct pmm_manager
 {
     const char *name;                                 // XXX_pmm_manager's name
@@ -91,7 +92,8 @@ static inline uintptr_t page2pa(struct Page *page)
 
 static inline struct Page *pa2page(uintptr_t pa)
 {
-    if (PPN(pa) >= npage) {
+    if (PPN(pa) >= npage)
+    {
         panic("pa2page called with invalid pa");
     }
     return &pages[PPN(pa)];
@@ -109,7 +111,8 @@ static inline struct Page *kva2page(void *kva)
 
 static inline struct Page *pte2page(pte_t pte)
 {
-    if (!(pte & PTE_P)) {
+    if (!(pte & PTE_P))
+    {
         panic("pte2page called with invalid pte");
     }
     return pa2page(PTE_ADDR(pte));

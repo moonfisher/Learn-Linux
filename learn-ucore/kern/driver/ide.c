@@ -57,15 +57,16 @@ static const struct {
 #define IO_BASE(ideno)          (channels[(ideno) >> 1].base)
 #define IO_CTRL(ideno)          (channels[(ideno) >> 1].ctrl)
 
-static struct ide_device {
+static struct ide_device
+{
     unsigned char valid;        // 0 or 1 (If Device Really Exists)
     unsigned int sets;          // Commend Sets Supported
     unsigned int size;          // Size in Sectors
     unsigned char model[41];    // Model in String
 } ide_devices[MAX_IDE];
 
-static int
-ide_wait_ready(unsigned short iobase, bool check_error) {
+static int ide_wait_ready(unsigned short iobase, bool check_error)
+{
     int r;
     while ((r = inb(iobase + ISA_STATUS)) & IDE_BSY)
         /* nothing */;
@@ -75,11 +76,12 @@ ide_wait_ready(unsigned short iobase, bool check_error) {
     return 0;
 }
 
-void
-ide_init(void) {
+void ide_init(void)
+{
     static_assert((SECTSIZE % 4) == 0);
     unsigned short ideno, iobase;
-    for (ideno = 0; ideno < MAX_IDE; ideno ++) {
+    for (ideno = 0; ideno < MAX_IDE; ideno ++)
+    {
         /* assume that no device here */
         ide_devices[ideno].valid = 0;
 
@@ -141,21 +143,22 @@ ide_init(void) {
     pic_enable(IRQ_IDE2);
 }
 
-bool
-ide_device_valid(unsigned short ideno) {
+bool ide_device_valid(unsigned short ideno)
+{
     return VALID_IDE(ideno);
 }
 
-size_t
-ide_device_size(unsigned short ideno) {
-    if (ide_device_valid(ideno)) {
+size_t ide_device_size(unsigned short ideno)
+{
+    if (ide_device_valid(ideno))
+    {
         return ide_devices[ideno].size;
     }
     return 0;
 }
 
-int
-ide_read_secs(unsigned short ideno, uint32_t secno, void *dst, size_t nsecs) {
+int ide_read_secs(unsigned short ideno, uint32_t secno, void *dst, size_t nsecs)
+{
     assert(nsecs <= MAX_NSECS && VALID_IDE(ideno));
     assert(secno < MAX_DISK_NSECS && secno + nsecs <= MAX_DISK_NSECS);
     unsigned short iobase = IO_BASE(ideno), ioctrl = IO_CTRL(ideno);
@@ -172,8 +175,10 @@ ide_read_secs(unsigned short ideno, uint32_t secno, void *dst, size_t nsecs) {
     outb(iobase + ISA_COMMAND, IDE_CMD_READ);
 
     int ret = 0;
-    for (; nsecs > 0; nsecs --, dst += SECTSIZE) {
-        if ((ret = ide_wait_ready(iobase, 1)) != 0) {
+    for (; nsecs > 0; nsecs --, dst += SECTSIZE)
+    {
+        if ((ret = ide_wait_ready(iobase, 1)) != 0)
+        {
             goto out;
         }
         insl(iobase, dst, SECTSIZE / sizeof(uint32_t));
@@ -183,8 +188,8 @@ out:
     return ret;
 }
 
-int
-ide_write_secs(unsigned short ideno, uint32_t secno, const void *src, size_t nsecs) {
+int ide_write_secs(unsigned short ideno, uint32_t secno, const void *src, size_t nsecs)
+{
     assert(nsecs <= MAX_NSECS && VALID_IDE(ideno));
     assert(secno < MAX_DISK_NSECS && secno + nsecs <= MAX_DISK_NSECS);
     unsigned short iobase = IO_BASE(ideno), ioctrl = IO_CTRL(ideno);
@@ -201,8 +206,10 @@ ide_write_secs(unsigned short ideno, uint32_t secno, const void *src, size_t nse
     outb(iobase + ISA_COMMAND, IDE_CMD_WRITE);
 
     int ret = 0;
-    for (; nsecs > 0; nsecs --, src += SECTSIZE) {
-        if ((ret = ide_wait_ready(iobase, 1)) != 0) {
+    for (; nsecs > 0; nsecs --, src += SECTSIZE)
+    {
+        if ((ret = ide_wait_ready(iobase, 1)) != 0)
+        {
             goto out;
         }
         outsl(iobase, src, SECTSIZE / sizeof(uint32_t));

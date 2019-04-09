@@ -198,6 +198,7 @@ static void gdt_init(void)
 }
 
 //init_pmm_manager - initialize a pmm_manager instance
+// 内存管理代码模块化，组件化，后续可以直接实现别的 default_pmm_manager
 static void init_pmm_manager(void)
 {
     pmm_manager = &default_pmm_manager;
@@ -205,7 +206,8 @@ static void init_pmm_manager(void)
     pmm_manager->init();
 }
 
-//init_memmap - call pmm->init_memmap to build Page struct for free memory  
+//init_memmap - call pmm->init_memmap to build Page struct for free memory
+// 空闲内存按照 4k 一页用双向链表连起来
 static void init_memmap(struct Page *base, size_t n)
 {
     pmm_manager->init_memmap(base, n);
@@ -221,7 +223,7 @@ struct Page *alloc_pages(size_t n)
     {
          local_intr_save(intr_flag);
          {
-              page = pmm_manager->alloc_pages(n);
+            page = pmm_manager->alloc_pages(n);
          }
          local_intr_restore(intr_flag);
 
@@ -263,7 +265,7 @@ size_t nr_free_pages(void)
 
 /* pmm_init - initialize the physical memory management */
 /*
- e820map:
+ e820map: qemu 缺省模拟了 128m 内存
     memory: 0009fc00, [00000000, 0009fbff], type = 1.
     memory: 00000400, [0009fc00, 0009ffff], type = 2.
     memory: 00010000, [000f0000, 000fffff], type = 2.
@@ -279,46 +281,76 @@ static void page_init(void)
     uint64_t maxpa = 0;
 
     cprintf("e820map:\n");
-    int i;
-    for (i = 0; i < memmap->nr_map; i ++) {
+    int i = 0;
+    for (i = 0; i < memmap->nr_map; i ++)
+    {
         uint64_t begin = memmap->map[i].addr, end = begin + memmap->map[i].size;
-        cprintf("  memory: %08llx, [%08llx, %08llx], type = %d.\n",
-                memmap->map[i].size, begin, end - 1, memmap->map[i].type);
-        if (memmap->map[i].type == E820_ARM) {
-            if (maxpa < end && begin < KMEMSIZE) {
+        cprintf("  memory: %08llx, [%08llx, %08llx], type = %d.\n", memmap->map[i].size, begin, end - 1, memmap->map[i].type);
+        if (memmap->map[i].type == E820_ARM)
+        {
+            if (maxpa < end && begin < KMEMSIZE)
+            {
                 maxpa = end;
             }
         }
     }
-    if (maxpa > KMEMSIZE) {
+    
+    // 先找到内存最高地址，但不能超过高端内存地址，高端内存通过其它方式来映射
+    if (maxpa > KMEMSIZE)
+    {
         maxpa = KMEMSIZE;
     }
 
+    // maxpa = 0x07FE0000
+    cprintf("maxpa: %08x\n", maxpa);
+    
     // 从内核在内存里结束的地方往后统计
-    extern char end[];
+    extern char end[];  // 0xC015B384
+    cprintf("end: %08x\n", end);
+    
+    // maxpa = 0x07FE0000 PGSIZE = 0x1000 = 4k
+    // 这里 npage 记录的是所有物理内存空间总页数，npage 最大值就是 KMEMSIZE / PGSIZE = 224k
+    npage = maxpa / PGSIZE; // 0x00007FE0
+    
+    // pages 指向内核代码结束后的第一个空闲4k页面，0xC015B384 的下一个 4k 起始是 0xC015C000
+    pages = (struct Page *)ROUNDUP((void *)end, PGSIZE);    // 0xC015C000
+    cprintf("npage: %08x, pages: %08x\n", npage, pages);
+    
+    // 代码走到这里，虚拟地址映射还是采用的 boot_pgdir，
+    // 虚拟地址 0xC0000000 ~ 0xC0400000 映射到物理地址 0 ~ 4M，并没有按完整的 1G 内核空间映射
+    // 所以 npage * sizeof(struct Page) = 0x0027BB80 < 0x00400000，否则访问内存地址出错
+    // 这里有点疑问 npage 计算的时候并没有减去内核和页表本身占用的空间，也没有减去内核在内存中的偏移地址
+    // 但 pages 起始地址却从内核占用后的空间空间开始计算，这样的话 npage 会大于实际有效的内存页数
+//    for (i = 0; i < npage; i ++)
+//    {
+//        SetPageReserved(pages + i);
+//    }
 
-    npage = maxpa / PGSIZE;
-    pages = (struct Page *)ROUNDUP((void *)end, PGSIZE);
-
-    for (i = 0; i < npage; i ++) {
-        SetPageReserved(pages + i);
-    }
-
-    uintptr_t freemem = PADDR((uintptr_t)pages + sizeof(struct Page) * npage);
-
-    for (i = 0; i < memmap->nr_map; i ++) {
+    // 真正的内存空闲起始物理地址，除了减去内核占用空间之外，还要减去页表本身占用的空间
+    uintptr_t freemem = PADDR((uintptr_t)pages + sizeof(struct Page) * npage);  // 0x0027BB80
+    cprintf("freemem: %08x.\n", freemem);
+    
+    for (i = 0; i < memmap->nr_map; i ++)
+    {
         uint64_t begin = memmap->map[i].addr, end = begin + memmap->map[i].size;
-        if (memmap->map[i].type == E820_ARM) {
-            if (begin < freemem) {
+        if (memmap->map[i].type == E820_ARM)
+        {
+            if (begin < freemem)
+            {
                 begin = freemem;
             }
-            if (end > KMEMSIZE) {
+            if (end > KMEMSIZE)
+            {
                 end = KMEMSIZE;
             }
-            if (begin < end) {
+            if (begin < end)
+            {
                 begin = ROUNDUP(begin, PGSIZE);
                 end = ROUNDDOWN(end, PGSIZE);
-                if (begin < end) {
+                if (begin < end)
+                {
+                    cprintf("begin: %08x\n", begin);    // 0x0027D000
+                    cprintf("end: %08x\n", end);        // 0x07FE0000
                     init_memmap(pa2page(begin), (end - begin) / PGSIZE);
                 }
             }
@@ -655,7 +687,8 @@ int page_insert(pde_t *pgdir, struct Page *page, uintptr_t la, uint32_t perm)
 // edited are the ones currently in use by the processor.
 void tlb_invalidate(pde_t *pgdir, uintptr_t la)
 {
-    if (rcr3() == PADDR(pgdir)) {
+    if (rcr3() == PADDR(pgdir))
+    {
         invlpg((void *)la);
     }
 }
@@ -666,26 +699,30 @@ void tlb_invalidate(pde_t *pgdir, uintptr_t la)
 struct Page *pgdir_alloc_page(pde_t *pgdir, uintptr_t la, uint32_t perm)
 {
     struct Page *page = alloc_page();
-    if (page != NULL) {
-        if (page_insert(pgdir, page, la, perm) != 0) {
+    if (page != NULL)
+    {
+        if (page_insert(pgdir, page, la, perm) != 0)
+        {
             free_page(page);
             return NULL;
         }
-        if (swap_init_ok){
-            if(check_mm_struct!=NULL) {
+        if (swap_init_ok)
+        {
+            if (check_mm_struct != NULL)
+            {
                 swap_map_swappable(check_mm_struct, la, page, 0);
                 page->pra_vaddr=la;
                 assert(page_ref(page) == 1);
                 //cprintf("get No. %d  page: pra_vaddr %x, pra_link.prev %x, pra_link_next %x in pgdir_alloc_page\n", (page-pages), page->pra_vaddr,page->pra_page_link.prev, page->pra_page_link.next);
             } 
-            else  {  //now current is existed, should fix it in the future
+            else
+            {  //now current is existed, should fix it in the future
                 //swap_map_swappable(current->mm, la, page, 0);
                 //page->pra_vaddr=la;
                 //assert(page_ref(page) == 1);
                 //panic("pgdir_alloc_page: no pages. now current is existed, should fix it in the future\n");
             }
         }
-
     }
 
     return page;

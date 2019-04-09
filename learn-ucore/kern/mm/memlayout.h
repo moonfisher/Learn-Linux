@@ -66,8 +66,23 @@
  *
  * */
 
+/*
+ Linux 操作系统和驱动程序运行在内核空间，应用程序运行在用户空间，两者不能简单地使用指针传递数据，
+ 因为Linux使用的虚拟内存机制，用户空间的数据可能被换出，当内核空间使用用户空间指针时，
+ 对应的数据可能不在内存中。用户空间的内存映射采用段页式，而内核空间有自己的规则
+ 用户进程没有高端内存概念。只有在内核空间才存在高端内存。
+ 用户进程最多只可以访问3G物理内存，而内核进程可以访问所有物理内存。
+*/
 /* All physical memory mapped at this address */
 #define KERNBASE            0xC0000000
+/*
+ 为什么上限是896M，Linux内核高端内存的由来 Linux HighMemory（高端内存）
+ 当内核模块代码或线程访问内存时，代码中的内存地址都为逻辑地址，而对应到真正的物理内存地址，
+ 需要地址一对一的映射，逻辑地址与物理地址对应的关系为：
+ 物理地址 = 逻辑地址 – 0xC0000000
+ 这是内核地址空间的地址转换关系，注意内核的虚拟地址在“高端”，但是内核映射的物理内存地址在低端。
+ https://blog.csdn.net/qq_26222859/article/details/80901104
+*/
 #define KMEMSIZE            0x38000000                  // the maximum amount of physical memory
 #define KERNTOP             (KERNBASE + KMEMSIZE)
 

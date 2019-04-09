@@ -9,8 +9,8 @@
  * Simple command-line kernel monitor useful for controlling the
  * kernel and exploring the system interactively.
  * */
-
-struct command {
+struct command
+{
     const char *name;
     const char *desc;
     // return -1 to force monitor to exit
@@ -34,10 +34,11 @@ bool is_kernel_panic(void);
 #define WHITESPACE      " \t\n\r"
 
 /* parse - parse the command buffer into whitespace-separated arguments */
-static int
-parse(char *buf, char **argv) {
+static int parse(char *buf, char **argv)
+{
     int argc = 0;
-    while (1) {
+    while (1)
+    {
         // find global whitespace
         while (*buf != '\0' && strchr(WHITESPACE, *buf) != NULL) {
             *buf ++ = '\0';
@@ -62,8 +63,8 @@ parse(char *buf, char **argv) {
  * runcmd - parse the input string, split it into separated arguments
  * and then lookup and invoke some related commands/
  * */
-static int
-runcmd(char *buf, struct trapframe *tf) {
+static int runcmd(char *buf, struct trapframe *tf)
+{
     char *argv[MAXARGS];
     int argc = parse(buf, argv);
     if (argc == 0) {
@@ -81,8 +82,8 @@ runcmd(char *buf, struct trapframe *tf) {
 
 /***** Implementations of basic kernel monitor commands *****/
 
-void
-kmonitor(struct trapframe *tf) {
+void kmonitor(struct trapframe *tf)
+{
     cprintf("Welcome to the kernel debug monitor!!\n");
     cprintf("Type 'help' for a list of commands.\n");
 
@@ -101,8 +102,8 @@ kmonitor(struct trapframe *tf) {
 }
 
 /* mon_help - print the information about mon_* functions */
-int
-mon_help(int argc, char **argv, struct trapframe *tf) {
+int mon_help(int argc, char **argv, struct trapframe *tf)
+{
     int i;
     for (i = 0; i < NCOMMANDS; i ++) {
         cprintf("%s - %s\n", commands[i].name, commands[i].desc);
@@ -114,8 +115,8 @@ mon_help(int argc, char **argv, struct trapframe *tf) {
  * mon_kerninfo - call print_kerninfo in kern/debug/kdebug.c to
  * print the memory occupancy in kernel.
  * */
-int
-mon_kerninfo(int argc, char **argv, struct trapframe *tf) {
+int mon_kerninfo(int argc, char **argv, struct trapframe *tf)
+{
     print_kerninfo();
     return 0;
 }
@@ -124,8 +125,8 @@ mon_kerninfo(int argc, char **argv, struct trapframe *tf) {
  * mon_backtrace - call print_stackframe in kern/debug/kdebug.c to
  * print a backtrace of the stack.
  * */
-int
-mon_backtrace(int argc, char **argv, struct trapframe *tf) {
+int mon_backtrace(int argc, char **argv, struct trapframe *tf)
+{
     print_stackframe();
     return 0;
 }
