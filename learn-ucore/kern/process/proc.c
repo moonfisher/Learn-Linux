@@ -1133,7 +1133,7 @@ static int kernel_execve(const char *name, const char **argv)
     int argc = 0, ret;
     while (argv[argc] != NULL)
     {
-        argc ++;
+        argc++;
     }
     asm volatile (
         "int %1;"

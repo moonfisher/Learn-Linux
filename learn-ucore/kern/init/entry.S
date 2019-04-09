@@ -65,10 +65,11 @@ __boot_pgdir:
 .globl __boot_pgdir # 0xC0156000 页目录地址
     # map va 0 ~ 4M to pa 0 ~ 4M (temporary) 目录地址 0x00156000
     # 虚拟地址 0 ~ 4M 映射到物理地址 0 ~ 4M，这里先临时映射 4M 就够用了，内核没那么大
+    # KERNBASE >> PGSHIFT >> 10 << 2 这里取内核虚拟地址高10位，然后左移2位是因为页目录一条记录占4个字节
     .long REALLOC(__boot_pt1) + (PTE_P | PTE_U | PTE_W)
     .space (KERNBASE >> PGSHIFT >> 10 << 2) - (. - __boot_pgdir) # pad to PDE of KERNBASE
 
-    # map va KERNBASE + (0 ~ 4M) to pa 0 ~ 4M 目录地址 0x00156C00
+    # map va KERNBASE + (0 ~ 4M) to pa 0 ~ 4M 目录地址 0x00156C00 = 0x00156000 + 0x300 * 4
     # 虚拟地址 0xC0000000 ~ 0xC0400000 映射到物理地址 0 ~ 4M，这里先临时映射 4M 就够用了，内核没那么大
     # 内核代码在物理内存的低端地址上，但映射到了虚拟地址空间的高端内存上
     # 实际上这种映射限制了内核的大小。当内核大小超过预期的4MB （实际上是3M，因为内核从 0x100000开始编址）

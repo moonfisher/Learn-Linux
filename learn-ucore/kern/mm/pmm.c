@@ -109,7 +109,7 @@ static inline void lgdt(struct pseudodesc *pd)
     asm volatile ("movw %%ax, %%es" :: "a" (KERNEL_DS));
     asm volatile ("movw %%ax, %%ds" :: "a" (KERNEL_DS));
     asm volatile ("movw %%ax, %%ss" :: "a" (KERNEL_DS));
-    // reload cs
+    // reload cs 通过跳转指令重新更新 cs 到内核代码段
     asm volatile ("ljmp %0, $1f\n 1:\n" :: "i" (KERNEL_CS));
 #endif
 }
@@ -695,6 +695,11 @@ int page_insert(pde_t *pgdir, struct Page *page, uintptr_t la, uint32_t perm)
 
 // invalidate a TLB entry, but only if the page tables being
 // edited are the ones currently in use by the processor.
+/*
+ 处理器使用快表 TLB（Translation Lookaside Buffer）来缓存线性地址到物理地址的映射关系。实际的地址转换过程中，
+ 处理器首先根据线性地址查找TLB，如果未发现该线性地址到物理地址的映射关系（TLB miss），
+ 将根据页表中的映射关系填充TLB（TLB fill），然后再进行地址转换。这样可以提高线性地址转换到物理地址的效率。
+*/
 void tlb_invalidate(pde_t *pgdir, uintptr_t la)
 {
     if (rcr3() == PADDR(pgdir))
