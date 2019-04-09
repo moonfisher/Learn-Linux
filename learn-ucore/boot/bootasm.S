@@ -76,7 +76,7 @@ finish_probe:
     # identical to physical addresses, so that the
     # effective memory map does not change during the switch.
     # 内核基于 32 bit 编译，地址都是虚拟地址，运行内核前必须先打开A20，CR0，进入保护模式
-    lgdt gdtdesc
+    lgdt gdtdesc # lgdt 0x0000:0x7DC4
     movl %cr0, %eax
     orl $CR0_PE_ON, %eax
     movl %eax, %cr0
@@ -84,7 +84,7 @@ finish_probe:
     # Jump to next instruction, but in 32-bit code segment.
     # Switches processor into 32-bit mode.
     # 这步执行之后，cs 寄存器就指向内核代码段 0x8
-    ljmp $PROT_MODE_CSEG, $protcseg # jmpf 0x0008:7c6d
+    ljmp $PROT_MODE_CSEG, $protcseg # jmpf 0x0008:0x7C6D
 
 .code32                                             # Assemble for 32-bit mode
 protcseg:
@@ -96,13 +96,13 @@ protcseg:
     movw %ax, %gs                                   # -> GS
     movw %ax, %ss                                   # -> SS: Stack Segment
 
-    # Set up the stack pointer and call into C. The stack region is from 0--start(0x7c00)
-    # 由于start位置（0x7c00）前的地址空间空闲，可以拿来用作临时栈，栈是向下生长的，不会破坏到start后面的代码
+    # Set up the stack pointer and call into C. The stack region is from 0--start(0x7C00)
+    # 由于start位置（0x7C00）前的地址空间空闲，可以拿来用作临时栈，栈是向下生长的，不会破坏到start后面的代码
     # 此时只是临时栈，也不能一直往里压数据到太低端的地址，0x0~0x1000的空间里还有bios设置的中断数据 
     # 如果不设置栈，当前的栈还是 bios 设置的栈
     movl $0x0, %ebp     
-    movl $start, %esp   # mov sp, 0x7c00
-    call bootmain
+    movl $start, %esp   # mov sp, 0x7C00
+    call bootmain   # call .+116 (0x00007CFE)
 
     # If bootmain returns (it shouldn't), loop.
 spin:
@@ -118,4 +118,4 @@ gdt:
 
 gdtdesc:
     .word 0x17                                      # sizeof(gdt) - 1
-    .long gdt                                       # address gdt
+    .long gdt                                       # address gdt 0x7DAC

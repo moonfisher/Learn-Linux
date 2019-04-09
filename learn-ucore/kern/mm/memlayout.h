@@ -29,7 +29,7 @@
  * Virtual memory map:                                          Permissions
  *                                                              kernel/user
  *
- *     4G ------------------> +---------------------------------+
+ *     4G ------------------> +---------------------------------+ 0xFFFFFFFF
  *                            |                                 |
  *                            |         Empty Memory (*)        |
  *                            |                                 |
@@ -143,11 +143,17 @@ struct e820map
  * physical page. In kern/mm/pmm.h, you can find lots of useful functions
  * that convert Page to other data types, such as phyical address.
  * */
+/*
+ 由于一个物理页可能被映射到不同的虚拟地址上去（譬如一块内存在不同进程间共享）
+ 当这个页需要在一个地址上解除映射时，操作系统不能直接把这个页回收，
+ 而是要先看看它还有没有映射到别的虚拟地址上。
+ 这是通过查找管理该物理页的 Page 数据结构的成员变量 ref 来实现的
+ */
 struct Page
 {
-    int ref;                        // page frame's reference counter
-    uint32_t flags;                 // array of flags that describe the status of the page frame
-    unsigned int property;          // used in buddy system, stores the order (the X in 2^X) of the continuous memory block
+    int ref;                        // 物理页被引用次数
+    uint32_t flags;                 // 当前页的状态
+    unsigned int property;          // used in buddy system, stores the order (the X in 2^X) of the continuous memory block 用来记录某连续内存空闲块的大小（即地址连续的空闲页的个数）
     int zone_num;                   // used in buddy system, the No. of zone which the page belongs to
     list_entry_t page_link;         // free list link
     list_entry_t pra_page_link;     // used for pra (page replace algorithm)

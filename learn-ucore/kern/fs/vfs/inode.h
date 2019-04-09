@@ -26,7 +26,8 @@ struct iobuf;
  * vfs_open() and vfs_close(). Code above the VFS layer should not
  * need to worry about it.
  */
-struct inode {
+struct inode
+{
     union {
         struct device __device_info;
         struct sfs_inode __sfs_inode_info;
@@ -166,7 +167,8 @@ void inode_kill(struct inode *node);
  *                      refers to. May destroy PATHNAME. Should increment
  *                      refcount on inode handed back.
  */
-struct inode_ops {
+struct inode_ops
+{
     unsigned long vop_magic;
     int (*vop_open)(struct inode *node, uint32_t open_flags);
     int (*vop_close)(struct inode *node);
@@ -233,14 +235,13 @@ void inode_check(struct inode *node, const char *opstr);
 #define vop_open_inc(node)                                          inode_open_inc(node)
 #define vop_open_dec(node)                                          inode_open_dec(node)
 
-
-static inline int
-inode_ref_count(struct inode *node) {
+static inline int inode_ref_count(struct inode *node)
+{
     return node->ref_count;
 }
 
-static inline int
-inode_open_count(struct inode *node) {
+static inline int inode_open_count(struct inode *node)
+{
     return node->open_count;
 }
 

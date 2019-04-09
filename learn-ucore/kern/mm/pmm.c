@@ -39,10 +39,10 @@ struct Page *pages;
 // amount of physical memory (in pages)
 size_t npage = 0;
 
-// virtual address of boot-time page directory 0xC0155000
+// virtual address of boot-time page directory 0xC0156000
 extern pde_t __boot_pgdir;
 pde_t *boot_pgdir = &__boot_pgdir;
-// physical address of boot-time page directory 0x155000
+// physical address of boot-time page directory 0x156000
 uintptr_t boot_cr3;
 
 // physical memory management
@@ -321,10 +321,10 @@ static void page_init(void)
     // 所以 npage * sizeof(struct Page) = 0x0027BB80 < 0x00400000，否则访问内存地址出错
     // 这里有点疑问 npage 计算的时候并没有减去内核和页表本身占用的空间，也没有减去内核在内存中的偏移地址
     // 但 pages 起始地址却从内核占用后的空间空间开始计算，这样的话 npage 会大于实际有效的内存页数
-//    for (i = 0; i < npage; i ++)
-//    {
-//        SetPageReserved(pages + i);
-//    }
+    for (i = 0; i < npage; i++)
+    {
+        SetPageReserved(pages + i);
+    }
 
     // 真正的内存空闲起始物理地址，除了减去内核占用空间之外，还要减去页表本身占用的空间
     uintptr_t freemem = PADDR((uintptr_t)pages + sizeof(struct Page) * npage);  // 0x0027BB80
@@ -370,7 +370,8 @@ static void boot_map_segment(pde_t *pgdir, uintptr_t la, size_t size, uintptr_t 
     size_t n = ROUNDUP(size + PGOFF(la), PGSIZE) / PGSIZE;
     la = ROUNDDOWN(la, PGSIZE);
     pa = ROUNDDOWN(pa, PGSIZE);
-    for (; n > 0; n --, la += PGSIZE, pa += PGSIZE) {
+    for (; n > 0; n --, la += PGSIZE, pa += PGSIZE)
+    {
         pte_t *ptep = get_pte(pgdir, la, 1);
         assert(ptep != NULL);
         *ptep = pa | PTE_P | perm;
@@ -399,7 +400,7 @@ static void extracted()
 void pmm_init(void)
 {
     // We've already enabled paging 进入内核之前临时设置的页表
-    // 0x155000 = PADDR(0xC0155000)
+    // 0x156000 = PADDR(0xC0156000)
     boot_cr3 = PADDR(boot_pgdir);
 
     //We need to alloc/free the physical memory (granularity is 4KB or other size). 
@@ -487,9 +488,11 @@ pte_t *get_pte(pde_t *pgdir, uintptr_t la, bool create)
     return NULL;          // (8) return page table entry
 #endif
     pde_t *pdep = &pgdir[PDX(la)];
-    if (!(*pdep & PTE_P)) {
+    if (!(*pdep & PTE_P))
+    {
         struct Page *page;
-        if (!create || (page = alloc_page()) == NULL) {
+        if (!create || (page = alloc_page()) == NULL)
+        {
             return NULL;
         }
         set_page_ref(page, 1);
@@ -504,10 +507,12 @@ pte_t *get_pte(pde_t *pgdir, uintptr_t la, bool create)
 struct Page *get_page(pde_t *pgdir, uintptr_t la, pte_t **ptep_store)
 {
     pte_t *ptep = get_pte(pgdir, la, 0);
-    if (ptep_store != NULL) {
+    if (ptep_store != NULL)
+    {
         *ptep_store = ptep;
     }
-    if (ptep != NULL && *ptep & PTE_P) {
+    if (ptep != NULL && *ptep & PTE_P)
+    {
         return pte2page(*ptep);
     }
     return NULL;
@@ -661,20 +666,25 @@ void page_remove(pde_t *pgdir, uintptr_t la)
 //  la:    the linear address need to map
 //  perm:  the permission of this Page which is setted in related pte
 // return value: always 0
-//note: PT is changed, so the TLB need to be invalidate 
+//note: PT is changed, so the TLB need to be invalidate
+// 将物理页映射在了页表上
 int page_insert(pde_t *pgdir, struct Page *page, uintptr_t la, uint32_t perm)
 {
     pte_t *ptep = get_pte(pgdir, la, 1);
-    if (ptep == NULL) {
+    if (ptep == NULL)
+    {
         return -E_NO_MEM;
     }
     page_ref_inc(page);
-    if (*ptep & PTE_P) {
+    if (*ptep & PTE_P)
+    {
         struct Page *p = pte2page(*ptep);
-        if (p == page) {
+        if (p == page)
+        {
             page_ref_dec(page);
         }
-        else {
+        else
+        {
             page_remove_pte(pgdir, la, ptep);
         }
     }
@@ -865,24 +875,24 @@ static int get_pgtable_items(size_t left, size_t right, size_t start, uintptr_t 
 //print_pgdir - print the PDT&PT
 /*
     -------------------- BEGIN --------------------
-    PDE(0e0) c0000000-f8000000 38000000 urw
-    |-- PTE(38000) c0000000-f8000000 38000000 -rw
-    PDE(001) fac00000-fb000000 00400000 -rw
-    |-- PTE(000e0) faf00000-fafe0000 000e0000 urw
-    |-- PTE(00001) fafeb000-fafec000 00001000 -rw
+    PDE(0e0)        c0000000-f8000000 38000000 urw
+    |-- PTE(38000)  c0000000-f8000000 38000000 -rw
+    PDE(001)        fac00000-fb000000 00400000 -rw
+    |-- PTE(000e0)  faf00000-fafe0000 000e0000 urw
+    |-- PTE(00001)  fafeb000-fafec000 00001000 -rw
     --------------------- END ---------------------
  */
 void print_pgdir(void)
 {
     cprintf("-------------------- BEGIN --------------------\n");
     size_t left, right = 0, perm;
-    while ((perm = get_pgtable_items(0, NPDEENTRY, right, vpd, &left, &right)) != 0) {
-        cprintf("PDE(%03x) %08x-%08x %08x %s\n", right - left,
-                left * PTSIZE, right * PTSIZE, (right - left) * PTSIZE, perm2str(perm));
+    while ((perm = get_pgtable_items(0, NPDEENTRY, right, vpd, &left, &right)) != 0)
+    {
+        cprintf("PDE(%03x) %08x-%08x %08x %s\n", right - left, left * PTSIZE, right * PTSIZE, (right - left) * PTSIZE, perm2str(perm));
         size_t l, r = left * NPTEENTRY;
-        while ((perm = get_pgtable_items(left * NPTEENTRY, right * NPTEENTRY, r, vpt, &l, &r)) != 0) {
-            cprintf("  |-- PTE(%05x) %08x-%08x %08x %s\n", r - l,
-                    l * PGSIZE, r * PGSIZE, (r - l) * PGSIZE, perm2str(perm));
+        while ((perm = get_pgtable_items(left * NPTEENTRY, right * NPTEENTRY, r, vpt, &l, &r)) != 0)
+        {
+            cprintf("  |-- PTE(%05x) %08x-%08x %08x %s\n", r - l, l * PGSIZE, r * PGSIZE, (r - l) * PGSIZE, perm2str(perm));
         }
     }
     cprintf("--------------------- END ---------------------\n");
