@@ -4,7 +4,8 @@
 #include "defs.h"
 #include "dirent.h"
 
-typedef struct {
+typedef struct
+{
     int fd;
     struct dirent dirent;
 } DIR;

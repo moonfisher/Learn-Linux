@@ -9,23 +9,25 @@
 
 typedef volatile bool lock_t;
 
-static inline void
-lock_init(lock_t *l) {
+static inline void lock_init(lock_t *l)
+{
     *l = 0;
 }
 
-static inline bool
-try_lock(lock_t *l) {
+static inline bool try_lock(lock_t *l)
+{
     return test_and_set_bit(0, l);
 }
 
-static inline void
-lock(lock_t *l) {
-    if (try_lock(l)) {
+static inline void lock(lock_t *l)
+{
+    if (try_lock(l))
+    {
         int step = 0;
         do {
             yield();
-            if (++ step == 100) {
+            if (++ step == 100)
+            {
                 step = 0;
                 sleep(10);
             }
@@ -33,8 +35,8 @@ lock(lock_t *l) {
     }
 }
 
-static inline void
-unlock(lock_t *l) {
+static inline void unlock(lock_t *l)
+{
     test_and_clear_bit(0, l);
 }
 

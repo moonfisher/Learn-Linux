@@ -1,7 +1,8 @@
 #ifndef __LIBS_SKEW_HEAP_H__
 #define __LIBS_SKEW_HEAP_H__
 
-struct skew_heap_entry {
+struct skew_heap_entry
+{
      struct skew_heap_entry *parent, *left, *right;
 };
 
@@ -20,14 +21,12 @@ static inline skew_heap_entry_t *skew_heap_remove(
      skew_heap_entry_t *a, skew_heap_entry_t *b,
      compare_f comp) __attribute__((always_inline));
 
-static inline void
-skew_heap_init(skew_heap_entry_t *a)
+static inline void skew_heap_init(skew_heap_entry_t *a)
 {
      a->left = a->right = a->parent = NULL;
 }
 
-static inline skew_heap_entry_t *
-skew_heap_merge(skew_heap_entry_t *a, skew_heap_entry_t *b,
+static inline skew_heap_entry_t *skew_heap_merge(skew_heap_entry_t *a, skew_heap_entry_t *b,
                 compare_f comp)
 {
      if (a == NULL) return b;
@@ -58,16 +57,14 @@ skew_heap_merge(skew_heap_entry_t *a, skew_heap_entry_t *b,
      }
 }
 
-static inline skew_heap_entry_t *
-skew_heap_insert(skew_heap_entry_t *a, skew_heap_entry_t *b,
+static inline skew_heap_entry_t *skew_heap_insert(skew_heap_entry_t *a, skew_heap_entry_t *b,
                  compare_f comp)
 {
      skew_heap_init(b);
      return skew_heap_merge(a, b, comp);
 }
 
-static inline skew_heap_entry_t *
-skew_heap_remove(skew_heap_entry_t *a, skew_heap_entry_t *b,
+static inline skew_heap_entry_t *skew_heap_remove(skew_heap_entry_t *a, skew_heap_entry_t *b,
                  compare_f comp)
 {
      skew_heap_entry_t *p   = b->parent;

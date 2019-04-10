@@ -8,8 +8,8 @@
  *
  * The strlen() function returns the length of string @s.
  * */
-size_t
-strlen(const char *s) {
+size_t strlen(const char *s)
+{
     size_t cnt = 0;
     while (*s ++ != '\0') {
         cnt ++;
@@ -30,8 +30,8 @@ strlen(const char *s) {
  * @len if there is no '\0' character among the first @len characters
  * pointed by @s.
  * */
-size_t
-strnlen(const char *s, size_t len) {
+size_t strnlen(const char *s, size_t len)
+{
     size_t cnt = 0;
     while (cnt < len && *s ++ != '\0') {
         cnt ++;
@@ -47,8 +47,8 @@ strnlen(const char *s, size_t len) {
  *          resulting string.
  * @src:    string to be appended, this should not overlap @dst
  * */
-char *
-strcat(char *dst, const char *src) {
+char *strcat(char *dst, const char *src)
+{
     return strcpy(dst + strlen(dst), src);
 }
 
@@ -64,8 +64,8 @@ strcat(char *dst, const char *src) {
  * contain the same string as @src (including the terminating null character), and
  * should not overlap in memory with @src.
  * */
-char *
-strcpy(char *dst, const char *src) {
+char *strcpy(char *dst, const char *src)
+{
 #ifdef __HAVE_ARCH_STRCPY
     return __strcpy(dst, src);
 #else
@@ -86,8 +86,8 @@ strcpy(char *dst, const char *src) {
  *
  * The return value is @dst
  * */
-char *
-strncpy(char *dst, const char *src, size_t len) {
+char *strncpy(char *dst, const char *src, size_t len)
+{
     char *p = dst;
     while (len > 0) {
         if ((*p = *src) != '\0') {
@@ -113,8 +113,8 @@ strncpy(char *dst, const char *src, size_t len) {
  *   not match has a greater value in @s1 than in @s2;
  * - And a value less than zero indicates the opposite.
  * */
-int
-strcmp(const char *s1, const char *s2) {
+int strcmp(const char *s1, const char *s2)
+{
 #ifdef __HAVE_ARCH_STRCMP
     return __strcmp(s1, s2);
 #else
@@ -136,8 +136,8 @@ strcmp(const char *s1, const char *s2) {
  * the characters differ, until a terminating null-character is reached, or
  * until @n characters match in both strings, whichever happens first.
  * */
-int
-strncmp(const char *s1, const char *s2, size_t n) {
+int strncmp(const char *s1, const char *s2, size_t n)
+{
     while (n > 0 && *s1 != '\0' && *s1 == *s2) {
         n --, s1 ++, s2 ++;
     }
@@ -152,8 +152,8 @@ strncmp(const char *s1, const char *s2, size_t n) {
  * The strchr() function returns a pointer to the first occurrence of
  * character in @s. If the value is not found, the function returns 'NULL'.
  * */
-char *
-strchr(const char *s, char c) {
+char *strchr(const char *s, char c)
+{
     while (*s != '\0') {
         if (*s == c) {
             return (char *)s;
@@ -172,8 +172,8 @@ strchr(const char *s, char c) {
  * not found in @s, then it returns a pointer to the null byte at the
  * end of @s, rather than 'NULL'.
  * */
-char *
-strfind(const char *s, char c) {
+char *strfind(const char *s, char c)
+{
     while (*s != '\0') {
         if (*s == c) {
             break;
@@ -213,8 +213,8 @@ strfind(const char *s, char c) {
  *
  * The strtol() function returns the converted integral number as a long int value.
  * */
-long
-strtol(const char *s, char **endptr, int base) {
+long strtol(const char *s, char **endptr, int base)
+{
     int neg = 0;
     long val = 0;
 
@@ -280,8 +280,8 @@ strtol(const char *s, char **endptr, int base) {
  *
  * The memset() function returns @s.
  * */
-void *
-memset(void *s, char c, size_t n) {
+void *memset(void *s, char c, size_t n)
+{
 #ifdef __HAVE_ARCH_MEMSET
     return __memset(s, c, n);
 #else
@@ -302,8 +302,8 @@ memset(void *s, char c, size_t n) {
  *
  * The memmove() function returns @dst.
  * */
-void *
-memmove(void *dst, const void *src, size_t n) {
+void *memmove(void *dst, const void *src, size_t n)
+{
 #ifdef __HAVE_ARCH_MEMMOVE
     return __memmove(dst, src, n);
 #else
@@ -366,8 +366,8 @@ void *memcpy(void *dst, const void *src, size_t n)
  *   as if evaluated as unsigned char values;
  * - And a value less than zero indicates the opposite.
  * */
-int
-memcmp(const void *v1, const void *v2, size_t n) {
+int memcmp(const void *v1, const void *v2, size_t n)
+{
     const char *s1 = (const char *)v1;
     const char *s2 = (const char *)v2;
     while (n -- > 0) {

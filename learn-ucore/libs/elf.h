@@ -6,7 +6,8 @@
 #define ELF_MAGIC   0x464C457FU         // "\x7FELF" in little endian
 
 /* file header */
-struct elfhdr {
+struct elfhdr
+{
     uint32_t e_magic;     // must equal ELF_MAGIC
     uint8_t e_elf[12];
     uint16_t e_type;      // 1=relocatable, 2=executable, 3=shared object, 4=core image
@@ -25,7 +26,8 @@ struct elfhdr {
 };
 
 /* program section header */
-struct proghdr {
+struct proghdr
+{
     uint32_t p_type;   // loadable code or data, dynamic linking info,etc.
     uint32_t p_offset; // file offset of segment
     uint32_t p_va;     // virtual address to map segment
