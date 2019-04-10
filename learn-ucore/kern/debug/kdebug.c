@@ -260,29 +260,38 @@ int debuginfo_eip(uintptr_t addr, struct eipdebuginfo *info)
  * address of free memory and how many memory that kernel has used.
  * */
 /*
-    entry           0xC0100036 (phys)
-    etext           0xC0114233 (phys)
-    bootstack       0xC0152000 (phys)
-    bootstacktop    0xC0154000 (phys)
-    __boot_pgdir    0xC0156000 (phys)
-    __boot_pt1      0xC0157000 (phys)
-    edata           0xC0157000 (phys)
-    end             0xC015b384 (phys)
-    __boot_pgdir    0x00000000 (phys)
-    Kernel executable memory footprint: 365KB
+ kern_entry           0xc0100000 (phys)
+ kern_init            0xc0100036 (phys)
+ etext                0xc01144a1 (phys)
+ __STAB_BEGIN__       0xc0118e40 (phys)
+ ___STAB_END__        0xc0145858 (phys)
+ __STABSTR_BEGIN__    0xc0145859 (phys)
+ __STABSTR_END__      0xc0152373 (phys)
+ bootstack            0xc0153000 (phys)
+ bootstacktop         0xc0155000 (phys)
+ __boot_pgdir         0xc0156000 (phys)
+ __boot_pt1           0xc0157000 (phys)
+ edata                0xc0158000 (phys)
+ end                  0xc015c384 (phys)
+ Kernel executable memory footprint: 369KB
  */
 void print_kerninfo(void)
 {
-    extern char etext[], edata[], end[], kern_init[], bootstack[], bootstacktop[], __boot_pgdir[], __boot_pt1[];
+    extern char kern_entry[], etext[], edata[], end[], kern_init[], bootstack[], bootstacktop[], __boot_pgdir[], __boot_pt1[];
     cprintf("Special kernel symbols:\n");
-    cprintf("  entry        0x%08x (phys)\n", kern_init);
-    cprintf("  etext        0x%08x (phys)\n", etext);
-    cprintf("  bootstack    0x%08x (phys)\n", bootstack);
-    cprintf("  bootstacktop 0x%08x (phys)\n", bootstacktop);
-    cprintf("  __boot_pgdir 0x%08x (phys)\n", __boot_pgdir);
-    cprintf("  __boot_pt1   0x%08x (phys)\n", __boot_pt1);
-    cprintf("  edata        0x%08x (phys)\n", edata);
-    cprintf("  end          0x%08x (phys)\n", end);
+    cprintf("  kern_entry           0x%08x (phys)\n", kern_entry);
+    cprintf("  kern_init            0x%08x (phys)\n", kern_init);
+    cprintf("  etext                0x%08x (phys)\n", etext);
+    cprintf("  __STAB_BEGIN__       0x%08x (phys)\n", __STAB_BEGIN__);
+    cprintf("  ___STAB_END__        0x%08x (phys)\n", __STAB_END__);
+    cprintf("  __STABSTR_BEGIN__    0x%08x (phys)\n", __STABSTR_BEGIN__);
+    cprintf("  __STABSTR_END__      0x%08x (phys)\n", __STABSTR_END__);
+    cprintf("  bootstack            0x%08x (phys)\n", bootstack);
+    cprintf("  bootstacktop         0x%08x (phys)\n", bootstacktop);
+    cprintf("  __boot_pgdir         0x%08x (phys)\n", __boot_pgdir);
+    cprintf("  __boot_pt1           0x%08x (phys)\n", __boot_pt1);
+    cprintf("  edata                0x%08x (phys)\n", edata);
+    cprintf("  end                  0x%08x (phys)\n", end);
     cprintf("  Kernel executable memory footprint: %dKB\n", (end - kern_init + 1023)/1024);
 }
 

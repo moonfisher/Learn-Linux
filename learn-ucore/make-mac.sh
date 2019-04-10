@@ -16,6 +16,6 @@ dd if=/dev/zero of=disk.img count=10000
 dd if=obj1/bootblock of=disk.img conv=notrunc
 dd if=bin/kernel of=disk.img seek=1 conv=notrunc
 
-# qemu-system-i386 -S -s -parallel stdio -hda disk.img
+# qemu-system-i386 -S -s -parallel stdio -m 128M -hda bin/ucore.img -drive file=bin/swap.img -drive file=bin/sfs.img
 # gdb -q -tui -x tools/gdbinit
 

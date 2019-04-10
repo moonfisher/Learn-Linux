@@ -12,30 +12,30 @@ static bool is_panic = 0;
 // 如果发生严重错误，就打开控制台，供用户调试
 void __panic(const char *file, int line, const char *fmt, ...)
 {
-//    if (is_panic)
-//    {
-//        goto panic_dead;
-//    }
-//    is_panic = 1;
-//
-//    // print the 'message'
-//    va_list ap;
-//    va_start(ap, fmt);
-//    cprintf("kernel panic at %s:%d:\n    ", file, line);
-//    vcprintf(fmt, ap);
-//    cprintf("\n");
-//
-//    cprintf("stack trackback:\n");
-//    print_stackframe();
-//
-//    va_end(ap);
-//
-//panic_dead:
-//    intr_disable();
-//    while (1)
-//    {
-//        kmonitor(NULL);
-//    }
+    if (is_panic)
+    {
+        goto panic_dead;
+    }
+    is_panic = 1;
+
+    // print the 'message'
+    va_list ap;
+    va_start(ap, fmt);
+    cprintf("kernel panic at %s:%d:\n    ", file, line);
+    vcprintf(fmt, ap);
+    cprintf("\n");
+
+    cprintf("stack trackback:\n");
+    print_stackframe();
+
+    va_end(ap);
+
+panic_dead:
+    intr_disable();
+    while (1)
+    {
+        kmonitor(NULL);
+    }
 }
 
 /* __warn - like panic, but don't */

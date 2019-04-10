@@ -239,7 +239,6 @@ static void trap_dispatch(struct trapframe *tf)
             }
             break;
         case T_SYSCALL:
-            print_trapframe(tf);
             syscall();
             break;
         case IRQ_OFFSET + IRQ_TIMER:
@@ -287,7 +286,6 @@ static void trap_dispatch(struct trapframe *tf)
             break;
         //LAB1 CHALLENGE 1 : YOUR CODE you should modify below codes.
         case T_SWITCH_TOU:
-            print_trapframe(tf);
             if (tf->tf_cs != USER_CS)
             {
                 // 当前在内核态，需要建立切换到用户态所需要的 trapframe，通过中断返回切换到用户态
@@ -316,7 +314,6 @@ static void trap_dispatch(struct trapframe *tf)
             }
             break;
         case T_SWITCH_TOK:
-            print_trapframe(tf);
             if (tf->tf_cs != KERNEL_CS)
             {
                 // 发出中断时，cpu 处于用户态，我们希望处理完中断后，cpu 能运行在内核态
@@ -340,7 +337,8 @@ static void trap_dispatch(struct trapframe *tf)
             break;
         default:
             print_trapframe(tf);
-            if (current != NULL) {
+            if (current != NULL)
+            {
                 cprintf("unhandled trap.\n");
                 do_exit(-E_KILLED);
             }
