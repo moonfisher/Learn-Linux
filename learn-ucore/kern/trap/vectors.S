@@ -1274,7 +1274,7 @@ vector255:
   pushl $255
   jmp __alltraps
 
-# vector table
+# vector table 0xC0102CDA
 .data
 .globl __vectors
 __vectors:

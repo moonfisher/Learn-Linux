@@ -62,14 +62,14 @@ SYS_getpid      : get the process's pid
 
 */
 
-// the process set's list
+// the process set's list 0xC015C37C
 list_entry_t proc_list;
 
 #define HASH_SHIFT          10
 #define HASH_LIST_SIZE      (1 << HASH_SHIFT)
 #define pid_hashfn(x)       (hash32(x, HASH_SHIFT))
 
-// has list for process set based on pid
+// has list for process set based on pid 0xC0159060
 static list_entry_t hash_list[HASH_LIST_SIZE];
 
 // idle 进程 pid = 0，是系统创建的第一个进程（也是内核线程），没有父进程，
@@ -112,7 +112,7 @@ static list_entry_t hash_list[HASH_LIST_SIZE];
     filesp = 0xC035c000
 }
 */
-struct proc_struct *idleproc = NULL;    //0xC035b008
+struct proc_struct *idleproc = NULL;    // 0xC0159040
 
 // init 进程 pid = 1，是系统创建的第二个进程（也是内核线程），父进程是 idle，
 // init 入口函数是 init_main，内核初始化完成后，init 负责进程调度，交换，其余进程退出后清理资源等
@@ -155,9 +155,9 @@ struct proc_struct *idleproc = NULL;    //0xC035b008
     filesp = 0xC035f000
  }
  */
-struct proc_struct *initproc = NULL;    // 0xC035b0e8
+struct proc_struct *initproc = NULL;    // 0xC0159044
 // current proc 标记当前正在运行的进程
-struct proc_struct *current = NULL;
+struct proc_struct *current = NULL;     // 0xC0159048
 
 static int nr_process = 0;
 

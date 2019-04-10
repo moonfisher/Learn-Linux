@@ -56,6 +56,7 @@ void print_pgdir(void);
  * where the machine's maximum 256MB of physical memory is mapped and returns the
  * corresponding physical address.  It panics if you pass it a non-kernel virtual address.
  * */
+// 虚拟地址转物理地址，增加有效性判断
 #define PADDR(kva) ({                                                   \
             uintptr_t __m_kva = (uintptr_t)(kva);                       \
             if (__m_kva < KERNBASE) {                                   \
@@ -68,6 +69,7 @@ void print_pgdir(void);
  * KADDR - takes a physical address and returns the corresponding kernel virtual
  * address. It panics if you pass an invalid physical address.
  * */
+// 物理地址转虚拟地址，增加有效性判断
 #define KADDR(pa) ({                                                    \
             uintptr_t __m_pa = (pa);                                    \
             size_t __m_ppn = PPN(__m_pa);                               \
@@ -80,47 +82,61 @@ void print_pgdir(void);
 extern struct Page *pages;
 extern size_t npage;
 
+// 根据 page 获取页表索引
 static inline ppn_t page2ppn(struct Page *page)
 {
-    return page - pages;
+    ppn_t ppn = (ppn_t)(page - pages);
+    return ppn;
 }
 
+// 根据 page 获取页表物理地址
 static inline uintptr_t page2pa(struct Page *page)
 {
-    return page2ppn(page) << PGSHIFT;
+    uintptr_t pa = page2ppn(page) << PGSHIFT;
+    return pa;
 }
 
+// 根据物理地址获取所在 page 页
 static inline struct Page *pa2page(uintptr_t pa)
 {
-    if (PPN(pa) >= npage)
+    uintptr_t ppn = PPN(pa);
+    if (ppn >= npage)
     {
         panic("pa2page called with invalid pa");
     }
-    return &pages[PPN(pa)];
+    return &pages[ppn];
 }
 
+// 根据 page 获取页表虚拟地址
 static inline void *page2kva(struct Page *page)
 {
-    return KADDR(page2pa(page));
+    void *kva = KADDR(page2pa(page));
+    return kva;
 }
 
+// 根据虚拟地址获取所在 page 页
 static inline struct Page *kva2page(void *kva)
 {
-    return pa2page(PADDR(kva));
+    struct Page *page = pa2page(PADDR(kva));
+    return page;
 }
 
+// 根据页表物理地址获取所在 page 页
 static inline struct Page *pte2page(pte_t pte)
 {
+    struct Page *page = pa2page(PTE_ADDR(pte));
     if (!(pte & PTE_P))
     {
         panic("pte2page called with invalid pte");
     }
-    return pa2page(PTE_ADDR(pte));
+    return page;
 }
 
+// 根据页目录物理地址所在 page 页
 static inline struct Page *pde2page(pde_t pde)
 {
-    return pa2page(PDE_ADDR(pde));
+    struct Page *page = pa2page(PDE_ADDR(pde));
+    return page;
 }
 
 static inline int page_ref(struct Page *page)

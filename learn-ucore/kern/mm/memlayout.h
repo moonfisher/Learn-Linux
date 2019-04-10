@@ -155,7 +155,7 @@ struct Page
     uint32_t flags;                 // 当前页的状态
     unsigned int property;          // used in buddy system, stores the order (the X in 2^X) of the continuous memory block 用来记录某连续内存空闲块的大小（即地址连续的空闲页的个数）
     int zone_num;                   // used in buddy system, the No. of zone which the page belongs to
-    list_entry_t page_link;         // free list link
+    list_entry_t page_link;         // 连接到全局空闲内存链表
     list_entry_t pra_page_link;     // used for pra (page replace algorithm)
     uintptr_t pra_vaddr;            // used for pra (page replace algorithm)
 };

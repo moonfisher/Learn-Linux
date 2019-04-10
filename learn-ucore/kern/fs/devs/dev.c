@@ -9,8 +9,8 @@
 /*
  * dev_open - Called for each open().
  */
-static int
-dev_open(struct inode *node, uint32_t open_flags) {
+static int dev_open(struct inode *node, uint32_t open_flags)
+{
     if (open_flags & (O_CREAT | O_TRUNC | O_EXCL | O_APPEND)) {
         return -E_INVAL;
     }
@@ -21,8 +21,8 @@ dev_open(struct inode *node, uint32_t open_flags) {
 /*
  * dev_close - Called on the last close(). Just pass through.
  */
-static int
-dev_close(struct inode *node) {
+static int dev_close(struct inode *node)
+{
     struct device *dev = vop_info(node, device);
     return dop_close(dev);
 }
@@ -30,8 +30,8 @@ dev_close(struct inode *node) {
 /*
  * dev_read -Called for read. Hand off to iobuf.
  */
-static int
-dev_read(struct inode *node, struct iobuf *iob) {
+static int dev_read(struct inode *node, struct iobuf *iob)
+{
     struct device *dev = vop_info(node, device);
     return dop_io(dev, iob, 0);
 }
@@ -39,8 +39,8 @@ dev_read(struct inode *node, struct iobuf *iob) {
 /*
  * dev_write -Called for write. Hand off to iobuf.
  */
-static int
-dev_write(struct inode *node, struct iobuf *iob) {
+static int dev_write(struct inode *node, struct iobuf *iob)
+{
     struct device *dev = vop_info(node, device);
     return dop_io(dev, iob, 1);
 }
@@ -48,8 +48,8 @@ dev_write(struct inode *node, struct iobuf *iob) {
 /*
  * dev_ioctl - Called for ioctl(). Just pass through.
  */
-static int
-dev_ioctl(struct inode *node, int op, void *data) {
+static int dev_ioctl(struct inode *node, int op, void *data)
+{
     struct device *dev = vop_info(node, device);
     return dop_ioctl(dev, op, data);
 }
@@ -59,8 +59,8 @@ dev_ioctl(struct inode *node, int op, void *data) {
  *             Set the type and the size (block devices only).
  *             The link count for a device is always 1.
  */
-static int
-dev_fstat(struct inode *node, struct stat *stat) {
+static int dev_fstat(struct inode *node, struct stat *stat)
+{
     int ret;
     memset(stat, 0, sizeof(struct stat));
     if ((ret = vop_gettype(node, &(stat->st_mode))) != 0) {
@@ -78,8 +78,8 @@ dev_fstat(struct inode *node, struct stat *stat) {
  *               length. A device that generates data in a stream is a "character
  *               device".
  */
-static int
-dev_gettype(struct inode *node, uint32_t *type_store) {
+static int dev_gettype(struct inode *node, uint32_t *type_store)
+{
     struct device *dev = vop_info(node, device);
     *type_store = (dev->d_blocks > 0) ? S_IFBLK : S_IFCHR;
     return 0;
@@ -90,8 +90,8 @@ dev_gettype(struct inode *node, uint32_t *type_store) {
  *               For block devices, require block alignment.
  *               For character devices, prohibit seeking entirely.
  */
-static int
-dev_tryseek(struct inode *node, off_t pos) {
+static int dev_tryseek(struct inode *node, off_t pos)
+{
     struct device *dev = vop_info(node, device);
     if (dev->d_blocks > 0) {
         if ((pos % dev->d_blocksize) == 0) {
@@ -115,8 +115,8 @@ dev_tryseek(struct inode *node, off_t pos) {
  *
  * However, we have no support for this in the base system.
  */
-static int
-dev_lookup(struct inode *node, char *path, struct inode **node_store) {
+static int dev_lookup(struct inode *node, char *path, struct inode **node_store)
+{
     if (*path != '\0') {
         return -E_NOENT;
     }
@@ -148,16 +148,17 @@ static const struct inode_ops dev_node_ops = {
     } while (0)
 
 /* dev_init - Initialization functions for builtin vfs-level devices. */
-void
-dev_init(void) {
+void dev_init(void)
+{
    // init_device(null);
     init_device(stdin);
     init_device(stdout);
     init_device(disk0);
 }
+
 /* dev_create_inode - Create inode for a vfs-level device. */
-struct inode *
-dev_create_inode(void) {
+struct inode *dev_create_inode(void)
+{
     struct inode *node;
     if ((node = alloc_inode(device)) != NULL) {
         vop_init(node, &dev_node_ops, NULL);

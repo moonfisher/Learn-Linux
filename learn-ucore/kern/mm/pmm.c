@@ -32,14 +32,56 @@
  * mode, the x86 CPU will look in the TSS for SS0 and ESP0 and load their value
  * into SS and ESP respectively.
  * */
+/* 0xC0158FC0
+{
+    ts_link = 0x0,
+    ts_esp0 = 0xC0155000,
+    ts_ss0 = 0x10,
+    ts_padding1 = 0x0,
+    ts_esp1 = 0x0,
+    ts_ss1 = 0x0,
+    ts_padding2 = 0x0,
+    ts_esp2 = 0x0,
+    ts_ss2 = 0x0,
+    ts_padding3 = 0x0,
+    ts_cr3 = 0x0,
+    ts_eip = 0x0,
+    ts_eflags = 0x0,
+    ts_eax = 0x0,
+    ts_ecx = 0x0,
+    ts_edx = 0x0,
+    ts_ebx = 0x0,
+    ts_esp = 0x0,
+    ts_ebp = 0x0,
+    ts_esi = 0x0,
+    ts_edi = 0x0,
+    ts_es = 0x0,
+    ts_padding4 = 0x0,
+    ts_cs = 0x0,
+    ts_padding5 = 0x0,
+    ts_ss = 0x0,
+    ts_padding6 = 0x0,
+    ts_ds = 0x0,
+    ts_padding7 = 0x0,
+    ts_fs = 0x0,
+    ts_padding8 = 0x0,
+    ts_gs = 0x0,
+    ts_padding9 = 0x0,
+    ts_ldt = 0x0,
+    ts_padding10 = 0x0,
+    ts_t = 0x0,
+    ts_iomb = 0x0
+}
+*/
 static struct taskstate ts = {0};
 
-// virtual address of physicall page array
+// virtual address of physicall page array 0xC015D000
 struct Page *pages;
-// amount of physical memory (in pages)
+// amount of physical memory (in pages) 0x7FE0
 size_t npage = 0;
 
 // virtual address of boot-time page directory 0xC0156000
+// 内核页目录，不用用户进程有属于自己的页目录
 extern pde_t __boot_pgdir;
 pde_t *boot_pgdir = &__boot_pgdir;
 // physical address of boot-time page directory 0x156000
@@ -61,8 +103,10 @@ const struct pmm_manager *pmm_manager;
  * always available at virtual address PGADDR(PDX(VPT), PDX(VPT), 0), to which
  * vpd is set bellow.
  * */
-pte_t * const vpt = (pte_t *)VPT;
-pde_t * const vpd = (pde_t *)PGADDR(PDX(VPT), PDX(VPT), 0);
+// 0xFAC00000 = 1111101011 0000000000 000000000000 = 0x3EB 0x0 0x0
+pte_t * const vpt = (pte_t *)VPT;   // 0xFAC00000
+// 0xFAFEB000 = 1111101011 1111101011 000000000000 = 0x3EB 0x3EB 0x0
+pde_t * const vpd = (pde_t *)PGADDR(PDX(VPT), PDX(VPT), 0); // 0xFAFEB000
 
 /* *
  * Global Descriptor Table:
@@ -77,6 +121,105 @@ pde_t * const vpd = (pde_t *)PGADDR(PDX(VPT), PDX(VPT), 0);
  *   - 0x20:  user data segment
  *   - 0x28:  defined for tss, initialized in gdt_init
  * */
+/* 0xC0155A20
+{
+    {
+        sd_lim_15_0 = 0x0,
+        sd_base_15_0 = 0x0,
+        sd_base_23_16 = 0x0,
+        sd_type = 0x0,
+        sd_s = 0x0,
+        sd_dpl = 0x0,
+        sd_p = 0x0,
+        sd_lim_19_16 = 0x0,
+        sd_avl = 0x0,
+        sd_rsv1 = 0x0,
+        sd_db = 0x0,
+        sd_g = 0x0,
+        sd_base_31_24 = 0x0
+    },
+ 
+    {
+        sd_lim_15_0 = 0xffff,
+        sd_base_15_0 = 0x0,
+        sd_base_23_16 = 0x0,
+        sd_type = 0xa,
+        sd_s = 0x1,
+        sd_dpl = 0x0,
+        sd_p = 0x1,
+        sd_lim_19_16 = 0xf,
+        sd_avl = 0x0,
+        sd_rsv1 = 0x0,
+        sd_db = 0x1,
+        sd_g = 0x1,
+        sd_base_31_24 = 0x0
+    },
+ 
+    {
+        sd_lim_15_0 = 0xffff,
+        sd_base_15_0 = 0x0,
+        sd_base_23_16 = 0x0,
+        sd_type = 0x3,
+        sd_s = 0x1,
+        sd_dpl = 0x0,
+        sd_p = 0x1,
+        sd_lim_19_16 = 0xf,
+        sd_avl = 0x0,
+        sd_rsv1 = 0x0, 
+        sd_db = 0x1,
+        sd_g = 0x1,
+        sd_base_31_24 = 0x0
+    },
+ 
+    {
+        sd_lim_15_0 = 0xffff,
+        sd_base_15_0 = 0x0,
+        sd_base_23_16 = 0x0,
+        sd_type = 0xa,
+        sd_s = 0x1,
+        sd_dpl = 0x3,
+        sd_p = 0x1,
+        sd_lim_19_16 = 0xf,
+        sd_avl = 0x0,
+        sd_rsv1 = 0x0,
+        sd_db = 0x1,
+        sd_g = 0x1,
+        sd_base_31_24 = 0x0
+    },
+ 
+    {
+        sd_lim_15_0 = 0xffff,
+        sd_base_15_0 = 0x0,
+        sd_base_23_16 = 0x0,
+        sd_type = 0x3,
+        sd_s = 0x1,
+        sd_dpl = 0x3,
+        sd_p = 0x1,
+        sd_lim_19_16 = 0xf,
+        sd_avl = 0x0,
+        sd_rsv1 = 0x0,
+        sd_db = 0x1,
+        sd_g = 0x1,
+        sd_base_31_24 = 0x0
+    },
+ 
+    {
+        sd_lim_15_0 = 0x68,
+        sd_base_15_0 = 0x8fc0,
+        sd_base_23_16 = 0x15,
+        sd_type = 0xb,
+        sd_s = 0x0,
+        sd_dpl = 0x0,
+        sd_p = 0x1,
+        sd_lim_19_16 = 0x0,
+        sd_avl = 0x0,
+        sd_rsv1 = 0x0,
+        sd_db = 0x1,
+        sd_g = 0x0,
+        sd_base_31_24 = 0xC0
+     }
+}
+ */
 static struct segdesc gdt[] = {
     SEG_NULL,
     [SEG_KTEXT] = SEG(STA_X | STA_R, 0x0, 0xFFFFFFFF, DPL_KERNEL),
@@ -86,6 +229,12 @@ static struct segdesc gdt[] = {
     [SEG_TSS]   = SEG_NULL,
 };
 
+/*
+    {
+        pd_lim = 0x2f,
+        pd_base = 0xC0155A20
+    }
+*/
 #if ASM_NO_64
 static struct pseudodesc gdt_pd = {sizeof(gdt) - 1, (uintptr_t)gdt};
 #else
@@ -318,9 +467,10 @@ static void page_init(void)
     
     // 代码走到这里，虚拟地址映射还是采用的 boot_pgdir，
     // 虚拟地址 0xC0000000 ~ 0xC0400000 映射到物理地址 0 ~ 4M，并没有按完整的 1G 内核空间映射
-    // 所以 npage * sizeof(struct Page) = 0x0027BB80 < 0x00400000，否则访问内存地址出错
-    // 这里有点疑问 npage 计算的时候并没有减去内核和页表本身占用的空间，也没有减去内核在内存中的偏移地址
-    // 但 pages 起始地址却从内核占用后的空间空间开始计算，这样的话 npage 会大于实际有效的内存页数
+    // 目前 qemu 缺省是按照 128m 来虚拟内存大小，此时映射的整个页表空间不超过 4m，没问题
+    // npage * sizeof(struct Page) = 0x0027BB80 < 0x00400000
+    // 但如果 qemu 设置虚拟内存很大，比如 512m，整个页表大小就会超过 4m，导致虚拟地址空间无法映射到
+    // 物理内存而访问出错，解决办法就是在 entry.S 里内存映射再设置大一些
     for (i = 0; i < npage; i++)
     {
         SetPageReserved(pages + i);
@@ -351,6 +501,7 @@ static void page_init(void)
                 {
                     cprintf("begin: %08x\n", begin);    // 0x0027D000
                     cprintf("end: %08x\n", end);        // 0x07FE0000
+                    // 从真正空闲的页面开始初始化，出去内核占用，页表本身占用等
                     init_memmap(pa2page(begin), (end - begin) / PGSIZE);
                 }
             }
@@ -363,7 +514,16 @@ static void page_init(void)
 //  la:   linear address of this memory need to map (after x86 segment map)
 //  size: memory size
 //  pa:   physical address of this memory
-//  perm: permission of this memory  
+//  perm: permission of this memory
+/*
+    linear addr = phy addr + 0xC0000000
+    页目录项内容 = (页表起始物理地址 & ~0x0FFF) | PTE_U | PTE_W | PTE_P
+    页表项内容 = (pa & ~0x0FFF) | PTE_P | PTE_W
+ 
+    PTE_U：位3，表示用户态的软件可以读取对应地址的物理内存页内容
+    PTE_W：位2，表示物理内存页内容可写
+    PTE_P：位1，表示物理内存页存在
+*/
 static void boot_map_segment(pde_t *pgdir, uintptr_t la, size_t size, uintptr_t pa, uint32_t perm)
 {
     assert(PGOFF(la) == PGOFF(pa));
@@ -452,6 +612,21 @@ void pmm_init(void)
 //  la:     the linear address need to map
 //  create: a logical value to decide if alloc a page for PT
 // return vaule: the kernel virtual address of this pte
+/*
+ 给定一个页目录，给定一个虚拟地址，找出这个虚拟地址在所在的页表。通过更改此项的值可以将虚拟地址映射到另外的页上
+ pgdir 给出页表起始地址。通过查找这个页表，我们需要给出二级页表中对应项的地址。
+ 虽然目前我们只有 boot_pgdir 一个页表，但是引入进程的概念之后每个进程都会有自己的页表
+ 
+ 有可能根本就没有对应的二级页表的情况，所以二级页表不必要一开始就分配，而是等到需要的时候再添加对应的二级页表。
+ 如果在查找二级页表项时，发现对应的二级页表不存在，则需要根据 create 参数的值来处理是否创建新的二级页表。
+ 如果 create 参数为 0，则 get_pte 返回 NULL；如果 create 参数不为 0，则 get_pte 需要申请一个新的物理页
+ （通过 alloc_page 来实现，可在mm/pmm.h中找到它的定义），再在一级页表中添加页目录项指向表示二级页表的新物理页。
+ 注意，新申请的页必须全部设定为零，因为这个页所代表的虚拟地址都没有被映射。
+ 
+ 只有当一级二级页表的项都设置了用户写权限后，用户才能对对应的物理地址进行读写。
+ 所以我们可以在一级页表先给用户写权限，再在二级页表上面根据需要限制用户的权限，对物理页进行保护。
+ 由于一个物理页可能被映射到不同的虚拟地址上去（譬如一块内存在不同进程间共享）
+*/
 pte_t *get_pte(pde_t *pgdir, uintptr_t la, bool create)
 {
     /* LAB2 EXERCISE 2: YOUR CODE
@@ -487,10 +662,12 @@ pte_t *get_pte(pde_t *pgdir, uintptr_t la, bool create)
     }
     return NULL;          // (8) return page table entry
 #endif
+    // 取虚拟地址页目录地址
     pde_t *pdep = &pgdir[PDX(la)];
     if (!(*pdep & PTE_P))
     {
-        struct Page *page;
+        // 如果还没分配物理页，根据 create 字段来判断是否分配物理页，有可能只是单纯的查询，不需要创建页表
+        struct Page *page = NULL;
         if (!create || (page = alloc_page()) == NULL)
         {
             return NULL;
@@ -500,7 +677,10 @@ pte_t *get_pte(pde_t *pgdir, uintptr_t la, bool create)
         memset(KADDR(pa), 0, PGSIZE);
         *pdep = pa | PTE_U | PTE_W | PTE_P;
     }
-    return &((pte_t *)KADDR(PDE_ADDR(*pdep)))[PTX(la)];
+    
+    // 如果已经分配物理页，直接返回虚拟地址对应的物理页表
+    pte_t *ptep = &((pte_t *)KADDR(PDE_ADDR(*pdep)))[PTX(la)];
+    return ptep;
 }
 
 //get_page - get related Page struct for linear address la using PDT pgdir
@@ -548,9 +728,13 @@ static inline void page_remove_pte(pde_t *pgdir, uintptr_t la, pte_t *ptep)
                                   //(6) flush tlb
     }
 #endif
-    if (*ptep & PTE_P) {
+    if (*ptep & PTE_P)
+    {
         struct Page *page = pte2page(*ptep);
-        if (page_ref_dec(page) == 0) {
+        // 当这个物理页引用计数为 0 的时候才能回收页面，有可能多个虚拟地址映射到同一个物理页面
+        // 这样多对一的映射是为了做内存共享
+        if (page_ref_dec(page) == 0)
+        {
             free_page(page);
         }
         *ptep = 0;
@@ -667,20 +851,23 @@ void page_remove(pde_t *pgdir, uintptr_t la)
 //  perm:  the permission of this Page which is setted in related pte
 // return value: always 0
 //note: PT is changed, so the TLB need to be invalidate
-// 将物理页映射在了页表上
+// 将物理页映射在了页表上，如果没有页表就分配
 int page_insert(pde_t *pgdir, struct Page *page, uintptr_t la, uint32_t perm)
 {
+    // 获取这个虚拟地址在所在的页表地址，如果没有页表就分配
     pte_t *ptep = get_pte(pgdir, la, 1);
     if (ptep == NULL)
     {
         return -E_NO_MEM;
     }
+    
     page_ref_inc(page);
-    if (*ptep & PTE_P)
+    if (*ptep & PTE_P) // 当前页面已经被其它虚拟地址映射了
     {
         struct Page *p = pte2page(*ptep);
         if (p == page)
         {
+            // 如果是同一个虚拟地址在映射，就减去刚才增加的引用计数
             page_ref_dec(page);
         }
         else
@@ -688,7 +875,9 @@ int page_insert(pde_t *pgdir, struct Page *page, uintptr_t la, uint32_t perm)
             page_remove_pte(pgdir, la, ptep);
         }
     }
+    // 标记当前物理页面已经被映射了
     *ptep = page2pa(page) | PTE_P | perm;
+    // 加入快表，提高 CPU 后续转换地址的效率
     tlb_invalidate(pgdir, la);
     return 0;
 }

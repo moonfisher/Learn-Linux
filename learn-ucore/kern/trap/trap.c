@@ -21,7 +21,7 @@
 
 static void print_ticks()
 {
-    cprintf("%d ticks\n",TICK_NUM);
+    cprintf("%d ticks\n", TICK_NUM);
 #ifdef DEBUG_GRADE
     cprintf("End of Test.\n");
     panic("EOT: kernel seems ok.");
@@ -34,8 +34,14 @@ static void print_ticks()
  * Must be built at run time because shifted function addresses can't
  * be represented in relocation records.
  * */
-static struct gatedesc idt[256] = {{0}};
+static struct gatedesc idt[256] = {{0}};    // 0xC0158780
 
+/* 0xC0155560
+{
+    pd_lim = 0x7FF,
+    pd_base = 0xC0158780
+}
+*/
 #if ASM_NO_64
 static struct pseudodesc idt_pd = {sizeof(idt) - 1, (uintptr_t)idt};
 #else

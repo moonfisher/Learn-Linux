@@ -260,24 +260,25 @@ int debuginfo_eip(uintptr_t addr, struct eipdebuginfo *info)
  * address of free memory and how many memory that kernel has used.
  * */
 /*
- kern_entry           0xc0100000 (phys)
- kern_init            0xc0100036 (phys)
- etext                0xc01144a1 (phys)
- __STAB_BEGIN__       0xc0118e40 (phys)
- ___STAB_END__        0xc0145858 (phys)
- __STABSTR_BEGIN__    0xc0145859 (phys)
- __STABSTR_END__      0xc0152373 (phys)
- bootstack            0xc0153000 (phys)
- bootstacktop         0xc0155000 (phys)
- __boot_pgdir         0xc0156000 (phys)
- __boot_pt1           0xc0157000 (phys)
- edata                0xc0158000 (phys)
- end                  0xc015c384 (phys)
+ kern_entry           0xC0100000 (phys)
+ kern_init            0xC0100036 (phys)
+ etext                0xC01144a1 (phys)
+ __STAB_BEGIN__       0xC0118e40 (phys)
+ ___STAB_END__        0xC0145858 (phys)
+ __STABSTR_BEGIN__    0xC0145859 (phys)
+ __STABSTR_END__      0xC0152373 (phys)
+ bootstack            0xC0153000 (phys)
+ bootstacktop         0xC0155000 (phys)
+ __vectors            0xC01555E0 (phys)
+ __boot_pgdir         0xC0156000 (phys)
+ __boot_pt1           0xC0157000 (phys)
+ edata                0xC0158000 (phys)
+ end                  0xC015c384 (phys)
  Kernel executable memory footprint: 369KB
  */
 void print_kerninfo(void)
 {
-    extern char kern_entry[], etext[], edata[], end[], kern_init[], bootstack[], bootstacktop[], __boot_pgdir[], __boot_pt1[];
+    extern char kern_entry[], etext[], edata[], end[], kern_init[], bootstack[], bootstacktop[], __boot_pgdir[], __boot_pt1[], __vectors[];
     cprintf("Special kernel symbols:\n");
     cprintf("  kern_entry           0x%08x (phys)\n", kern_entry);
     cprintf("  kern_init            0x%08x (phys)\n", kern_init);
@@ -288,6 +289,7 @@ void print_kerninfo(void)
     cprintf("  __STABSTR_END__      0x%08x (phys)\n", __STABSTR_END__);
     cprintf("  bootstack            0x%08x (phys)\n", bootstack);
     cprintf("  bootstacktop         0x%08x (phys)\n", bootstacktop);
+    cprintf("  __vectors            0x%08x (phys)\n", __vectors);
     cprintf("  __boot_pgdir         0x%08x (phys)\n", __boot_pgdir);
     cprintf("  __boot_pt1           0x%08x (phys)\n", __boot_pt1);
     cprintf("  edata                0x%08x (phys)\n", edata);

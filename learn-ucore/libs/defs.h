@@ -78,6 +78,7 @@ uint32_t __n = (uint32_t)(n);                           \
  * @type:   the type of the struct this is embedded in
  * @member: the name of the member within the struct
  * */
+// 实现了根据一个结构体变量中的一个域成员变量的指针来获取指向整个结构体变量的指针的功能
 #define to_struct(ptr, type, member)                               \
     ((type *)((char *)(ptr) - offsetof(type, member)))
 

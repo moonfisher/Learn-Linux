@@ -93,7 +93,8 @@
  *      Try to merge blocks at lower or higher addresses. Notice: This should
  *  change some pages' `p->property` correctly.
  */
-free_area_t free_area;
+// 记录空闲内存列表，刚开始的时候只有一个大的空闲页面，内存碎片化之后，会记录多段连续的空闲内存页
+free_area_t free_area;  // 0xC015C190
 
 #define free_list (free_area.free_list)
 #define nr_free (free_area.nr_free)
@@ -140,7 +141,9 @@ static struct Page *default_alloc_pages(size_t n)
     // TODO: optimize (next-fit)
     while ((le = list_next(le)) != &free_list)
     {
+        // 通过 page_link 变量找到 page_link 所在的 page 页
         struct Page *p = le2page(le, page_link);
+//        struct Page *p = (struct Page *)((char *)(le) - (size_t)(&((struct Page *)0)->page_link));
         if (p->property >= n)
         {
             page = p;
@@ -151,13 +154,16 @@ static struct Page *default_alloc_pages(size_t n)
     {
         if (page->property > n)
         {
+            // 找到第 n 页的 page 页面
             struct Page *p = page + n;
+            // 记录剩余的空闲页面数
             p->property = page->property - n;
             SetPageProperty(p);
             list_add_after(&(page->page_link), &(p->page_link));
         }
         list_del(&(page->page_link));
         nr_free -= n;
+        // 标记当前页面已经被分配
         ClearPageProperty(page);
     }
     return page;
@@ -175,13 +181,17 @@ static void default_free_pages(struct Page *base, size_t n)
         set_page_ref(p, 0);
     }
     base->property = n;
+    // 标记当前页面可以被分配
     SetPageProperty(base);
+    
     list_entry_t *le = list_next(&free_list);
     while (le != &free_list)
     {
+        // 通过 page_link 变量找到 page_link 所在的 page 页
         p = le2page(le, page_link);
         le = list_next(le);
         // TODO: optimize
+        // 合并空闲页
         if (base + base->property == p)
         {
             base->property += p->property;
