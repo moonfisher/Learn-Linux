@@ -106,6 +106,7 @@ struct proc_struct
     struct proc_struct *cptr, *yptr, *optr;     // relations between processes
     struct run_queue *rq;                       // running queue contains Process
     list_entry_t run_link;                      // the entry linked in run queue
+    // 进程运行时间片
     int time_slice;                             // time slice for occupying the CPU
     skew_heap_entry_t lab6_run_pool;            // FOR LAB6 ONLY: the entry in the run pool
     uint32_t lab6_stride;                       // FOR LAB6 ONLY: the current stride of the process

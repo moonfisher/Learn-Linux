@@ -642,7 +642,7 @@ int do_exit(int error_code)
     struct mm_struct *mm = current->mm;
     if (mm != NULL)
     {
-        // 当前进程退出之后，先加载内核页表
+        // 当前进程退出之后，先加载内核页目录，要用物理地址
         lcr3(boot_cr3);
         if (mm_count_dec(mm) == 0)
         {
@@ -1003,7 +1003,7 @@ int do_execve(const char *name, int argc, const char **argv)
     
     if (mm != NULL)
     {
-        // 当前进程创建之后，先加载内核页表，后面再加载操作系统给进程分配的页表
+        // 当前进程创建之后，先加载内核页目录，要用物理地址。后面再加载操作系统给进程分配的页目录
         lcr3(boot_cr3);
         if (mm_count_dec(mm) == 0)
         {
