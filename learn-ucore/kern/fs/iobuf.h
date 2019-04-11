@@ -6,7 +6,8 @@
 /*
  * iobuf is a buffer Rd/Wr status record
  */
-struct iobuf {
+struct iobuf
+{
     void *io_base;     // the base addr of buffer (used for Rd/Wr)
     off_t io_offset;   // current Rd/Wr position in buffer, will have been incremented by the amount transferred
     size_t io_len;     // the length of buffer  (used for Rd/Wr)

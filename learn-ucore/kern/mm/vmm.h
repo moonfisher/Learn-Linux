@@ -12,10 +12,17 @@
 struct mm_struct;
 
 // the virtual continuous memory area(vma)
+/*
+ vm_start 和 vm_end 描述了一个连续地址的虚拟内存空间的起始位置和结束位置
+ 这两个值都应该是 PGSIZE 对齐的，而且描述的是一个合理的地址空间范围（即严格确保 vm_start < vm_end的关系）
+ list_link 是一个双向链表，按照从小到大的顺序把一系列用 vma_struct 表示的虚拟内存空间链接起来，
+ 并且还要求这些链起来的 vma_struct 应该是不相交的，即 vma 之间的地址空间无交集
+ vm_flags 表示了这个虚拟内存空间的属性
+*/
 struct vma_struct
 {
     struct mm_struct *vm_mm; // the set of vma using the same PDT 
-    uintptr_t vm_start;      //    start addr of vma    
+    uintptr_t vm_start;      // start addr of vma
     uintptr_t vm_end;        // end addr of vma
     uint32_t vm_flags;       // flags of vma
     list_entry_t list_link;  // linear list link which sorted by start addr of vma
@@ -30,6 +37,17 @@ struct vma_struct
 #define VM_STACK                0x00000008
 
 // the control struct for a set of vma using the same PDT
+/*
+ mmap_list 是双向链表头，链接了所有属于同一页目录表的虚拟内存空间
+ mmap_cache 是指向当前正在使用的虚拟内存空间，由于操作系统执行的“局部性”原理，
+ 当前正在用到的虚拟内存空间在接下来的操作中可能还会用到，这时就不需要查链表，
+ 而是直接使用此指针就可找到下一次要用到的虚拟内存空间。
+ 由于 mmap_cache 的引入，可使得 mm_struct 数据结构的查询加速 30% 以上。
+ pgdir 所指向的就是 mm_struct 数据结构所维护的页表。
+ 通过访问 pgdir 可以查找某虚拟地址对应的页表项是否存在以及页表项的属性等。
+ map_count 记录 mmap_list 里面链接的 vma_struct 的个数。
+ sm_priv 指向用来链接记录页访问情况的链表头，这建立了 mm_struct 和 swap_manager 之间的联系。
+*/
 struct mm_struct
 {
     list_entry_t mmap_list;        // linear list link which sorted by start addr of vma

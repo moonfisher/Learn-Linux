@@ -11,8 +11,10 @@ struct inode;
 struct stat;
 struct dirent;
 
-struct file {
-    enum {
+struct file
+{
+    enum
+    {
         FD_NONE, FD_INIT, FD_OPENED, FD_CLOSED,
     } status;
     bool readable;
@@ -41,19 +43,19 @@ int file_dup(int fd1, int fd2);
 int file_pipe(int fd[]);
 int file_mkfifo(const char *name, uint32_t open_flags);
 
-static inline int
-fopen_count(struct file *file) {
+static inline int fopen_count(struct file *file)
+{
     return file->open_count;
 }
 
-static inline int
-fopen_count_inc(struct file *file) {
+static inline int fopen_count_inc(struct file *file)
+{
     file->open_count += 1;
     return file->open_count;
 }
 
-static inline int
-fopen_count_dec(struct file *file) {
+static inline int fopen_count_dec(struct file *file)
+{
     file->open_count -= 1;
     return file->open_count;
 }

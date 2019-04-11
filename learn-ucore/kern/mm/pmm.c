@@ -105,16 +105,16 @@ const struct pmm_manager *pmm_manager;
  * */
 /*
  vpd 和 vpt 的作用
- 在物理地址空间里，页目录，页表并不是地址连续的，这样对于页目录和页表的遍历访问比较麻烦，
- 如果需要按虚拟地址的地址顺序显示整个页目录表和页表的内容，则要查找页目录表的页目录表项内容，
- 根据页目录表项内容找到页表的物理地址，再转换成对应的虚地址，然后访问页表的虚地址，
+ 在物理地址空间里，页目录，页表并不是地址连续的，一开始并不会根据虚拟地址空间去构造所有页表，
+ 这样对于内存空间是很大的浪费，只有用到的时候才会临时申请内存去创建（比如发生缺页中断需要分配物理页面）。
+ 这样对于页目录和页表的遍历访问就比较麻烦，如果需要按虚拟地址的地址顺序显示整个页目录表和页表的内容，
+ 则要查找页目录表的页目录表项内容，根据页目录表项内容找到页表的物理地址，再转换成对应的虚地址，然后访问页表的虚地址，
  搜索整个页表的每个页目录项来实现。
  
  ucore 做了一个很巧妙的地址自映射设计，参考 memlayout.h 虚拟地址分配图，
- 把页目录表和页表放在一个连续的 4M (4M 可以映射 4G 空间，但实际内存映射只映射 896M，用不了 4M 这么多 )
+ 把页目录表和页表放在一个连续的 4M (4M 可以映射 4G 空间，但实际内存映射只映射 896M，用不了 4M 这么多)
  虚拟地址空间中，并设置页目录表自身的虚地址 <--> 物理地址映射关系。
- 这样在已知页目录表起始虚地址的情况下，通过连续扫描这特定的 4M 虚拟地址空间，
- 就很容易访问每个页目录表项和页表项内容。
+ 这样在已知页目录表起始虚地址的情况下，通过连续扫描这特定的 4M 虚拟地址空间，就很容易访问每个页目录表项和页表项内容。
  
  这个也是用户态访问内核态页表项的非常精巧的方式，对于一个用户态的虚拟地址 va (4k 对齐才行) 来说，
  vpd[va >> 22] 读出的是 page table，而 vpt[va >> 12] 读出的是页表项 pte，
@@ -726,39 +726,6 @@ void pmm_init(void)
 */
 pte_t *get_pte(pde_t *pgdir, uintptr_t la, bool create)
 {
-    /* LAB2 EXERCISE 2: YOUR CODE
-     *
-     * If you need to visit a physical address, please use KADDR()
-     * please read pmm.h for useful macros
-     *
-     * Maybe you want help comment, BELOW comments can help you finish the code
-     *
-     * Some Useful MACROs and DEFINEs, you can use them in below implementation.
-     * MACROs or Functions:
-     *   PDX(la) = the index of page directory entry of VIRTUAL ADDRESS la.
-     *   KADDR(pa) : takes a physical address and returns the corresponding kernel virtual address.
-     *   set_page_ref(page,1) : means the page be referenced by one time
-     *   page2pa(page): get the physical address of memory which this (struct Page *) page  manages
-     *   struct Page * alloc_page() : allocation a page
-     *   memset(void *s, char c, size_t n) : sets the first n bytes of the memory area pointed by s
-     *                                       to the specified value c.
-     * DEFINEs:
-     *   PTE_P           0x001                   // page table/directory entry flags bit : Present
-     *   PTE_W           0x002                   // page table/directory entry flags bit : Writeable
-     *   PTE_U           0x004                   // page table/directory entry flags bit : User can access
-     */
-#if 0
-    pde_t *pdep = NULL;   // (1) find page directory entry
-    if (0) {              // (2) check if entry is not present
-                          // (3) check if creating is needed, then alloc page for page table
-                          // CAUTION: this page is used for page table, not for common data page
-                          // (4) set page reference
-        uintptr_t pa = 0; // (5) get linear address of page
-                          // (6) clear page content using memset
-                          // (7) set page directory entry's permission
-    }
-    return NULL;          // (8) return page table entry
-#endif
     // 取虚拟地址页目录地址
     pde_t *pdep = &pgdir[PDX(la)];
     if (!(*pdep & PTE_P))
@@ -800,31 +767,6 @@ struct Page *get_page(pde_t *pgdir, uintptr_t la, pte_t **ptep_store)
 //note: PT is changed, so the TLB need to be invalidate 
 static inline void page_remove_pte(pde_t *pgdir, uintptr_t la, pte_t *ptep)
 {
-    /* LAB2 EXERCISE 3: YOUR CODE
-     *
-     * Please check if ptep is valid, and tlb must be manually updated if mapping is updated
-     *
-     * Maybe you want help comment, BELOW comments can help you finish the code
-     *
-     * Some Useful MACROs and DEFINEs, you can use them in below implementation.
-     * MACROs or Functions:
-     *   struct Page *page pte2page(*ptep): get the according page from the value of a ptep
-     *   free_page : free a page
-     *   page_ref_dec(page) : decrease page->ref. NOTICE: ff page->ref == 0 , then this page should be free.
-     *   tlb_invalidate(pde_t *pgdir, uintptr_t la) : Invalidate a TLB entry, but only if the page tables being
-     *                        edited are the ones currently in use by the processor.
-     * DEFINEs:
-     *   PTE_P           0x001                   // page table/directory entry flags bit : Present
-     */
-#if 0
-    if (0) {                      //(1) check if page directory is present
-        struct Page *page = NULL; //(2) find corresponding page to pte
-                                  //(3) decrease page reference
-                                  //(4) and free this page when page reference reachs 0
-                                  //(5) clear second page table entry
-                                  //(6) flush tlb
-    }
-#endif
     if (*ptep & PTE_P)
     {
         struct Page *page = pte2page(*ptep);
