@@ -114,6 +114,7 @@ const struct pmm_manager *pmm_manager;
 // 0xFAC00000 = 1111101011 0000000000 000000000000 = 0x3EB 0x0 0x0
 pte_t * const vpt = (pte_t *)VPT;   // 0xFAC00000
 // 0xFAFEB000 = 1111101011 1111101011 000000000000 = 0x3EB 0x3EB 0x0
+// (gdb) x /32hx boot_pgdir + 0x300 内容等于 (gdb) x /32hx vpd + 0x300
 pde_t * const vpd = (pde_t *)PGADDR(PDX(VPT), PDX(VPT), 0); // 0xFAFEB000
 
 /* *
@@ -469,8 +470,8 @@ static void page_init(void)
     // 这里 npage 记录的是所有物理内存空间总页数，npage 最大值就是 KMEMSIZE / PGSIZE = 224k
     npage = maxpa / PGSIZE; // 0x00007FE0
     
-    // pages 指向内核代码结束后的第一个空闲4k页面，0xC015B384 的下一个 4k 起始是 0xC015C000
-    pages = (struct Page *)ROUNDUP((void *)end, PGSIZE);    // 0xC015C000
+    // pages 指向内核代码结束后的第一个空闲4k页面，0xC015B384 的下一个 4k 起始是 0xC015D000
+    pages = (struct Page *)ROUNDUP((void *)end, PGSIZE);    // 0xC015D000
     cprintf("npage: %08x, pages: %08x\n", npage, pages);
     
     // 代码走到这里，虚拟地址映射还是采用的 boot_pgdir，
@@ -485,7 +486,7 @@ static void page_init(void)
     }
 
     // 真正的内存空闲起始物理地址，除了减去内核占用空间之外，还要减去页表本身占用的空间
-    uintptr_t freemem = PADDR((uintptr_t)pages + sizeof(struct Page) * npage);  // 0x0027BB80
+    uintptr_t freemem = PADDR((uintptr_t)pages + sizeof(struct Page) * npage);  // 0x0027CB80
     cprintf("freemem: %08x.\n", freemem);
     
     for (i = 0; i < memmap->nr_map; i ++)
