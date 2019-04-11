@@ -247,27 +247,34 @@ static int get_pid(void)
     struct proc_struct *proc;
     list_entry_t *list = &proc_list, *le;
     static int next_safe = MAX_PID, last_pid = MAX_PID;
-    if (++ last_pid >= MAX_PID) {
+    if (++ last_pid >= MAX_PID)
+    {
         last_pid = 1;
         goto inside;
     }
-    if (last_pid >= next_safe) {
+    if (last_pid >= next_safe)
+    {
     inside:
         next_safe = MAX_PID;
     repeat:
         le = list;
-        while ((le = list_next(le)) != list) {
+        while ((le = list_next(le)) != list)
+        {
             proc = le2proc(le, list_link);
-            if (proc->pid == last_pid) {
-                if (++ last_pid >= next_safe) {
-                    if (last_pid >= MAX_PID) {
+            if (proc->pid == last_pid)
+            {
+                if (++ last_pid >= next_safe)
+                {
+                    if (last_pid >= MAX_PID)
+                    {
                         last_pid = 1;
                     }
                     next_safe = MAX_PID;
                     goto repeat;
                 }
             }
-            else if (proc->pid > last_pid && next_safe > proc->pid) {
+            else if (proc->pid > last_pid && next_safe > proc->pid)
+            {
                 next_safe = proc->pid;
             }
         }
@@ -406,19 +413,23 @@ static int copy_mm(uint32_t clone_flags, struct proc_struct *proc)
     struct mm_struct *mm, *oldmm = current->mm;
 
     /* current is a kernel thread */
-    if (oldmm == NULL) {
+    if (oldmm == NULL)
+    {
         return 0;
     }
-    if (clone_flags & CLONE_VM) {
+    if (clone_flags & CLONE_VM)
+    {
         mm = oldmm;
         goto good_mm;
     }
 
     int ret = -E_NO_MEM;
-    if ((mm = mm_create()) == NULL) {
+    if ((mm = mm_create()) == NULL)
+    {
         goto bad_mm;
     }
-    if (setup_pgdir(mm) != 0) {
+    if (setup_pgdir(mm) != 0)
+    {
         goto bad_pgdir_cleanup_mm;
     }
 
@@ -466,17 +477,20 @@ static int copy_fs(uint32_t clone_flags, struct proc_struct *proc)
     struct files_struct *filesp, *old_filesp = current->filesp;
     assert(old_filesp != NULL);
 
-    if (clone_flags & CLONE_FS) {
+    if (clone_flags & CLONE_FS)
+    {
         filesp = old_filesp;
         goto good_files_struct;
     }
 
     int ret = -E_NO_MEM;
-    if ((filesp = files_create()) == NULL) {
+    if ((filesp = files_create()) == NULL)
+    {
         goto bad_files_struct;
     }
 
-    if ((ret = dup_fs(filesp, old_filesp)) != 0) {
+    if ((ret = dup_fs(filesp, old_filesp)) != 0)
+    {
         goto bad_dup_cleanup_fs;
     }
 
@@ -1219,7 +1233,8 @@ void lab6_set_priority(uint32_t priority)
 //          - then call scheduler. if process run again, delete timer first.
 int do_sleep(unsigned int time)
 {
-    if (time == 0) {
+    if (time == 0)
+    {
         return 0;
     }
     bool intr_flag;

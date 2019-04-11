@@ -120,9 +120,11 @@ void add_timer(timer_t *timer)
         assert(timer->expires > 0 && timer->proc != NULL);
         assert(list_empty(&(timer->timer_link)));
         list_entry_t *le = list_next(&timer_list);
-        while (le != &timer_list) {
+        while (le != &timer_list)
+        {
             timer_t *next = le2timer(le, timer_link);
-            if (timer->expires < next->expires) {
+            if (timer->expires < next->expires)
+            {
                 next->expires -= timer->expires;
                 break;
             }
@@ -139,10 +141,13 @@ void del_timer(timer_t *timer)
     bool intr_flag;
     local_intr_save(intr_flag);
     {
-        if (!list_empty(&(timer->timer_link))) {
-            if (timer->expires != 0) {
+        if (!list_empty(&(timer->timer_link)))
+        {
+            if (timer->expires != 0)
+            {
                 list_entry_t *le = list_next(&(timer->timer_link));
-                if (le != &timer_list) {
+                if (le != &timer_list)
+                {
                     timer_t *next = le2timer(le, timer_link);
                     next->expires += timer->expires;
                 }
@@ -159,22 +164,27 @@ void run_timer_list(void)
     local_intr_save(intr_flag);
     {
         list_entry_t *le = list_next(&timer_list);
-        if (le != &timer_list) {
+        if (le != &timer_list)
+        {
             timer_t *timer = le2timer(le, timer_link);
             assert(timer->expires != 0);
-            timer->expires --;
-            while (timer->expires == 0) {
+            timer->expires--;
+            while (timer->expires == 0)
+            {
                 le = list_next(le);
                 struct proc_struct *proc = timer->proc;
-                if (proc->wait_state != 0) {
+                if (proc->wait_state != 0)
+                {
                     assert(proc->wait_state & WT_INTERRUPTED);
                 }
-                else {
+                else
+                {
                     warn("process %d's wait_state == 0.\n", proc->pid);
                 }
                 wakeup_proc(proc);
                 del_timer(timer);
-                if (le == &timer_list) {
+                if (le == &timer_list)
+                {
                     break;
                 }
                 timer = le2timer(le, timer_link);

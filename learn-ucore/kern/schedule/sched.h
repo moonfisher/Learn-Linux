@@ -7,7 +7,8 @@
 
 struct proc_struct;
 
-typedef struct {
+typedef struct
+{
     unsigned int expires;
     struct proc_struct *proc;
     list_entry_t timer_link;
@@ -16,8 +17,8 @@ typedef struct {
 #define le2timer(le, member)            \
 to_struct((le), timer_t, member)
 
-static inline timer_t *
-timer_init(timer_t *timer, struct proc_struct *proc, int expires) {
+static inline timer_t *timer_init(timer_t *timer, struct proc_struct *proc, int expires)
+{
     timer->expires = expires;
     timer->proc = proc;
     list_init(&(timer->timer_link));
@@ -29,7 +30,8 @@ struct run_queue;
 // The introduction of scheduling classes is borrrowed from Linux, and makes the 
 // core scheduler quite extensible. These classes (the scheduler modules) encapsulate 
 // the scheduling policies. 
-struct sched_class {
+struct sched_class
+{
     // the name of sched_class
     const char *name;
     // Init the run queue
@@ -51,7 +53,8 @@ struct sched_class {
      */
 };
 
-struct run_queue {
+struct run_queue
+{
     list_entry_t run_list;
     unsigned int proc_num;
     int max_time_slice;
