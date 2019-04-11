@@ -55,33 +55,35 @@ typedef unsigned int gfp_t;
 #define ALIGN(addr,size)   (((addr)+(size)-1)&(~((size)-1))) 
 #endif
 
-
-struct slob_block {
+struct slob_block
+{
 	int units;
 	struct slob_block *next;
 };
+
 typedef struct slob_block slob_t;
 
 #define SLOB_UNIT sizeof(slob_t)
 #define SLOB_UNITS(size) (((size) + SLOB_UNIT - 1)/SLOB_UNIT)
 #define SLOB_ALIGN L1_CACHE_BYTES
 
-struct bigblock {
+struct bigblock
+{
 	int order;
 	void *pages;
 	struct bigblock *next;
 };
+
 typedef struct bigblock bigblock_t;
 
 static slob_t arena = { .next = &arena, .units = 1 };
 static slob_t *slobfree = &arena;
 static bigblock_t *bigblocks;
 
-
-static void* __slob_get_free_pages(gfp_t gfp, int order)
+static void *__slob_get_free_pages(gfp_t gfp, int order)
 {
-    struct Page * page = alloc_pages(1 << order);
-    if(!page)
+    struct Page *page = alloc_pages(1 << order);
+    if (!page)
         return NULL;
     return page2kva(page);
 }
@@ -97,21 +99,29 @@ static void slob_free(void *b, int size);
 
 static void *slob_alloc(size_t size, gfp_t gfp, int align)
 {
-    assert( (size + SLOB_UNIT) < PAGE_SIZE );
+    assert((size + SLOB_UNIT) < PAGE_SIZE);
 
 	slob_t *prev, *cur, *aligned = 0;
 	int delta = 0, units = SLOB_UNITS(size);
 	unsigned long flags;
 
+    // 分配内存需要先关闭中断，防止出错
 	spin_lock_irqsave(&slob_lock, flags);
 	prev = slobfree;
-	for (cur = prev->next; ; prev = cur, cur = cur->next) {
-		if (align) {
+	for (cur = prev->next; ; prev = cur, cur = cur->next)
+    {
+		if (align)
+        {
 			aligned = (slob_t *)ALIGN((unsigned long)cur, align);
 			delta = aligned - cur;
 		}
-		if (cur->units >= units + delta) { /* room enough? */
-			if (delta) { /* need to fragment head to align? */
+        
+		if (cur->units >= units + delta)
+        {
+            /* room enough? */
+			if (delta)
+            {
+                /* need to fragment head to align? */
 				aligned->units = cur->units - delta;
 				aligned->next = cur->next;
 				cur->next = aligned;
@@ -121,8 +131,12 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align)
 			}
 
 			if (cur->units == units) /* exact fit? */
+            {
 				prev->next = cur->next; /* unlink */
-			else { /* fragment */
+            }
+			else
+            {
+                /* fragment */
 				prev->next = cur + units;
 				prev->next->units = cur->units - units;
 				prev->next->next = cur->next;
@@ -133,9 +147,10 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align)
 			spin_unlock_irqrestore(&slob_lock, flags);
 			return cur;
 		}
-		if (cur == slobfree) {
+        
+		if (cur == slobfree)
+        {
 			spin_unlock_irqrestore(&slob_lock, flags);
-
 			if (size == PAGE_SIZE) /* trying to shrink arena? */
 				return 0;
 
@@ -164,23 +179,32 @@ static void slob_free(void *block, int size)
 	/* Find reinsertion point */
 	spin_lock_irqsave(&slob_lock, flags);
 	for (cur = slobfree; !(b > cur && b < cur->next); cur = cur->next)
+    {
 		if (cur >= cur->next && (b > cur || b < cur->next))
 			break;
+    }
 
-	if (b + b->units == cur->next) {
+	if (b + b->units == cur->next)
+    {
 		b->units += cur->next->units;
 		b->next = cur->next->next;
-	} else
+	}
+    else
+    {
 		b->next = cur->next;
+    }
 
-	if (cur + cur->units == b) {
+	if (cur + cur->units == b)
+    {
 		cur->units += b->units;
 		cur->next = b->next;
-	} else
+	}
+    else
+    {
 		cur->next = b;
+    }
 
 	slobfree = cur;
-
 	spin_unlock_irqrestore(&slob_lock, flags);
 }
 
@@ -225,19 +249,22 @@ static void *__kmalloc(size_t size, gfp_t gfp)
 	bigblock_t *bb;
 	unsigned long flags;
 
-	if (size < PAGE_SIZE - SLOB_UNIT) {
+    // 分配空间小于 4k 的，按小内存方式分配
+	if (size < PAGE_SIZE - SLOB_UNIT)
+    {
 		m = slob_alloc(size + SLOB_UNIT, gfp, 0);
 		return m ? (void *)(m + 1) : 0;
 	}
 
+    // 分配空间大于 4k 的，按大内存方式分配
 	bb = slob_alloc(sizeof(bigblock_t), gfp, 0);
 	if (!bb)
 		return 0;
 
 	bb->order = find_order(size);
 	bb->pages = (void *)__slob_get_free_pages(gfp, bb->order);
-
-	if (bb->pages) {
+	if (bb->pages)
+    {
 		spin_lock_irqsave(&block_lock, flags);
 		bb->next = bigblocks;
 		bigblocks = bb;

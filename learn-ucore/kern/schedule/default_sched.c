@@ -4,6 +4,7 @@
 #include "assert.h"
 #include "default_sched.h"
 
+// 斜堆算法
 #define USE_SKEW_HEAP 1
 
 /* You should define the BigStride constant here*/
