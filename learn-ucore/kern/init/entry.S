@@ -9,9 +9,10 @@ kern_entry: # 0x00100000
     # load pa of boot pgdir
     # 加载临时分页方案, __boot_pgdir 但此时还没开启分页，需要减去 KERNBASE
     movl $REALLOC(__boot_pgdir), %eax # mov eax, 0x00156000
+    # cr3 存放页目录地址
     movl %eax, %cr3
 
-    # enable paging
+    # enable paging 开启分页，此时地址映射是临时的，等操作系统内核运行的时候再重新分页
     movl %cr0, %eax
     # or eax, 0x8005002f
     orl $(CR0_PE | CR0_PG | CR0_AM | CR0_WP | CR0_NE | CR0_TS | CR0_EM | CR0_MP), %eax
@@ -29,8 +30,9 @@ next:
 
     # unmap va 0 ~ 4M, it's temporary mapping
     # 跳转完毕后，内核代码已经都运行在虚拟地址上，通过把 boot_pgdir[0] 对应的第一个页目录表项
-    # 清零来取消了（0 ~ 4MB）临时的页映射关系
-    # 只保留 0xC0000000 ~ 0xC0400000 映射到物理地址 0 ~ 4M 这个关系
+    # 清零来取消物理地址（0 ~ 4M）到虚拟地址（0 ~ 4M）临时的页映射关系
+    # 只保留 0xC0000000 ~ 0xC1000000 映射到物理地址 0 ~ 16M 这个关系
+    # 这是因为 0 ~ 4M 的内存映射只是在最开始几句代码执行时会用到，跳转之后已经跳转到虚拟地址了
     xorl %eax, %eax
     movl %eax, __boot_pgdir # mov dword ptr 0x0010:0xC0156000, eax
 
@@ -66,54 +68,36 @@ __boot_pgdir:
     # map va 0 ~ 4M to pa 0 ~ 4M (temporary) 目录地址 0x00156000
     # 虚拟地址 0 ~ 4M 映射到物理地址 0 ~ 4M，这里先临时映射 4M 就够用了，内核没那么大
     # KERNBASE >> PGSHIFT >> 10 << 2 这里取内核虚拟地址高10位，然后左移2位是因为页目录一条记录占4个字节
-    .long REALLOC(__boot_pt1) + (PTE_P | PTE_U | PTE_W)
+    .long REALLOC(__boot_pte) + (PTE_P | PTE_U | PTE_W)
     .space (KERNBASE >> PGSHIFT >> 10 << 2) - (. - __boot_pgdir) # pad to PDE of KERNBASE
 
     # map va KERNBASE + (0 ~ 4M) to pa 0 ~ 4M 目录地址 0x00156C00 = 0x00156000 + 0x300 * 4
     # 虚拟地址 0xC0000000 ~ 0xC0400000 映射到物理地址 0 ~ 4M，这里先临时映射 4M 就够用了，内核没那么大
     # 内核代码在物理内存的低端地址上，但映射到了虚拟地址空间的高端内存上
-    # 实际上这种映射限制了内核的大小。当内核大小超过预期的 4MB （实际上是 3M，因为内核从 0x100000开始编址）
+    # 实际上这种映射限制了内核的大小。当内核大小超过预期的 4M （实际上是 3M，因为内核从 0x100000开始编址）
     # 就可能导致打开分页之后内核 crash，在某些试验中，也的确出现了这种情况。
     # 解决方法同样简单，就是正确填充更多的页目录项即可。
 
     # 重要：如果 qemu 设置虚拟内存很大，比如 512M，整个页表大小就会超过 4M，导致虚拟地址空间无法映射到
-    # 最后内核因为访问到非法地址而 crash，这里先简单修改，扩展内存映射到 16M
-    .long REALLOC(__boot_pt1) + (PTE_P | PTE_U | PTE_W)
-    .long REALLOC(__boot_pt2) + (PTE_P | PTE_U | PTE_W)
-    .long REALLOC(__boot_pt3) + (PTE_P | PTE_U | PTE_W)
-    .long REALLOC(__boot_pt4) + (PTE_P | PTE_U | PTE_W)
+    # 最后内核因为访问到非法地址而 crash，这里改下方案，直接把 0xC0000000 ~ 0xF8000000 地址空间
+    # 一次全部映射，省得有部分空间因为没映射到而非法访问 crash，这样页目录和页表结构在内存里也是连续的地址
+    .set i, 0
+    .rept 224
+        .long REALLOC(__boot_pte + PGSIZE * i) + (PTE_P | PTE_U | PTE_W)
+        .set i, i + 1
+    .endr
     .space PGSIZE - (. - __boot_pgdir) # pad to PGSIZE
 
 .set i, 0
-__boot_pt1:
-.globl __boot_pt1 # 0xC0157000
-.rept 1024
-    .long i * PGSIZE + (PTE_P | PTE_W)
-    .set i, i + 1
-.endr
-
-.set i, 1
-__boot_pt2:
-.globl __boot_pt2 # 0xC0158000
-.rept 1024
-    .long i * PGSIZE * NPTEENTRY + (PTE_P | PTE_W)
-    .set i, i + 1
-.endr
-
-.set i, 2
-__boot_pt3:
-.globl __boot_pt3 # 0xC0159000
-.rept 1024
-    .long i * PGSIZE * NPTEENTRY + (PTE_P | PTE_W)
-    .set i, i + 1
-.endr
-
-.set i, 3
-__boot_pt4:
-.globl __boot_pt4 # 0xC015a000
-.rept 1024
-    .long i * PGSIZE * NPTEENTRY + (PTE_P | PTE_W)
-    .set i, i + 1
+.set j, 0
+__boot_pte:
+.globl __boot_pte # 0xC0157000
+.rept 224
+    .rept 1024
+        .long i * PGSIZE + (PTE_P | PTE_W)
+        .set i, i + 1
+    .endr
+    .set j, j + 1
 .endr
 
 # <bochs:7> x /64hx 0x00156000 

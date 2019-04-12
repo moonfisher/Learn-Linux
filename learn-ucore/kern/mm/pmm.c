@@ -490,13 +490,7 @@ static void page_init(void)
     for (i = 0; i < npage; i++)
     {
         page = &pages[i];
-        //cprintf("start i: %08x, page: %08x, flags: %08x\n", i, page, page->flags);
         SetPageReserved(page);
-        //cprintf("end i: %08x, page: %08x, flags: %08x\n", i, page, page->flags);
-        if (i > 0x0001ffd0)
-        {
-            cprintf("end i: %08x, page: %08x, flags: %08x\n", i, page, page->flags);
-        }
     }
     
     // 真正的内存空闲起始物理地址，除了减去内核占用空间之外，还要减去页表本身占用的空间
@@ -675,7 +669,8 @@ void pmm_init(void)
     // map all physical memory to linear memory with base linear addr KERNBASE
     // linear_addr KERNBASE ~ KERNBASE + KMEMSIZE = phy_addr 0 ~ KMEMSIZE
     // 映射虚拟地址 0xC0000000 ~ 0xF8000000 到物理地址 0 ~ 0x38000000
-    boot_map_segment(boot_pgdir, KERNBASE, KMEMSIZE, 0, PTE_W);
+    // 这段代码可以不执行了，虚拟地址映射全部挪到 entry.S 里提前映射完，防止后续代码访问到未映射的地址
+    // boot_map_segment(boot_pgdir, KERNBASE, KMEMSIZE, 0, PTE_W);
 
     // Since we are using bootloader's GDT,
     // we should reload gdt (second time, the last time) to get user segments and the TSS
