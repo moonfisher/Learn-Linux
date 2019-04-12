@@ -72,10 +72,16 @@ __boot_pgdir:
     # map va KERNBASE + (0 ~ 4M) to pa 0 ~ 4M 目录地址 0x00156C00 = 0x00156000 + 0x300 * 4
     # 虚拟地址 0xC0000000 ~ 0xC0400000 映射到物理地址 0 ~ 4M，这里先临时映射 4M 就够用了，内核没那么大
     # 内核代码在物理内存的低端地址上，但映射到了虚拟地址空间的高端内存上
-    # 实际上这种映射限制了内核的大小。当内核大小超过预期的4MB （实际上是3M，因为内核从 0x100000开始编址）
-    # 就可能导致打开分页之后内核crash，在某些试验中，也的确出现了这种情况。
+    # 实际上这种映射限制了内核的大小。当内核大小超过预期的 4MB （实际上是 3M，因为内核从 0x100000开始编址）
+    # 就可能导致打开分页之后内核 crash，在某些试验中，也的确出现了这种情况。
     # 解决方法同样简单，就是正确填充更多的页目录项即可。
+
+    # 重要：如果 qemu 设置虚拟内存很大，比如 512M，整个页表大小就会超过 4M，导致虚拟地址空间无法映射到
+    # 最后内核因为访问到非法地址而 crash，这里先简单修改，扩展内存映射到 16M
     .long REALLOC(__boot_pt1) + (PTE_P | PTE_U | PTE_W)
+    .long REALLOC(__boot_pt2) + (PTE_P | PTE_U | PTE_W)
+    .long REALLOC(__boot_pt3) + (PTE_P | PTE_U | PTE_W)
+    .long REALLOC(__boot_pt4) + (PTE_P | PTE_U | PTE_W)
     .space PGSIZE - (. - __boot_pgdir) # pad to PGSIZE
 
 .set i, 0
@@ -86,14 +92,38 @@ __boot_pt1:
     .set i, i + 1
 .endr
 
-# <bochs:7> x /64hx 0x00156000
+.set i, 1
+__boot_pt2:
+.globl __boot_pt2 # 0xC0158000
+.rept 1024
+    .long i * PGSIZE * NPTEENTRY + (PTE_P | PTE_W)
+    .set i, i + 1
+.endr
+
+.set i, 2
+__boot_pt3:
+.globl __boot_pt3 # 0xC0159000
+.rept 1024
+    .long i * PGSIZE * NPTEENTRY + (PTE_P | PTE_W)
+    .set i, i + 1
+.endr
+
+.set i, 3
+__boot_pt4:
+.globl __boot_pt4 # 0xC015a000
+.rept 1024
+    .long i * PGSIZE * NPTEENTRY + (PTE_P | PTE_W)
+    .set i, i + 1
+.endr
+
+# <bochs:7> x /64hx 0x00156000 
 # 0x00156000 :0x7007    0x0015    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000
 # 0x00156010 :0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000
 # 0x00156020 :0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000
 # 0x00156030 :0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000
 
 # <bochs:7> x /64hx 0x00156C00
-# 0x00156c00 :0x7007    0x0015    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000
+# 0x00156c00 :0x7027    0x0015    0x8027    0x0015    0x9027    0x0015    0xa027    0x0015
 # 0x00156c10 :0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000
 # 0x00156c20 :0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000
 # 0x00156c30 :0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000

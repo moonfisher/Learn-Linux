@@ -432,13 +432,13 @@ size_t nr_free_pages(void)
 
 /* pmm_init - initialize the physical memory management */
 /*
- e820map: qemu 缺省模拟了 128m 内存
-    memory: 0009fc00, [00000000, 0009fbff], type = 1.
-    memory: 00000400, [0009fc00, 0009ffff], type = 2.
-    memory: 00010000, [000f0000, 000fffff], type = 2.
-    memory: 07ee0000, [00100000, 07fdffff], type = 1.
-    memory: 00020000, [07fe0000, 07ffffff], type = 2.
-    memory: 00040000, [fffc0000, ffffffff], type = 2.
+ e820map: qemu 模拟 512M 内存后的分布
+     memory: 0009fc00, [00000000, 0009fbff], type = 1.
+     memory: 00000400, [0009fc00, 0009ffff], type = 2.
+     memory: 00010000, [000f0000, 000fffff], type = 2.
+     memory: 1fee0000, [00100000, 1ffdffff], type = 1.
+     memory: 00020000, [1ffe0000, 1fffffff], type = 2.
+     memory: 00040000, [fffc0000, ffffffff], type = 2.
  */
 static void page_init(void)
 {
@@ -449,7 +449,7 @@ static void page_init(void)
 
     cprintf("e820map:\n");
     int i = 0;
-    for (i = 0; i < memmap->nr_map; i ++)
+    for (i = 0; i < memmap->nr_map; i++)
     {
         uint64_t begin = memmap->map[i].addr, end = begin + memmap->map[i].size;
         cprintf("  memory: %08llx, [%08llx, %08llx], type = %d.\n", memmap->map[i].size, begin, end - 1, memmap->map[i].type);
@@ -468,37 +468,42 @@ static void page_init(void)
         maxpa = KMEMSIZE;
     }
 
-    // maxpa = 0x07FE0000
+    // maxpa = 0x1FFE0000
     cprintf("maxpa: %08x\n", maxpa);
     
     // 从内核在内存里结束的地方往后统计
     extern char end[];  // 0xC015B384
     cprintf("end: %08x\n", end);
     
-    // maxpa = 0x07FE0000 PGSIZE = 0x1000 = 4k
+    // maxpa = 0x1FFE0000 PGSIZE = 0x1000 = 4k
     // 这里 npage 记录的是所有物理内存空间总页数，npage 最大值就是 KMEMSIZE / PGSIZE = 224k
-    npage = maxpa / PGSIZE; // 0x00007FE0
+    npage = maxpa / PGSIZE; // 0x0001FFE0
     
-    // pages 指向内核代码结束后的第一个空闲4k页面，0xC015B384 的下一个 4k 起始是 0xC015D000
-    pages = (struct Page *)ROUNDUP((void *)end, PGSIZE);    // 0xC015D000
+    // pages 指向内核代码结束后的第一个空闲 4k 页面，0xC015F384 的下一个 4k 起始是 0xC0160000
+    pages = (struct Page *)ROUNDUP((void *)end, PGSIZE);    // 0xC0160000
     cprintf("npage: %08x, pages: %08x\n", npage, pages);
     
     // 代码走到这里，虚拟地址映射还是采用的 boot_pgdir，
-    // 虚拟地址 0xC0000000 ~ 0xC0400000 映射到物理地址 0 ~ 4M，并没有按完整的 1G 内核空间映射
-    // 目前 qemu 缺省是按照 128m 来虚拟内存大小，此时映射的整个页表空间不超过 4m，没问题
-    // npage * sizeof(struct Page) = 0x0027BB80 < 0x00400000
-    // 但如果 qemu 设置虚拟内存很大，比如 512m，整个页表大小就会超过 4m，导致虚拟地址空间无法映射到
-    // 物理内存而访问出错，解决办法就是在 entry.S 里内存映射再设置大一些
+    // 虚拟地址 0xC0000000 ~ 0xC1000000 映射到物理地址 0 ~ 16M，并没有按完整的 1G 内核空间映射
+    // 目前 qemu 缺省是按照 512M 来虚拟内存大小，此时映射的整个页表空间不超过 16M，没问题
+    struct Page *page;
     for (i = 0; i < npage; i++)
     {
-        SetPageReserved(pages + i);
+        page = &pages[i];
+        //cprintf("start i: %08x, page: %08x, flags: %08x\n", i, page, page->flags);
+        SetPageReserved(page);
+        //cprintf("end i: %08x, page: %08x, flags: %08x\n", i, page, page->flags);
+        if (i > 0x0001ffd0)
+        {
+            cprintf("end i: %08x, page: %08x, flags: %08x\n", i, page, page->flags);
+        }
     }
-
-    // 真正的内存空闲起始物理地址，除了减去内核占用空间之外，还要减去页表本身占用的空间
-    uintptr_t freemem = PADDR((uintptr_t)pages + sizeof(struct Page) * npage);  // 0x0027CB80
-    cprintf("freemem: %08x.\n", freemem);
     
-    for (i = 0; i < memmap->nr_map; i ++)
+    // 真正的内存空闲起始物理地址，除了减去内核占用空间之外，还要减去页表本身占用的空间
+    uintptr_t freemem = PADDR((uintptr_t)pages + sizeof(struct Page) * npage);  // 0x005DFB80
+    cprintf("freemem: %08x.\n", freemem);
+
+    for (i = 0; i < memmap->nr_map; i++)
     {
         uint64_t begin = memmap->map[i].addr, end = begin + memmap->map[i].size;
         if (memmap->map[i].type == E820_ARM)
@@ -517,8 +522,8 @@ static void page_init(void)
                 end = ROUNDDOWN(end, PGSIZE);
                 if (begin < end)
                 {
-                    cprintf("begin: %08x\n", begin);    // 0x0027D000
-                    cprintf("end: %08x\n", end);        // 0x07FE0000
+                    cprintf("begin: %08x\n", begin);    // 0x005E0000
+                    cprintf("end: %08x\n", end);        // 0x1FFE0000
                     // 从真正空闲的页面开始初始化，出去内核占用，页表本身占用等
                     init_memmap(pa2page(begin), (end - begin) / PGSIZE);
                 }
@@ -611,11 +616,13 @@ static void boot_map_segment(pde_t *pgdir, uintptr_t la, size_t size, uintptr_t 
     pa = ROUNDDOWN(pa, PGSIZE);
     for (; n > 0; n --, la += PGSIZE, pa += PGSIZE)
     {
-        // 获取这个虚拟地址在所在的页表地址，如果没有页表就分配一个空闲4k页面当做页表
-        // 第一个页表 ptep 的虚拟地址是 0xC0157000，页目录起始地址是 0xC0156000，1k个页目录，每个四字节
-        // 0xC0156000 + 0x400 * 4 = 0xC0157000，这个空间在 entry.S 里就已经分配好了
-        // 第二个页表 ptep 的虚拟地址是 0xC027D000，和第一个 ptep 并不连续，是因为从第二个页表开始，内存空间
-        // 是通过 alloc_page 分配过来的，能分配的有效空闲内存起始物理地址就是 0x0027D000
+        /*
+         获取这个虚拟地址在所在的页表地址，如果没有页表就从空闲内存里分配一个空闲 4k 页面当做页表
+         第 1 ~ 4 页表 ptep 的虚拟地址是 0xC0157000，页目录起始地址是 0xC0156000，1k个页目录，
+         每个四字节，0xC0156000 + 0x400 * 4 = 0xC0157000，这个空间在 entry.S 里就已经分配好了
+         第 5 个页表 ptep 的虚拟地址和第一个 ptep 并不连续，是因为从第 5 页表开始，内存空间
+         是通过 alloc_page 分配过来的，不是之前规划的
+        */
         pte_t *ptep = get_pte(pgdir, la, 1);
         assert(ptep != NULL);
         *ptep = pa | PTE_P | perm;
@@ -658,22 +665,10 @@ void pmm_init(void)
     // then use pmm->init_memmap to create free page list
     page_init();
 
-    //use pmm->check to verify the correctness of the alloc/free function in a pmm
-    check_alloc_page();
-
-    check_pgdir();
-
     static_assert(KERNBASE % PTSIZE == 0 && KERNTOP % PTSIZE == 0);
 
     // recursively insert boot_pgdir in itself
     // to form a virtual page table at virtual address VPT
-    /*
-     其实vpd变量的值就是页目录表的起始虚地址0xFAFEB000，且它的高10位和中10位是相等的，都是10进制的1003。
-     当执行了上述语句，就确保了vpd变量的值就是页目录表的起始虚地址，且vpt是页目录表中第一个目录表项指向的页表的起始虚地址。
-     此时描述内核虚拟空间的页目录表的虚地址为0xFAFEB000，大小为4KB。
-     页表的理论连续虚拟地址空间0xFAC00000~0xFB000000，大小为4MB。
-     因为这个连续地址空间的大小为4MB，可有1M个PTE，即可映射4GB的地址空间
-     */
     // boot_pgdir[0x3EB] = 0x00156000 | PTE_P | PTE_W = 0x00156003
     boot_pgdir[PDX(VPT)] = PADDR(boot_pgdir) | PTE_P | PTE_W;
 
@@ -688,6 +683,11 @@ void pmm_init(void)
     // then set kernel stack (ss:esp) in TSS, setup TSS in gdt, load TSS
     gdt_init();
 
+    //use pmm->check to verify the correctness of the alloc/free function in a pmm
+    check_alloc_page();
+    
+    check_pgdir();
+    
     //now the basic virtual memory map(see memalyout.h) is established.
     //check the correctness of the basic virtual memory map.
     extracted();

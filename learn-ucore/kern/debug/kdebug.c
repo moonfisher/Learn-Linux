@@ -272,13 +272,16 @@ int debuginfo_eip(uintptr_t addr, struct eipdebuginfo *info)
  __vectors            0xC01555E0 (phys)
  __boot_pgdir         0xC0156000 (phys)
  __boot_pt1           0xC0157000 (phys)
- edata                0xC0158000 (phys)
+ __boot_pt2           0xC0158000 (phys)
+ __boot_pt3           0xC0159000 (phys)
+ __boot_pt4           0xC015a000 (phys)
+ edata                0xC015b000 (phys)
  end                  0xC015c384 (phys)
- Kernel executable memory footprint: 369KB
+ Kernel executable memory footprint: 381KB
  */
 void print_kerninfo(void)
 {
-    extern char kern_entry[], etext[], edata[], end[], kern_init[], bootstack[], bootstacktop[], __boot_pgdir[], __boot_pt1[], __vectors[];
+    extern char kern_entry[], etext[], edata[], end[], kern_init[], bootstack[], bootstacktop[], __boot_pgdir[], __boot_pt1[], __boot_pt2[], __boot_pt3[], __boot_pt4[], __vectors[];
     cprintf("Special kernel symbols:\n");
     cprintf("  kern_entry           0x%08x (phys)\n", kern_entry);
     cprintf("  kern_init            0x%08x (phys)\n", kern_init);
@@ -292,6 +295,9 @@ void print_kerninfo(void)
     cprintf("  __vectors            0x%08x (phys)\n", __vectors);
     cprintf("  __boot_pgdir         0x%08x (phys)\n", __boot_pgdir);
     cprintf("  __boot_pt1           0x%08x (phys)\n", __boot_pt1);
+    cprintf("  __boot_pt2           0x%08x (phys)\n", __boot_pt2);
+    cprintf("  __boot_pt3           0x%08x (phys)\n", __boot_pt3);
+    cprintf("  __boot_pt4           0x%08x (phys)\n", __boot_pt4);
     cprintf("  edata                0x%08x (phys)\n", edata);
     cprintf("  end                  0x%08x (phys)\n", end);
     cprintf("  Kernel executable memory footprint: %dKB\n", (end - kern_init + 1023)/1024);
