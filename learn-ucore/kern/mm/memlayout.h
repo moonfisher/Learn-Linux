@@ -181,7 +181,7 @@
 #include "atomic.h"
 #include "list.h"
 
-typedef uintptr_t pte_t;
+typedef uintptr_t pte_t;                                                          
 typedef uintptr_t pde_t;
 typedef pte_t swap_entry_t; //the pte can also be a swap entry
 

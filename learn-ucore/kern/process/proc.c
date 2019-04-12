@@ -180,7 +180,7 @@ static struct proc_struct *alloc_proc(void)
         proc->mm = NULL;
         memset(&(proc->context), 0, sizeof(struct context));
         proc->tf = NULL;
-        proc->cr3 = boot_cr3;   //0x156000
+        proc->cr3 = boot_cr3;   // 页目录要用物理地址 0x156000
         proc->flags = 0;
         memset(proc->name, 0, PROC_NAME_LEN);
         proc->wait_state = 0;
@@ -337,11 +337,14 @@ static void unhash_proc(struct proc_struct *proc)
 // find_proc - find proc frome proc hash_list according to pid
 struct proc_struct *find_proc(int pid)
 {
-    if (0 < pid && pid < MAX_PID) {
+    if (0 < pid && pid < MAX_PID)
+    {
         list_entry_t *list = hash_list + pid_hashfn(pid), *le = list;
-        while ((le = list_next(le)) != list) {
+        while ((le = list_next(le)) != list)
+        {
             struct proc_struct *proc = le2proc(le, hash_link);
-            if (proc->pid == pid) {
+            if (proc->pid == pid)
+            {
                 return proc;
             }
         }
@@ -417,6 +420,7 @@ static int copy_mm(uint32_t clone_flags, struct proc_struct *proc)
     {
         return 0;
     }
+    
     if (clone_flags & CLONE_VM)
     {
         mm = oldmm;
@@ -428,6 +432,7 @@ static int copy_mm(uint32_t clone_flags, struct proc_struct *proc)
     {
         goto bad_mm;
     }
+    
     if (setup_pgdir(mm) != 0)
     {
         goto bad_pgdir_cleanup_mm;
@@ -439,7 +444,8 @@ static int copy_mm(uint32_t clone_flags, struct proc_struct *proc)
     }
     unlock_mm(oldmm);
 
-    if (ret != 0) {
+    if (ret != 0)
+    {
         goto bad_dup_cleanup_mmap;
     }
 
@@ -520,6 +526,14 @@ static void put_fs(struct proc_struct *proc)
  * @stack:       the parent's user stack pointer. if stack==0, It means to fork a kernel thread.
  * @tf:          the trapframe info, which will be copied to child process's proc->tf
  */
+/*
+ 内核不区分线程还是进程，都同样是 proc_struct，一样的调度过程
+ 区别是在于 clone_flags 为 CLONE_VM 或者 CLONE_FS
+ 如果多个 proc_struct 之间可以共享虚拟地址和文件句柄，那可以把这些 proc_struct 看做
+ 是同时属于同一个进程的多个线程
+ 如果多个 proc_struct 之间不共享虚拟地址和文件句柄，那可以把这些 proc_struct 看做
+ 独立的进程
+*/
 int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf)
 {
     int ret = -E_NO_FREE_PROC;
