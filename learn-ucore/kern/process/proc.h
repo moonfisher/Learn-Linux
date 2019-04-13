@@ -72,7 +72,7 @@ struct proc_struct
     struct proc_struct *parent;                 // the parent process
 /*
     mm：内存管理的信息，包括内存映射列表、页表指针等,即实验三中的描述进程虚拟内存的结构体.
-    mm 里有个很重要的项 pgdir，记录的是该进程使用的一级页表的物理地址。
+    mm 里有个很重要的项 pgdir，记 录的是该进程使用的一级页表的物理地址。
  */
     struct mm_struct *mm;                       // Process's memory management field
 /*

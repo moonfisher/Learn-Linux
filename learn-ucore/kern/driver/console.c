@@ -9,8 +9,8 @@
 #include "sync.h"
 
 /* stupid I/O delay routine necessitated by historical PC design flaws */
-static void
-delay(void) {
+static void delay(void)
+{
     inb(0x84);
     inb(0x84);
     inb(0x84);
@@ -61,10 +61,13 @@ static void cga_init(void)
     volatile uint16_t *cp = (uint16_t *)(CGA_BUF + KERNBASE);
     uint16_t was = *cp;
     *cp = (uint16_t) 0xA55A;
-    if (*cp != 0xA55A) {
+    if (*cp != 0xA55A)
+    {
         cp = (uint16_t*)(MONO_BUF + KERNBASE);
         addr_6845 = MONO_BASE;
-    } else {
+    }
+    else
+    {
         *cp = was;
         addr_6845 = CGA_BASE;
     }
@@ -106,15 +109,17 @@ static void serial_init(void)
     (void) inb(COM1+COM_IIR);
     (void) inb(COM1+COM_RX);
 
-    if (serial_exists) {
+    if (serial_exists)
+    {
         pic_enable(IRQ_COM1);
     }
 }
 
-static void
-lpt_putc_sub(int c) {
+static void lpt_putc_sub(int c)
+{
     int i;
-    for (i = 0; !(inb(LPTPORT + 1) & 0x80) && i < 12800; i ++) {
+    for (i = 0; !(inb(LPTPORT + 1) & 0x80) && i < 12800; i ++)
+    {
         delay();
     }
     outb(LPTPORT + 0, c);
@@ -123,12 +128,14 @@ lpt_putc_sub(int c) {
 }
 
 /* lpt_putc - copy console output to parallel port */
-static void
-lpt_putc(int c) {
-    if (c != '\b') {
+static void lpt_putc(int c)
+{
+    if (c != '\b')
+    {
         lpt_putc_sub(c);
     }
-    else {
+    else
+    {
         lpt_putc_sub('\b');
         lpt_putc_sub(' ');
         lpt_putc_sub('\b');
@@ -136,35 +143,40 @@ lpt_putc(int c) {
 }
 
 /* cga_putc - print character to console */
-static void
-cga_putc(int c) {
+static void cga_putc(int c)
+{
     // set black on white
-    if (!(c & ~0xFF)) {
+    if (!(c & ~0xFF))
+    {
         c |= 0x0700;
     }
 
-    switch (c & 0xff) {
-    case '\b':
-        if (crt_pos > 0) {
-            crt_pos --;
-            crt_buf[crt_pos] = (c & ~0xff) | ' ';
-        }
-        break;
-    case '\n':
-        crt_pos += CRT_COLS;
-    case '\r':
-        crt_pos -= (crt_pos % CRT_COLS);
-        break;
-    default:
-        crt_buf[crt_pos ++] = c;     // write the character
-        break;
+    switch (c & 0xff)
+    {
+        case '\b':
+            if (crt_pos > 0)
+            {
+                crt_pos --;
+                crt_buf[crt_pos] = (c & ~0xff) | ' ';
+            }
+            break;
+        case '\n':
+            crt_pos += CRT_COLS;
+        case '\r':
+            crt_pos -= (crt_pos % CRT_COLS);
+            break;
+        default:
+            crt_buf[crt_pos ++] = c;     // write the character
+            break;
     }
 
     // What is the purpose of this?
-    if (crt_pos >= CRT_SIZE) {
+    if (crt_pos >= CRT_SIZE)
+    {
         int i;
         memmove(crt_buf, crt_buf + CRT_COLS, (CRT_SIZE - CRT_COLS) * sizeof(uint16_t));
-        for (i = CRT_SIZE - CRT_COLS; i < CRT_SIZE; i ++) {
+        for (i = CRT_SIZE - CRT_COLS; i < CRT_SIZE; i ++)
+        {
             crt_buf[i] = 0x0700 | ' ';
         }
         crt_pos -= CRT_COLS;
@@ -177,22 +189,25 @@ cga_putc(int c) {
     outb(addr_6845 + 1, crt_pos);
 }
 
-static void
-serial_putc_sub(int c) {
+static void serial_putc_sub(int c)
+{
     int i;
-    for (i = 0; !(inb(COM1 + COM_LSR) & COM_LSR_TXRDY) && i < 12800; i ++) {
+    for (i = 0; !(inb(COM1 + COM_LSR) & COM_LSR_TXRDY) && i < 12800; i ++)
+    {
         delay();
     }
     outb(COM1 + COM_TX, c);
 }
 
 /* serial_putc - print character to serial port */
-static void
-serial_putc(int c) {
-    if (c != '\b') {
+static void serial_putc(int c)
+{
+    if (c != '\b')
+    {
         serial_putc_sub(c);
     }
-    else {
+    else
+    {
         serial_putc_sub('\b');
         serial_putc_sub(' ');
         serial_putc_sub('\b');
@@ -207,7 +222,8 @@ serial_putc(int c) {
 
 #define CONSBUFSIZE 512
 
-static struct {
+static struct
+{
     uint8_t buf[CONSBUFSIZE];
     uint32_t rpos;
     uint32_t wpos;
@@ -217,13 +233,16 @@ static struct {
  * cons_intr - called by device interrupt routines to feed input
  * characters into the circular console input buffer.
  * */
-static void
-cons_intr(int (*proc)(void)) {
+static void cons_intr(int (*proc)(void))
+{
     int c;
-    while ((c = (*proc)()) != -1) {
-        if (c != 0) {
+    while ((c = (*proc)()) != -1)
+    {
+        if (c != 0)
+        {
             cons.buf[cons.wpos ++] = c;
-            if (cons.wpos == CONSBUFSIZE) {
+            if (cons.wpos == CONSBUFSIZE)
+            {
                 cons.wpos = 0;
             }
         }
@@ -231,22 +250,25 @@ cons_intr(int (*proc)(void)) {
 }
 
 /* serial_proc_data - get data from serial port */
-static int
-serial_proc_data(void) {
-    if (!(inb(COM1 + COM_LSR) & COM_LSR_DATA)) {
+static int serial_proc_data(void)
+{
+    if (!(inb(COM1 + COM_LSR) & COM_LSR_DATA))
+    {
         return -1;
     }
     int c = inb(COM1 + COM_RX);
-    if (c == 127) {
+    if (c == 127)
+    {
         c = '\b';
     }
     return c;
 }
 
 /* serial_intr - try to feed input characters from serial port */
-void
-serial_intr(void) {
-    if (serial_exists) {
+void serial_intr(void)
+{
+    if (serial_exists)
+    {
         cons_intr(serial_proc_data);
     }
 }
@@ -351,28 +373,34 @@ static uint8_t *charcode[4] = {
  * The kbd_proc_data() function gets data from the keyboard.
  * If we finish a character, return it, else 0. And return -1 if no data.
  * */
-static int
-kbd_proc_data(void) {
+static int kbd_proc_data(void)
+{
     int c;
     uint8_t data;
     static uint32_t shift;
 
-    if ((inb(KBSTATP) & KBS_DIB) == 0) {
+    if ((inb(KBSTATP) & KBS_DIB) == 0)
+    {
         return -1;
     }
 
     data = inb(KBDATAP);
 
-    if (data == 0xE0) {
+    if (data == 0xE0)
+    {
         // E0 escape character
         shift |= E0ESC;
         return 0;
-    } else if (data & 0x80) {
+    }
+    else if (data & 0x80)
+    {
         // Key released
         data = (shift & E0ESC ? data : data & 0x7F);
         shift &= ~(shiftcode[data] | E0ESC);
         return 0;
-    } else if (shift & E0ESC) {
+    }
+    else if (shift & E0ESC)
+    {
         // Last character was an E0 escape; or with 0x80
         data |= 0x80;
         shift &= ~E0ESC;
@@ -382,7 +410,8 @@ kbd_proc_data(void) {
     shift ^= togglecode[data];
 
     c = charcode[shift & (CTL | SHIFT)][data];
-    if (shift & CAPSLOCK) {
+    if (shift & CAPSLOCK)
+    {
         if ('a' <= c && c <= 'z')
             c += 'A' - 'a';
         else if ('A' <= c && c <= 'Z')
@@ -391,7 +420,8 @@ kbd_proc_data(void) {
 
     // Process special keys
     // Ctrl-Alt-Del: reboot
-    if (!(~shift & (CTL | ALT)) && c == KEY_DEL) {
+    if (!(~shift & (CTL | ALT)) && c == KEY_DEL)
+    {
         cprintf("Rebooting!\n");
         outb(0x92, 0x3); // courtesy of Chris Frost
     }
@@ -440,8 +470,8 @@ void cons_putc(int c)
  * cons_getc - return the next input character from console,
  * or 0 if none waiting.
  * */
-int
-cons_getc(void) {
+int cons_getc(void)
+{
     int c = 0;
     bool intr_flag;
     local_intr_save(intr_flag);
@@ -453,9 +483,11 @@ cons_getc(void) {
         kbd_intr();
 
         // grab the next character from the input buffer.
-        if (cons.rpos != cons.wpos) {
+        if (cons.rpos != cons.wpos)
+        {
             c = cons.buf[cons.rpos ++];
-            if (cons.rpos == CONSBUFSIZE) {
+            if (cons.rpos == CONSBUFSIZE)
+            {
                 cons.rpos = 0;
             }
         }

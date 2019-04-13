@@ -306,6 +306,7 @@ void proc_run(struct proc_struct *proc)
         local_intr_save(intr_flag);
         {
             current = proc;
+            // 找到栈顶
             load_esp0(next->kstack + KSTACKSIZE);
             lcr3(next->cr3);
             switch_to(&(prev->context), &(next->context));
@@ -359,18 +360,25 @@ int kernel_thread(int (*fn)(void *), void *arg, uint32_t clone_flags)
 {
     struct trapframe tf;
     memset(&tf, 0, sizeof(struct trapframe));
+    
+    // 通过 kernel_thread 创建的内核线程，代码段都是内核段
     tf.tf_cs = KERNEL_CS;
     tf.tf_ds = tf.tf_es = tf.tf_ss = KERNEL_DS;
+    
     // 设置下次要启动的函数，调度之前 ebx 中存有函数地址
     tf.tf_regs.reg_ebx = (uint32_t)fn;
+    
     // 参数，调度之前参数的地址存于 edx
     tf.tf_regs.reg_edx = (uint32_t)arg;
+    
     // 下次进程运行的位置
     tf.tf_eip = (uint32_t)kernel_thread_entry;  // 0xC010b37b
+    
     return do_fork(clone_flags | CLONE_VM, 0, &tf);
 }
 
 // setup_kstack - alloc pages with size KSTACKPAGE as process kernel stack
+// 分配栈空间，2个页面，8k
 static int setup_kstack(struct proc_struct *proc)
 {
     struct Page *page = alloc_pages(KSTACKPAGE);
@@ -514,8 +522,10 @@ bad_files_struct:
 static void put_fs(struct proc_struct *proc)
 {
     struct files_struct *filesp = proc->filesp;
-    if (filesp != NULL) {
-        if (files_count_dec(filesp) == 0) {
+    if (filesp != NULL)
+    {
+        if (files_count_dec(filesp) == 0)
+        {
             files_destroy(filesp);
         }
     }
@@ -553,7 +563,7 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf)
     proc->parent = current;
     assert(current->wait_state == 0);
 
-    // 分配内核栈
+    // 分配栈空间，2个页面，8k大小
     if (setup_kstack(proc) != 0)
     {
         goto bad_fork_cleanup_proc;
@@ -1155,6 +1165,9 @@ static int init_main(void *arg)
         panic("create user_main failed.\n");
     }
     
+    struct proc_struct *userproc = find_proc(pid);
+    set_proc_name(userproc, "user_main");
+    
     extern void check_sync(void);
 //    check_sync();                // check philosopher sync problem
 
@@ -1193,9 +1206,10 @@ void proc_init(void)
         panic("cannot alloc idleproc.\n");
     }
 
-    // idleproc = 0xC035b008
     idleproc->pid = 0;
     idleproc->state = PROC_RUNNABLE;
+    
+    // 只有 idleproc 使用最早创建的内核栈，后续无论再创建别的内核线程，还是用户进程，都是重新分配的栈空间
     idleproc->kstack = (uintptr_t)bootstack;    //0xC0152000
     idleproc->need_resched = 1;
     

@@ -27,7 +27,7 @@ static void cputch(int c, int *cnt)
 int vcprintf(const char *fmt, va_list ap)
 {
     int cnt = 0;
-    vprintfmt((void*)cputch, NO_FD, &cnt, fmt, ap);
+    vprintfmt((void *)cputch, NO_FD, &cnt, fmt, ap);
     return cnt;
 }
 

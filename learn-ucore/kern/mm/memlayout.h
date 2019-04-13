@@ -55,12 +55,15 @@
  *  physical memory end ----> |---------------------------------| 0xE0000000 512M
  *                            |                                 |
  *  free memory end --------> |---------------------------------| 0xDFFE0000
- *                            |                                 |
- *                            |                                 |
  *                            |  free memory = 0x0001F924 * 4k  |
  *                            |                                 |
+ *  user_main --------------->|---------------------------------| 0xC06BC4A0
  *                            |                                 |
- *  free memory start ------> |---------------------------------| 0xC06BC000
+ *  initproc ---------------->|---------------------------------| 0xC06BC0E8
+ *                            |                                 |
+ *  idleproc ---------------->|---------------------------------| 0xC06BC008
+ *                            |                                 |
+ *  free memory start ------> |---------------------------------| 0xC06BC000 (0x0001F924 * 4k)
  *                            |                                 |
  *  pages end --------------> |---------------------------------| 0xC06BBB80
  *                            |                                 |
@@ -69,6 +72,12 @@
  *  pages start ------------> |---------------------------------| 0xC023C000
  *                            |                                 |
  *  end --------------------> |---------------------------------| 0xC023B384
+ *                            |                                 |
+ *  proc_list --------------> |---------------------------------| 0xC023B37C
+ *                            |                                 |
+ *  hash_list --------------> |---------------------------------| 0xC0238060
+ *                            |                                 |
+ *  current ----------------> |---------------------------------| 0xC0238048
  *                            |                                 |
  *  ts ---------------------> |---------------------------------| 0xC0237FC0
  *                            |                                 |
@@ -157,12 +166,12 @@
  * */
 #define VPT                 0xFAC00000
 
-#define KSTACKPAGE          2                              // # of pages in kernel stack
+#define KSTACKPAGE          2                           // # of pages in kernel stack
 #define KSTACKSIZE          (KSTACKPAGE * PGSIZE)       // sizeof kernel stack
 
 #define USERTOP             0xB0000000
 #define USTACKTOP           USERTOP
-#define USTACKPAGE          256                            // # of pages in user stack
+#define USTACKPAGE          256                         // # of pages in user stack
 #define USTACKSIZE          (USTACKPAGE * PGSIZE)       // sizeof user stack
 
 #define USERBASE            0x00200000

@@ -11,7 +11,8 @@
  */
 static int dev_open(struct inode *node, uint32_t open_flags)
 {
-    if (open_flags & (O_CREAT | O_TRUNC | O_EXCL | O_APPEND)) {
+    if (open_flags & (O_CREAT | O_TRUNC | O_EXCL | O_APPEND))
+    {
         return -E_INVAL;
     }
     struct device *dev = vop_info(node, device);
@@ -63,7 +64,8 @@ static int dev_fstat(struct inode *node, struct stat *stat)
 {
     int ret;
     memset(stat, 0, sizeof(struct stat));
-    if ((ret = vop_gettype(node, &(stat->st_mode))) != 0) {
+    if ((ret = vop_gettype(node, &(stat->st_mode))) != 0)
+    {
         return ret;
     }
     struct device *dev = vop_info(node, device);
@@ -93,9 +95,12 @@ static int dev_gettype(struct inode *node, uint32_t *type_store)
 static int dev_tryseek(struct inode *node, off_t pos)
 {
     struct device *dev = vop_info(node, device);
-    if (dev->d_blocks > 0) {
-        if ((pos % dev->d_blocksize) == 0) {
-            if (pos >= 0 && pos < dev->d_blocks * dev->d_blocksize) {
+    if (dev->d_blocks > 0)
+    {
+        if ((pos % dev->d_blocksize) == 0)
+        {
+            if (pos >= 0 && pos < dev->d_blocks * dev->d_blocksize)
+            {
                 return 0;
             }
         }
@@ -117,7 +122,8 @@ static int dev_tryseek(struct inode *node, off_t pos)
  */
 static int dev_lookup(struct inode *node, char *path, struct inode **node_store)
 {
-    if (*path != '\0') {
+    if (*path != '\0')
+    {
         return -E_NOENT;
     }
     vop_ref_inc(node);
@@ -150,17 +156,21 @@ static const struct inode_ops dev_node_ops = {
 /* dev_init - Initialization functions for builtin vfs-level devices. */
 void dev_init(void)
 {
-   // init_device(null);
-    init_device(stdin);
-    init_device(stdout);
-    init_device(disk0);
+//    init_device(null);
+//    init_device(stdin);
+//    init_device(stdout);
+//    init_device(disk0);
+    dev_init_stdin();
+    dev_init_stdout();
+    dev_init_disk0();
 }
 
 /* dev_create_inode - Create inode for a vfs-level device. */
 struct inode *dev_create_inode(void)
 {
     struct inode *node;
-    if ((node = alloc_inode(device)) != NULL) {
+    if ((node = alloc_inode(device)) != NULL)
+    {
         vop_init(node, &dev_node_ops, NULL);
     }
     return node;
