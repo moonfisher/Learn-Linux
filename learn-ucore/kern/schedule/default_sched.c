@@ -5,7 +5,7 @@
 #include "default_sched.h"
 
 // 斜堆算法
-#define USE_SKEW_HEAP 0
+#define USE_SKEW_HEAP 1
 
 /* You should define the BigStride constant here*/
 /* LAB6: YOUR CODE */
@@ -146,7 +146,7 @@ static void stride_proc_tick(struct run_queue *rq, struct proc_struct *proc)
      /* LAB6: YOUR CODE */
      if (proc->time_slice > 0)
      {
-          proc->time_slice --;
+          proc->time_slice--;
      }
      if (proc->time_slice == 0)
      {

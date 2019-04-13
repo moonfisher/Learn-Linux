@@ -17,7 +17,7 @@
 #include "sync.h"
 #include "proc.h"
 
-#define TICK_NUM 100
+#define TICK_NUM 1000
 
 static void print_ticks()
 {
@@ -244,7 +244,7 @@ static void trap_dispatch(struct trapframe *tf)
             run_timer_list();
             if (ticks % TICK_NUM == 0)
             {
-//                print_ticks();
+                print_ticks();
             }
             break;
             
@@ -344,16 +344,19 @@ void trap(struct trapframe *tf)
     else
     {
         // keep a trapframe chain in stack
+        // 先保存中断处理之前，current 关联的 tf
         struct trapframe *otf = current->tf;
         current->tf = tf;
     
         bool in_kernel = trap_in_kernel(tf);
     
+        // 中断处理过程有可能会修改 tf 的内容
         trap_dispatch(tf);
     
         current->tf = otf;
         if (!in_kernel)
         {
+            // 说明当前是从用户态切换到内核态
             if (current->flags & PF_EXITING)
             {
                 do_exit(-E_KILLED);

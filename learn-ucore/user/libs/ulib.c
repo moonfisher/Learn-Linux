@@ -79,7 +79,8 @@ unsigned int gettime_msec(void)
 int __exec(const char *name, const char **argv)
 {
     int argc = 0;
-    while (argv[argc] != NULL) {
+    while (argv[argc] != NULL)
+    {
         argc ++;
     }
     return sys_exec(name, argc, argv);

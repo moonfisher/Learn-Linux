@@ -306,7 +306,7 @@ void proc_run(struct proc_struct *proc)
         local_intr_save(intr_flag);
         {
             current = proc;
-            // 找到栈顶
+            // 找到当前进程内核栈顶
             load_esp0(next->kstack + KSTACKSIZE);
             lcr3(next->cr3);
             switch_to(&(prev->context), &(next->context));
@@ -378,7 +378,7 @@ int kernel_thread(int (*fn)(void *), void *arg, uint32_t clone_flags)
 }
 
 // setup_kstack - alloc pages with size KSTACKPAGE as process kernel stack
-// 分配栈空间，2个页面，8k
+// 分配内核栈空间，2个页面，8k
 static int setup_kstack(struct proc_struct *proc)
 {
     struct Page *page = alloc_pages(KSTACKPAGE);
@@ -559,7 +559,7 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf)
         goto fork_out;
     }
 
-    //设置父节点为当前进程
+    //设置父节点为当前进程，如果是 shell 下执行的命令，current 就是 sh
     proc->parent = current;
     assert(current->wait_state == 0);
 
@@ -699,6 +699,7 @@ static int load_icode(int fd, int argc, char **kargv)
 {
     assert(argc >= 0 && argc <= EXEC_MAX_ARG_NUM);
 
+    // mm 是根据下面要加载的程序 elf 格式来创建的，不可能一开始就有
     if (current->mm != NULL)
     {
         panic("load_icode: current->mm must be empty.\n");
@@ -846,7 +847,7 @@ static int load_icode(int fd, int argc, char **kargv)
 
     //setup argc, argv
     uint32_t argv_size = 0, i;
-    for (i = 0; i < argc; i ++)
+    for (i = 0; i < argc; i++)
     {
         argv_size += strnlen(kargv[i], EXEC_MAX_ARG_LEN + 1) + 1;
     }
@@ -871,7 +872,7 @@ static int load_icode(int fd, int argc, char **kargv)
     memset(tf, 0, sizeof(struct trapframe));
     tf->tf_cs = USER_CS;
     tf->tf_ds = tf->tf_es = tf->tf_ss = USER_DS;
-    tf->tf_esp = stacktop;
+    tf->tf_esp = stacktop; // 用户态堆栈地址
     tf->tf_eip = elf->e_entry;
     tf->tf_eflags = FL_IF;
     ret = 0;
@@ -1083,10 +1084,13 @@ found:
 int do_kill(int pid)
 {
     struct proc_struct *proc;
-    if ((proc = find_proc(pid)) != NULL) {
-        if (!(proc->flags & PF_EXITING)) {
+    if ((proc = find_proc(pid)) != NULL)
+    {
+        if (!(proc->flags & PF_EXITING))
+        {
             proc->flags |= PF_EXITING;
-            if (proc->wait_state & WT_INTERRUPTED) {
+            if (proc->wait_state & WT_INTERRUPTED)
+            {
                 wakeup_proc(proc);
             }
             return 0;
@@ -1128,7 +1132,9 @@ const char *argv[] = {path, ##__VA_ARGS__, NULL};       \
 #define KERNEL_EXECVE3(x, s, ...)               __KERNEL_EXECVE3(x, s, ##__VA_ARGS__)
 
 // user_main - kernel thread used to exec a user program
-// 通过内核线程来执行一个用户程序，并切换到用户态
+// 通过内核线程来执行一个用户程序，并切换到用户态，这里是直接用 user_main 来执行 sh，
+// 这里是先创建了 proc task（user_main）然后再去加载执行 sh 代码文件，
+// 并没有 fork 新的进程去执行 sh，sh 就是 user_main 本身
 static int user_main(void *arg)
 {
 #ifdef TEST
@@ -1209,7 +1215,7 @@ void proc_init(void)
     idleproc->pid = 0;
     idleproc->state = PROC_RUNNABLE;
     
-    // 只有 idleproc 使用最早创建的内核栈，后续无论再创建别的内核线程，还是用户进程，都是重新分配的栈空间
+    // 只有 idleproc 使用最早创建的内核栈，后续无论再创建别的内核线程，还是用户进程，都是重新分配的内核栈空间
     idleproc->kstack = (uintptr_t)bootstack;    //0xC0152000
     idleproc->need_resched = 1;
     
@@ -1238,6 +1244,7 @@ void proc_init(void)
 }
 
 // cpu_idle - at the end of kern_init, the first kernel thread idleproc will do below works
+// idle 进程创建之后只干一件事，就是 schedule 调度进程
 void cpu_idle(void)
 {
     while (1)

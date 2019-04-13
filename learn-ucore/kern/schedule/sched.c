@@ -87,6 +87,7 @@ void schedule(void)
     local_intr_save(intr_flag);
     {
         current->need_resched = 0;
+        // 睡眠和死掉的线程不参与调度
         if (current->state == PROC_RUNNABLE)
         {
             sched_class_enqueue(current);

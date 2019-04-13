@@ -21,7 +21,7 @@ static __noinline void __up(semaphore_t *sem, uint32_t wait_state)
         wait_t *wait;
         if ((wait = wait_queue_first(&(sem->wait_queue))) == NULL)
         {
-            sem->value ++;
+            sem->value++;
         }
         else
         {
@@ -38,7 +38,7 @@ static __noinline uint32_t __down(semaphore_t *sem, uint32_t wait_state)
     local_intr_save(intr_flag);
     if (sem->value > 0)
     {
-        sem->value --;
+        sem->value--;
         local_intr_restore(intr_flag);
         return 0;
     }
@@ -76,7 +76,8 @@ bool try_down(semaphore_t *sem)
     local_intr_save(intr_flag);
     if (sem->value > 0)
     {
-        sem->value --, ret = 1;
+        sem->value--;
+        ret = 1;
     }
     local_intr_restore(intr_flag);
     return ret;

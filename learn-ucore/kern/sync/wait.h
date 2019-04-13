@@ -3,13 +3,15 @@
 
 #include "list.h"
 
-typedef struct {
+typedef struct
+{
     list_entry_t wait_head;
 } wait_queue_t;
 
 struct proc_struct;
 
-typedef struct {
+typedef struct
+{
     struct proc_struct *proc;
     uint32_t wakeup_flags;
     wait_queue_t *wait_queue;

@@ -286,8 +286,9 @@ static inline void lgdt(struct pseudodesc *pd)
  * so that we can use different kernel stack when we trap frame
  * user to kernel.
  
- 用户栈和内核站的区别
- 内核栈：内存中属于操作系统空间的一块区域，空间不大，目前设置的 8k
+ 用户栈和内核栈的区别
+ 内核栈：内存中属于操作系统空间的一块区域，空间不大，目前设置的 8k，
+ 每个 proc task 都有属于自己的内核栈，task 不同，内核栈就不同
  
  作用：
   1 保存中断现场，对于嵌套中断，被中断程序的现场信息一次压入系统栈，中断返回时逆序弹出

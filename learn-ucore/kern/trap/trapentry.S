@@ -47,7 +47,7 @@ __trapret:
     addl $0x8, %esp
     iret
 
-.globl forkrets
+.globl forkrets # 创建进程或者切换进程之后的入口
 forkrets:
     # set stack to this new process's trapframe
     movl 4(%esp), %esp

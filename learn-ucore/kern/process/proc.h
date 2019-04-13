@@ -73,6 +73,7 @@ struct proc_struct
 /*
     mm：内存管理的信息，包括内存映射列表、页表指针等,即实验三中的描述进程虚拟内存的结构体.
     mm 里有个很重要的项 pgdir，记 录的是该进程使用的一级页表的物理地址。
+    这个主要给用户进程使用，内核线程不需要使用 mm，因为内核的地址映射是一开始就静态映射好了
  */
     struct mm_struct *mm;                       // Process's memory management field
 /*
