@@ -32,11 +32,14 @@ struct iobuf;   // kernel or userspace I/O buffer (iobuf.h)
  * filesystem should have been discarded/released.
  *
  */
-struct fs {
-    union {
+struct fs
+{
+    union
+    {
         struct sfs_fs __sfs_info;                   
     } fs_info;                                     // filesystem-specific data 
-    enum {
+    enum
+    {
         fs_type_sfs_info,
     } fs_type;                                     // filesystem type 
     int (*fs_sync)(struct fs *fs);                 // Flush all dirty buffers to disk 

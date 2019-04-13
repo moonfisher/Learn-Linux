@@ -10,8 +10,8 @@
 #define printf(...)                     fprintf(1, __VA_ARGS__)
 #define BUFSIZE                         4096
 
-static char
-getmode(uint32_t st_mode) {
+static char getmode(uint32_t st_mode)
+{
     char mode = '?';
     if (S_ISREG(st_mode)) mode = '-';
     if (S_ISDIR(st_mode)) mode = 'd';
@@ -21,10 +21,11 @@ getmode(uint32_t st_mode) {
     return mode;
 }
 
-static int
-getstat(const char *name, struct stat *stat) {
+static int getstat(const char *name, struct stat *stat)
+{
     int fd, ret;
-    if ((fd = open(name, O_RDONLY)) < 0) {
+    if ((fd = open(name, O_RDONLY)) < 0)
+    {
         return fd;
     }
     ret = fstat(fd, stat);
@@ -32,8 +33,8 @@ getstat(const char *name, struct stat *stat) {
     return ret;
 }
 
-void
-lsstat(struct stat *stat, const char *filename) {
+void lsstat(struct stat *stat, const char *filename)
+{
     printf("   [%c]", getmode(stat->st_mode));
     printf(" %3d(h)", stat->st_nlinks);
     printf(" %8d(b)", stat->st_blocks);
@@ -41,18 +42,21 @@ lsstat(struct stat *stat, const char *filename) {
     printf("   %s\n", filename);
 }
 
-int
-lsdir(const char *path) {
+int lsdir(const char *path)
+{
     struct stat __stat, *stat = &__stat;
     int ret;
     DIR *dirp = opendir(".");
     
-    if (dirp == NULL) {
+    if (dirp == NULL)
+    {
         return -1;
     }
     struct dirent *direntp;
-    while ((direntp = readdir(dirp)) != NULL) {
-        if ((ret = getstat(direntp->name, stat)) != 0) {
+    while ((direntp = readdir(dirp)) != NULL)
+    {
+        if ((ret = getstat(direntp->name, stat)) != 0)
+        {
             goto failed;
         }
         lsstat(stat, direntp->name);
@@ -65,11 +69,12 @@ failed:
     return ret;
 }
 
-int
-ls(const char *path) {
+int ls(const char *path)
+{
     struct stat __stat, *stat = &__stat;
     int ret, type;
-    if ((ret = getstat(path, stat)) != 0) {
+    if ((ret = getstat(path, stat)) != 0)
+    {
         return ret;
     }
 
@@ -81,34 +86,40 @@ ls(const char *path) {
         " [  block  ]",
         " [  ?????  ]",
     };
-    switch (getmode(stat->st_mode)) {
-    case '0': type = 0; break;
-    case 'd': type = 1; break;
-    case 'l': type = 2; break;
-    case 'c': type = 3; break;
-    case 'b': type = 4; break;
-    default:  type = 5; break;
+    switch (getmode(stat->st_mode))
+    {
+        case '0': type = 0; break;
+        case 'd': type = 1; break;
+        case 'l': type = 2; break;
+        case 'c': type = 3; break;
+        case 'b': type = 4; break;
+        default:  type = 5; break;
     }
 
     printf(" @ is %s", filetype[type]);
     printf(" %d(hlinks)", stat->st_nlinks);
     printf(" %d(blocks)", stat->st_blocks);
     printf(" %d(bytes) : @'%s'\n", stat->st_size, path);
-    if (S_ISDIR(stat->st_mode)) {
+    if (S_ISDIR(stat->st_mode))
+    {
         return lsdir(path);
     }
     return 0;
 }
 
-int
-main(int argc, char **argv) {
-    if (argc == 1) {
+int main(int argc, char **argv)
+{
+    if (argc == 1)
+    {
         return ls(".");
     }
-    else {
+    else
+    {
         int i, ret;
-        for (i = 1; i < argc; i ++) {
-            if ((ret = ls(argv[i])) != 0) {
+        for (i = 1; i < argc; i ++)
+        {
+            if ((ret = ls(argv[i])) != 0)
+            {
                 return ret;
             }
         }

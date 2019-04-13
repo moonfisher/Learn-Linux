@@ -1,10 +1,11 @@
 #include "stdio.h"
 #include "ulib.h"
 
-int
-main(void) {
+int main(void)
+{
     int pid;
-    if ((pid = fork()) == 0) {
+    if ((pid = fork()) == 0)
+    {
         sleep(~0);
         exit(0xdead);
     }

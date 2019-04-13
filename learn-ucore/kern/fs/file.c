@@ -352,7 +352,8 @@ int file_fsync(int fd)
 {
     int ret = 0;
     struct file *file;
-    if ((ret = fd2file(fd, &file)) != 0) {
+    if ((ret = fd2file(fd, &file)) != 0)
+    {
         return ret;
     }
     fd_array_acquire(file);

@@ -1,22 +1,24 @@
 #include "stdio.h"
 #include "ulib.h"
 
-void
-sleepy(int pid) {
+void sleepy(int pid)
+{
     int i, time = 100;
-    for (i = 0; i < 10; i ++) {
+    for (i = 0; i < 10; i ++)
+    {
         sleep(time);
         cprintf("sleep %d x %d slices.\n", i + 1, time);
     }
     exit(0);
 }
 
-int
-main(void) {
+int main(void)
+{
     unsigned int time = gettime_msec();
     int pid1, exit_code;
 
-    if ((pid1 = fork()) == 0) {
+    if ((pid1 = fork()) == 0)
+    {
         sleepy(pid1);
     }
     

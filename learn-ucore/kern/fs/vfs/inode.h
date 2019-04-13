@@ -28,11 +28,13 @@ struct iobuf;
  */
 struct inode
 {
-    union {
+    union
+    {
         struct device __device_info;
         struct sfs_inode __sfs_inode_info;
     } in_info;
-    enum {
+    enum
+    {
         inode_type_device_info = 0x1234,
         inode_type_sfs_inode_info,
     } in_type;

@@ -1,13 +1,15 @@
 #include "stdio.h"
 #include "ulib.h"
 
-int
-main(void) {
+int main(void)
+{
     int pid, exit_code;
-    if ((pid = fork()) == 0) {
+    if ((pid = fork()) == 0)
+    {
         cprintf("fork ok.\n");
         int i;
-        for (i = 0; i < 10; i ++) {
+        for (i = 0; i < 10; i ++)
+        {
             yield();
         }
         exit(0xbeaf);

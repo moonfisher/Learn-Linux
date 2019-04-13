@@ -18,28 +18,35 @@ char shcwd[BUFSIZE];
 int gettoken(char **p1, char **p2)
 {
     char *s;
-    if ((s = *p1) == NULL) {
+    if ((s = *p1) == NULL)
+    {
         return 0;
     }
-    while (strchr(WHITESPACE, *s) != NULL) {
+    while (strchr(WHITESPACE, *s) != NULL)
+    {
         *s ++ = '\0';
     }
-    if (*s == '\0') {
+    if (*s == '\0')
+    {
         return 0;
     }
 
     *p2 = s;
     int token = 'w';
-    if (strchr(SYMBOLS, *s) != NULL) {
+    if (strchr(SYMBOLS, *s) != NULL)
+    {
         token = *s, *s ++ = '\0';
     }
-    else {
+    else
+    {
         bool flag = 0;
-        while (*s != '\0' && (flag || strchr(WHITESPACE SYMBOLS, *s) == NULL)) {
-            if (*s == '"') {
+        while (*s != '\0' && (flag || strchr(WHITESPACE SYMBOLS, *s) == NULL))
+        {
+            if (*s == '"')
+            {
                 *s = ' ', flag = !flag;
             }
-            s ++;
+            s++;
         }
     }
     *p1 = (*s != '\0' ? s : NULL);
@@ -49,35 +56,45 @@ int gettoken(char **p1, char **p2)
 char *readline(const char *prompt)
 {
     static char buffer[BUFSIZE];
-    if (prompt != NULL) {
+    if (prompt != NULL)
+    {
         printf("%s", prompt);
     }
+    
     int ret, i = 0;
-    while (1) {
+    while (1)
+    {
         char c;
-        if ((ret = read(0, &c, sizeof(char))) < 0) {
+        if ((ret = read(0, &c, sizeof(char))) < 0)
+        {
             return NULL;
         }
-        else if (ret == 0) {
-            if (i > 0) {
+        else if (ret == 0)
+        {
+            if (i > 0)
+            {
                 buffer[i] = '\0';
                 break;
             }
             return NULL;
         }
 
-        if (c == 3) {
+        if (c == 3)
+        {
             return NULL;
         }
-        else if (c >= ' ' && i < BUFSIZE - 1) {
+        else if (c >= ' ' && i < BUFSIZE - 1)
+        {
             putc(c);
             buffer[i ++] = c;
         }
-        else if (c == '\b' && i > 0) {
+        else if (c == '\b' && i > 0)
+        {
             putc(c);
             i --;
         }
-        else if (c == '\n' || c == '\r') {
+        else if (c == '\n' || c == '\r')
+        {
             putc(c);
             buffer[i] = '\0';
             break;
@@ -95,7 +112,8 @@ int reopen(int fd2, const char *filename, uint32_t open_flags)
 {
     int ret, fd1;
     close(fd2);
-    if ((ret = open(filename, open_flags)) >= 0 && ret != fd2) {
+    if ((ret = open(filename, open_flags)) >= 0 && ret != fd2)
+    {
         close(fd2);
         fd1 = ret, ret = dup2(fd1, fd2);
         close(fd1);
@@ -106,7 +124,8 @@ int reopen(int fd2, const char *filename, uint32_t open_flags)
 int testfile(const char *name)
 {
     int ret;
-    if ((ret = open(name, O_RDONLY)) < 0) {
+    if ((ret = open(name, O_RDONLY)) < 0)
+    {
         return ret;
     }
     close(ret);
@@ -121,90 +140,110 @@ int runcmd(char *cmd)
     int argc, token, ret, p[2];
 again:
     argc = 0;
-    while (1) {
-        switch (token = gettoken(&cmd, &t)) {
-        case 'w':
-            if (argc == EXEC_MAX_ARG_NUM) {
-                printf("sh error: too many arguments\n");
-                return -1;
-            }
-            argv[argc ++] = t;
-            break;
-        case '<':
-            if (gettoken(&cmd, &t) != 'w') {
-                printf("sh error: syntax error: < not followed by word\n");
-                return -1;
-            }
-            if ((ret = reopen(0, t, O_RDONLY)) != 0) {
-                return ret;
-            }
-            break;
-        case '>':
-            if (gettoken(&cmd, &t) != 'w') {
-                printf("sh error: syntax error: > not followed by word\n");
-                return -1;
-            }
-            if ((ret = reopen(1, t, O_RDWR | O_TRUNC | O_CREAT)) != 0) {
-                return ret;
-            }
-            break;
-        case '|':
-          //  if ((ret = pipe(p)) != 0) {
-          //      return ret;
-          //  }
-            if ((ret = fork()) == 0) {
-                close(0);
-                if ((ret = dup2(p[0], 0)) < 0) {
+    while (1)
+    {
+        switch (token = gettoken(&cmd, &t))
+        {
+            case 'w':
+                if (argc == EXEC_MAX_ARG_NUM)
+                {
+                    printf("sh error: too many arguments\n");
+                    return -1;
+                }
+                argv[argc ++] = t;
+                break;
+            case '<':
+                if (gettoken(&cmd, &t) != 'w')
+                {
+                    printf("sh error: syntax error: < not followed by word\n");
+                    return -1;
+                }
+                if ((ret = reopen(0, t, O_RDONLY)) != 0)
+                {
                     return ret;
                 }
-                close(p[0]), close(p[1]);
-                goto again;
-            }
-            else {
-                if (ret < 0) {
+                break;
+            case '>':
+                if (gettoken(&cmd, &t) != 'w')
+                {
+                    printf("sh error: syntax error: > not followed by word\n");
+                    return -1;
+                }
+                if ((ret = reopen(1, t, O_RDWR | O_TRUNC | O_CREAT)) != 0)
+                {
                     return ret;
                 }
-                close(1);
-                if ((ret = dup2(p[1], 1)) < 0) {
-                    return ret;
+                break;
+            case '|':
+              //  if ((ret = pipe(p)) != 0) {
+              //      return ret;
+              //  }
+                if ((ret = fork()) == 0)
+                {
+                    close(0);
+                    if ((ret = dup2(p[0], 0)) < 0)
+                    {
+                        return ret;
+                    }
+                    close(p[0]), close(p[1]);
+                    goto again;
                 }
-                close(p[0]), close(p[1]);
+                else
+                {
+                    if (ret < 0)
+                    {
+                        return ret;
+                    }
+                    close(1);
+                    if ((ret = dup2(p[1], 1)) < 0)
+                    {
+                        return ret;
+                    }
+                    close(p[0]), close(p[1]);
+                    goto runit;
+                }
+                break;
+            case 0:
                 goto runit;
-            }
-            break;
-        case 0:
-            goto runit;
-        case ';':
-            if ((ret = fork()) == 0) {
-                goto runit;
-            }
-            else {
-                if (ret < 0) {
-                    return ret;
+            case ';':
+                if ((ret = fork()) == 0)
+                {
+                    goto runit;
                 }
-                waitpid(ret, NULL);
-                goto again;
-            }
-            break;
-        default:
-            printf("sh error: bad return %d from gettoken\n", token);
-            return -1;
+                else
+                {
+                    if (ret < 0)
+                    {
+                        return ret;
+                    }
+                    waitpid(ret, NULL);
+                    goto again;
+                }
+                break;
+            default:
+                printf("sh error: bad return %d from gettoken\n", token);
+                return -1;
         }
     }
 
 runit:
-    if (argc == 0) {
+    if (argc == 0)
+    {
         return 0;
     }
-    else if (strcmp(argv[0], "cd") == 0) {
-        if (argc != 2) {
+    else if (strcmp(argv[0], "cd") == 0)
+    {
+        if (argc != 2)
+        {
             return -1;
         }
         strcpy(shcwd, argv[1]);
         return 0;
     }
-    if ((ret = testfile(argv[0])) != 0) {
-        if (ret != -E_NOENT) {
+    if ((ret = testfile(argv[0])) != 0)
+    {
+        if (ret != -E_NOENT)
+        {
             return ret;
         }
         snprintf(argv0, sizeof(argv0), "/%s", argv[0]);

@@ -1,15 +1,18 @@
 #include "stdio.h"
 #include "ulib.h"
 
-int
-main(void) {
+int main(void)
+{
     int pid, ret, i ,j;
     cprintf("I am the parent. Forking the child...\n");
     pid = fork();
-    if (pid== 0) {
+    if (pid == 0)
+    {
         cprintf("I am the child. spinning ...\n");
         while (1);
-    }else if (pid<0) {
+    }
+    else if (pid < 0)
+    {
         panic("fork child error\n");
     }
     cprintf("I am the parent. Running the child...\n");

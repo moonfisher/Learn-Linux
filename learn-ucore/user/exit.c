@@ -3,11 +3,12 @@
 
 int magic = -0x10384;
 
-int
-main(void) {
+int main(void)
+{
     int pid, code;
     cprintf("I am the parent. Forking the child...\n");
-    if ((pid = fork()) == 0) {
+    if ((pid = fork()) == 0)
+    {
         cprintf("I am the child.\n");
         yield();
         yield();
@@ -18,7 +19,8 @@ main(void) {
         yield();
         exit(magic);
     }
-    else {
+    else
+    {
         cprintf("I am parent, fork a child pid %d\n",pid);
     }
     assert(pid > 0);

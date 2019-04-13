@@ -37,7 +37,8 @@
 /*
  * On-disk superblock
  */
-struct sfs_super {
+struct sfs_super
+{
     uint32_t magic;                                 /* magic number, should be SFS_MAGIC */
     uint32_t blocks;                                /* # of blocks in fs */
     uint32_t unused_blocks;                         /* # of unused blocks in fs */
@@ -45,7 +46,8 @@ struct sfs_super {
 };
 
 /* inode (on disk) */
-struct sfs_disk_inode {
+struct sfs_disk_inode
+{
     uint32_t size;                                  /* size of the file (in bytes) */
     uint16_t type;                                  /* one of SYS_TYPE_* above */
     uint16_t nlinks;                                /* # of hard links to this file */
@@ -57,7 +59,8 @@ struct sfs_disk_inode {
 };
 
 /* file entry (on disk) */
-struct sfs_disk_entry {
+struct sfs_disk_entry
+{
     uint32_t ino;                                   /* inode number */
     char name[SFS_MAX_FNAME_LEN + 1];               /* file name */
 };
@@ -66,7 +69,8 @@ struct sfs_disk_entry {
     sizeof(((struct sfs_disk_entry *)0)->name)
 
 /* inode for sfs */
-struct sfs_inode {
+struct sfs_inode
+{
     struct sfs_disk_inode *din;                     /* on-disk inode */
     uint32_t ino;                                   /* inode number */
     bool dirty;                                     /* true if inode modified */
@@ -80,7 +84,8 @@ struct sfs_inode {
     to_struct((le), struct sfs_inode, member)
 
 /* filesystem for sfs */
-struct sfs_fs {
+struct sfs_fs
+{
     struct sfs_super super;                         /* on-disk superblock */
     struct device *dev;                             /* device mounted on */
     struct bitmap *freemap;                         /* blocks in use are mared 0 */

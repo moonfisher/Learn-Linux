@@ -25,13 +25,11 @@ static struct stat *safe_fstat(int fd)
 	return stat;
 }
 
-
 static void safe_read(int fd, void *data, size_t len)
 {
 	int ret = read(fd, data, len);
 	assert(ret == len);
 }
-
 
 int main(void)
 {

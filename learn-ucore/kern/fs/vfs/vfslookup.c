@@ -9,15 +9,16 @@
  * get_device- Common code to pull the device name, if any, off the front of a
  *             path and choose the inode to begin the name lookup relative to.
  */
-
 static int get_device(char *path, char **subpath, struct inode **node_store)
 {
     int i, slash = -1, colon = -1;
-    for (i = 0; path[i] != '\0'; i ++) {
+    for (i = 0; path[i] != '\0'; i ++)
+    {
         if (path[i] == ':') { colon = i; break; }
         if (path[i] == '/') { slash = i; break; }
     }
-    if (colon < 0 && slash != 0) {
+    if (colon < 0 && slash != 0)
+    {
         /* *
          * No colon before a slash, so no device name specified, and the slash isn't leading
          * or is also absent, so this is a relative path or just a bare filename. Start from
@@ -26,7 +27,8 @@ static int get_device(char *path, char **subpath, struct inode **node_store)
         *subpath = path;
         return vfs_get_curdir(node_store);
     }
-    if (colon > 0) {
+    if (colon > 0)
+    {
         /* device:path - get root of device's filesystem */
         path[colon] = '\0';
 
@@ -42,15 +44,19 @@ static int get_device(char *path, char **subpath, struct inode **node_store)
      * :path is a path relative to the root of the current filesystem
      * */
     int ret;
-    if (*path == '/') {
-        if ((ret = vfs_get_bootfs(node_store)) != 0) {
+    if (*path == '/')
+    {
+        if ((ret = vfs_get_bootfs(node_store)) != 0)
+        {
             return ret;
         }
     }
-    else {
+    else
+    {
         assert(*path == ':');
         struct inode *node;
-        if ((ret = vfs_get_curdir(&node)) != 0) {
+        if ((ret = vfs_get_curdir(&node)) != 0)
+        {
             return ret;
         }
         /* The current directory may not be a device, so it must have a fs. */
@@ -72,10 +78,12 @@ int vfs_lookup(char *path, struct inode **node_store)
 {
     int ret;
     struct inode *node;
-    if ((ret = get_device(path, &path, &node)) != 0) {
+    if ((ret = get_device(path, &path, &node)) != 0)
+    {
         return ret;
     }
-    if (*path != '\0') {
+    if (*path != '\0')
+    {
         ret = vop_lookup(node, path, node_store);
         vop_ref_dec(node);
         return ret;
@@ -92,7 +100,8 @@ int vfs_lookup_parent(char *path, struct inode **node_store, char **endp)
 {
     int ret;
     struct inode *node;
-    if ((ret = get_device(path, &path, &node)) != 0) {
+    if ((ret = get_device(path, &path, &node)) != 0)
+    {
         return ret;
     }
     *endp = path;
