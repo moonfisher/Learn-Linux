@@ -285,13 +285,12 @@ static int get_pid(void)
 // proc_run - make process "proc" running on cpu
 // NOTE: before call switch_to, should load  base addr of "proc"'s new PDT
 /*
- 让 current 指向 next 内核线程 initproc；
  设置任务状态段 ts 中特权态 0 下的栈顶指针 esp0 为 next 内核线程的内核栈的栈顶，
  即 next->kstack + KSTACKSIZE；
  设置 CR3 寄存器的值为 next 内核线程的页目录表起始地址 next->cr3，
  这实际上是完成进程间的页表切换；
- 由switch_to函数完成具体的两个线程的执行现场切换，即切换各个寄存器，当 switch_to 函数执行完 ret 指令后，
- 就切换到initproc执行了。
+ 由 switch_to 函数完成具体的两个线程的执行现场切换，即切换各个寄存器，当 switch_to 函数执行完 ret 指令后，
+ 就切换到 next 执行了。
  在页表设置方面，考虑到以后的进程有各自的页表，其起始地址各不相同，只有完成页表切换，才能确保新的进程能够正确执行。
  */
 void proc_run(struct proc_struct *proc)

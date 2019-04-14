@@ -118,7 +118,7 @@ static const char *IA32flags[] = {
 void print_trapframe(struct trapframe *tf)
 {
     cprintf("trapframe at %p\n", tf);
-    print_regs(&tf->tf_regs);
+    print_regs(&(tf->tf_regs));
     cprintf("  ds   0x----%04x\n", tf->tf_ds);
     cprintf("  es   0x----%04x\n", tf->tf_es);
     cprintf("  fs   0x----%04x\n", tf->tf_fs);
@@ -354,13 +354,17 @@ void trap(struct trapframe *tf)
         trap_dispatch(tf);
     
         current->tf = otf;
+        
+        // 下面的分支，说明当前是在用户态发生了中断
         if (!in_kernel)
         {
-            // 说明当前是从用户态切换到内核态
             if (current->flags & PF_EXITING)
             {
                 do_exit(-E_KILLED);
             }
+            
+            // 用户态切入内核态之后，有可能引起重新调度，比如基于时间片的计算，时间片达到最大之后，重新调度
+            // 正是因为有周期性的时钟中断，操作系统内核才能一直有机会获取代码执行权，否则用户进程写个死循环就完了
             if (current->need_resched)
             {
                 schedule();

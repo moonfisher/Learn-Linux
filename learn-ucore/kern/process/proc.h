@@ -48,7 +48,7 @@ struct proc_struct
 {
     enum proc_state state;                      // Process state
     int pid;                                    // Process ID
-    int runs;                                   // the running times of Proces
+    int runs;                                   // the running times of Proces 进程运行过的次数
 /*
     kstack: 每个进程都有一个内核桟，并且位于内核地址空间的不同位置。
     对于内核线程，该桟就是运行时的程序使用的桟；

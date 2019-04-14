@@ -30,6 +30,7 @@ static inline struct proc_struct *sched_class_pick_next(void)
     return sched_class->pick_next(rq);
 }
 
+// 计算进程运行时间片
 static void sched_class_proc_tick(struct proc_struct *proc)
 {
     if (proc != idleproc)
@@ -80,13 +81,25 @@ void wakeup_proc(struct proc_struct *proc)
     local_intr_restore(intr_flag);
 }
 
+/*
+ 触发进程重新调度的几个关键点：
+ 1）idle 进程空转，不停触发调度
+ 2）周期性的时钟中断，正是因为有时钟中断，操作系统内核才能一直有机会主动获取代码执行权，否则用户进程写个死循环就完了
+ 3）lock，sem，condition，这些信号控制，用户进程因为阻塞或者等待，触发调度
+ 4）读写 io 导致阻塞，比如从 stdin 读取数据，触发调度
+ 5）当前进程执行完 exit 退出了，触发调度
+ 6）父进程等待子进程 exit 退出后，触发调度
+ 7）进程自己 sleep 睡眠，触发调度
+*/
 void schedule(void)
 {
     bool intr_flag;
     struct proc_struct *next;
     local_intr_save(intr_flag);
     {
+        // 已经进入调度，先清零标记位，防止过度重复调度
         current->need_resched = 0;
+        
         // 睡眠和死掉的线程不参与调度
         if (current->state == PROC_RUNNABLE)
         {
@@ -98,6 +111,8 @@ void schedule(void)
             sched_class_dequeue(next);
         }
         
+        // 如果在进程列表里找不到需要调度的进程（有可能进程处于睡眠或者 io 等待状态）
+        // 就只能调度 idle 内核进程了
         if (next == NULL)
         {
             next = idleproc;
@@ -191,6 +206,8 @@ void run_timer_list(void)
                 timer = le2timer(le, timer_link);
             }
         }
+        
+        // 通过周期性的时钟中断，计算当前正在运行中的进程时间片，时间片达到最大之后，重新调度
         sched_class_proc_tick(current);
     }
     local_intr_restore(intr_flag);

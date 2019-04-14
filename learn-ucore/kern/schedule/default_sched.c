@@ -141,6 +141,7 @@ static struct proc_struct *stride_pick_next(struct run_queue *rq)
  * process. proc->need_resched is the flag variable for process
  * switching.
  */
+// 通过周期性的时钟中断，计算当前正在运行中的进程时间片，时间片达到最大之后，重新调度
 static void stride_proc_tick(struct run_queue *rq, struct proc_struct *proc)
 {
      /* LAB6: YOUR CODE */
