@@ -14,7 +14,8 @@ static inline int syscall(int num, ...)
     va_start(ap, num);
     uint32_t a[MAX_ARGS];
     int i, ret;
-    for (i = 0; i < MAX_ARGS; i ++) {
+    for (i = 0; i < MAX_ARGS; i ++)
+    {
         a[i] = va_arg(ap, uint32_t);
     }
     va_end(ap);
@@ -38,9 +39,9 @@ int sys_exit(int error_code)
     return syscall(SYS_exit, error_code);
 }
 
-int sys_fork(void)
+int sys_fork(char *name)
 {
-    return syscall(SYS_fork);
+    return syscall(SYS_fork, name);
 }
 
 int sys_wait(int pid, int *store)

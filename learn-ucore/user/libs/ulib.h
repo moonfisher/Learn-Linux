@@ -26,7 +26,7 @@ void __noreturn __panic(const char *file, int line, const char *fmt, ...);
 int fprintf(int fd, const char *fmt, ...);
 
 void __noreturn exit(int error_code);
-int fork(void);
+int fork(char *name);
 int wait(void);
 int waitpid(int pid, int *store);
 void yield(void);

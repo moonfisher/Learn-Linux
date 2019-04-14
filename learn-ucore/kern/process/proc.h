@@ -24,6 +24,8 @@ enum proc_state
 // which are caller save, but not the return register %eax.
 // (Not saving %eax just simplifies the switching code.)
 // The layout of context must match code in switch.S.
+// 用户在发生进程切换的时候（switch_to），保存当前进程执行的现场，后续好恢复
+// 只需要保留几个常用的寄存器就行了，并不需要保存所有 cpu 寄存器
 struct context
 {
     uint32_t eip;
@@ -78,8 +80,10 @@ struct proc_struct
  */
     struct mm_struct *mm;                       // Process's memory management field
 /*
-    context：进程的上下文，用于进程切换。 在ucore 中，所有的进程在内核中也是相对独立的
-    （例如独立的内核堆栈以及上下文等等）。使用context保存寄存器的目的就在于在内核态中能够进行上下文之间的切换。
+    context：进程的上下文，用于进程切换（switch_to）。 在 ucore 中，所有的进程在内核中也是相对独立的
+    （例如独立的内核堆栈以及上下文等等）。使用 context 保存寄存器的目的就在于在内核态中能够进行上下文之间的切换。
+    context 和下面的 tf 有相似的地方，都会因为被切换而保存 cpu 寄存器状态数据，但区别是 context 仅在
+    进程调度切换的场景下使用，tf 是用在进程从用户态切换到内核态，这时候进程不一定发生了切换
  */
     struct context context;                     // Switch here to run process
 /*
@@ -142,7 +146,7 @@ char *get_proc_name(struct proc_struct *proc);
 void cpu_idle(void) __attribute__((noreturn));
 
 struct proc_struct *find_proc(int pid);
-int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf);
+int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf, const char *name);
 int do_exit(int error_code);
 int do_yield(void);
 int do_execve(const char *name, int argc, const char **argv);

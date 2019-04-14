@@ -60,6 +60,7 @@ void sched_init(void)
 
 void wakeup_proc(struct proc_struct *proc)
 {
+    cprintf("wakeup_proc: pid = %d, name = \"%s\".\n", proc->pid, proc->name);
     assert(proc->state != PROC_ZOMBIE);
     bool intr_flag;
     local_intr_save(intr_flag);

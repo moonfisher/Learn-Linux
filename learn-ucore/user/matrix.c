@@ -59,7 +59,11 @@ int main(void)
     int i;
     for (i = 0; i < total; i ++)
     {
-        if ((pids[i] = fork()) == 0)
+        char local_name[20];
+        memset(local_name, 0, sizeof(local_name));
+        snprintf(local_name, sizeof(local_name), "pids-%d", i);
+        
+        if ((pids[i] = fork(local_name)) == 0)
         {
             srand(i * i);
             int times = (((unsigned int)rand()) % total);

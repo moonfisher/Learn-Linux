@@ -24,15 +24,19 @@ static void spin_delay(void)
 int main(void)
 {
      int i, time;
-     cprintf("priority process will sleep %d ticks\n",SLEEP_TIME);
+     cprintf("priority process will sleep %d ticks\n", SLEEP_TIME);
      sleep(SLEEP_TIME);
      memset(pids, 0, sizeof(pids));
      set_priority(TOTAL + 1);
 
      for (i = 0; i < TOTAL; i ++)
      {
+          char local_name[20];
+          memset(local_name, 0, sizeof(local_name));
+          snprintf(local_name, sizeof(local_name), "pids-%d", i);
+         
           acc[i] = 0;
-          if ((pids[i] = fork()) == 0)
+          if ((pids[i] = fork(local_name)) == 0)
           {
                set_priority(i + 1);
                acc[i] = 0;
@@ -40,7 +44,7 @@ int main(void)
                {
                     spin_delay();
                     ++acc[i];
-                    if(acc[i] % 4000 == 0)
+                    if (acc[i] % 4000 == 0)
                     {
                         if ((time = gettime_msec()) > SLEEP_TIME + MAX_TIME)
                         {
@@ -78,10 +82,10 @@ int main(void)
 failed:
      for (i = 0; i < TOTAL; i ++)
      {
-          if (pids[i] > 0)
-          {
-               kill(pids[i]);
-          }
+        if (pids[i] > 0)
+        {
+            kill(pids[i]);
+        }
      }
      panic("FAIL: T.T\n");
 }

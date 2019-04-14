@@ -106,8 +106,8 @@ static void serial_init(void)
     // Clear any preexisting overrun indications and interrupts
     // Serial port doesn't exist if COM_LSR returns 0xFF
     serial_exists = (inb(COM1 + COM_LSR) != 0xFF);
-    (void) inb(COM1+COM_IIR);
-    (void) inb(COM1+COM_RX);
+    (void) inb(COM1 + COM_IIR);
+    (void) inb(COM1 + COM_RX);
 
     if (serial_exists)
     {
@@ -222,6 +222,7 @@ static void serial_putc(int c)
 
 #define CONSBUFSIZE 512
 
+// io 输入缓冲区
 static struct
 {
     uint8_t buf[CONSBUFSIZE];
@@ -479,13 +480,14 @@ int cons_getc(void)
         // poll for any pending input characters,
         // so that this function works even when interrupts are disabled
         // (e.g., when called from the kernel monitor).
+        // 这里是需要循环读取 io 上的数据，为了能完整一批批读完，需要先关闭中断
         serial_intr();
         kbd_intr();
 
         // grab the next character from the input buffer.
         if (cons.rpos != cons.wpos)
         {
-            c = cons.buf[cons.rpos ++];
+            c = cons.buf[cons.rpos++];
             if (cons.rpos == CONSBUFSIZE)
             {
                 cons.rpos = 0;

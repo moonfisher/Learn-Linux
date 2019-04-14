@@ -2,7 +2,7 @@
 #define __USER_LIBS_SYSCALL_H__
 
 int sys_exit(int error_code);
-int sys_fork(void);
+int sys_fork(char *name);
 int sys_wait(int pid, int *store);
 int sys_exec(const char *name, int argc, const char **argv);
 int sys_yield(void);

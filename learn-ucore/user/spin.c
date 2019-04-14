@@ -5,7 +5,7 @@ int main(void)
 {
     int pid, ret, i ,j;
     cprintf("I am the parent. Forking the child...\n");
-    pid = fork();
+    pid = fork("spin");
     if (pid == 0)
     {
         cprintf("I am the child. spinning ...\n");

@@ -25,9 +25,10 @@ void exit(int error_code)
     while (1);
 }
 
-int fork(void)
+// 这里修改下 fork，加个参数，给生成的子进程设置名字，方便 debug
+int fork(char *name)
 {
-    return sys_fork();
+    return sys_fork(name);
 }
 
 int wait(void)

@@ -99,7 +99,8 @@ void ide_init(void)
         ide_wait_ready(iobase, 0);
 
         /* step3: polling */
-        if (inb(iobase + ISA_STATUS) == 0 || ide_wait_ready(iobase, 1) != 0) {
+        if (inb(iobase + ISA_STATUS) == 0 || ide_wait_ready(iobase, 1) != 0)
+        {
             continue ;
         }
 
@@ -114,10 +115,12 @@ void ide_init(void)
         unsigned int sectors;
         unsigned int cmdsets = *(unsigned int *)(ident + IDE_IDENT_CMDSETS);
         /* device use 48-bits or 28-bits addressing */
-        if (cmdsets & (1 << 26)) {
+        if (cmdsets & (1 << 26))
+        {
             sectors = *(unsigned int *)(ident + IDE_IDENT_MAX_LBA_EXT);
         }
-        else {
+        else
+        {
             sectors = *(unsigned int *)(ident + IDE_IDENT_MAX_LBA);
         }
         ide_devices[ideno].sets = cmdsets;
@@ -128,7 +131,8 @@ void ide_init(void)
 
         unsigned char *model = ide_devices[ideno].model, *data = ident + IDE_IDENT_MODEL;
         unsigned int i, length = 40;
-        for (i = 0; i < length; i += 2) {
+        for (i = 0; i < length; i += 2)
+        {
             model[i] = data[i + 1], model[i + 1] = data[i];
         }
         do {

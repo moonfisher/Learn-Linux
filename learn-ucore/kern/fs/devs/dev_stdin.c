@@ -54,6 +54,8 @@ static int dev_stdin_read(char *buf, size_t len)
             }
             else
             {
+                // 如果缓冲区里没有数据，就先挂起当前进程等待，打开中断，然后先调度别的进程运行，
+                // 等后续 io 数据回来之后，会再次中断将数据存到缓冲区，然后唤醒当前进程来读取数据
                 wait_t __wait, *wait = &__wait;
                 wait_current_set(wait_queue, wait, WT_KBD);
                 local_intr_restore(intr_flag);

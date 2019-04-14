@@ -17,7 +17,7 @@ int main(void)
     unsigned int time = gettime_msec();
     int pid1, exit_code;
 
-    if ((pid1 = fork()) == 0)
+    if ((pid1 = fork("pid1")) == 0)
     {
         sleepy(pid1);
     }

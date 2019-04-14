@@ -238,7 +238,7 @@ size_t kallocated(void)
 static int find_order(int size)
 {
 	int order = 0;
-	for ( ; size > 4096 ; size >>=1)
+	for (; size > 4096; size >>= 1)
 		order++;
 	return order;
 }
@@ -289,11 +289,14 @@ void kfree(void *block)
 	if (!block)
 		return;
 
-	if (!((unsigned long)block & (PAGE_SIZE-1))) {
+	if (!((unsigned long)block & (PAGE_SIZE - 1)))
+    {
 		/* might be on the big block list */
 		spin_lock_irqsave(&block_lock, flags);
-		for (bb = bigblocks; bb; last = &bb->next, bb = bb->next) {
-			if (bb->pages == block) {
+		for (bb = bigblocks; bb; last = &bb->next, bb = bb->next)
+        {
+			if (bb->pages == block)
+            {
 				*last = bb->next;
 				spin_unlock_irqrestore(&block_lock, flags);
 				__slob_free_pages((unsigned long)block, bb->order);
@@ -316,13 +319,17 @@ unsigned int ksize(const void *block)
 	if (!block)
 		return 0;
 
-	if (!((unsigned long)block & (PAGE_SIZE-1))) {
+	if (!((unsigned long)block & (PAGE_SIZE - 1)))
+    {
 		spin_lock_irqsave(&block_lock, flags);
 		for (bb = bigblocks; bb; bb = bb->next)
-			if (bb->pages == block) {
+        {
+			if (bb->pages == block)
+            {
 				spin_unlock_irqrestore(&slob_lock, flags);
 				return PAGE_SIZE << bb->order;
 			}
+        }
 		spin_unlock_irqrestore(&block_lock, flags);
 	}
 

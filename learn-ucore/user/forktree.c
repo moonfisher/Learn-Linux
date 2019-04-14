@@ -14,7 +14,7 @@ void forkchild(const char *cur, char branch)
         return;
 
     snprintf(nxt, DEPTH + 1, "%s%c", cur, branch);
-    if (fork() == 0)
+    if (fork(nxt) == 0)
     {
         forktree(nxt);
         yield();

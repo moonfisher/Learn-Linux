@@ -154,16 +154,19 @@ static void set_links(struct proc_struct *proc)
 static void remove_links(struct proc_struct *proc)
 {
     list_del(&(proc->list_link));
-    if (proc->optr != NULL) {
+    if (proc->optr != NULL)
+    {
         proc->optr->yptr = proc->yptr;
     }
-    if (proc->yptr != NULL) {
+    if (proc->yptr != NULL)
+    {
         proc->yptr->optr = proc->optr;
     }
-    else {
+    else
+    {
        proc->parent->cptr = proc->optr;
     }
-    nr_process --;
+    nr_process--;
 }
 
 // get_pid - alloc a unique pid for process
@@ -249,6 +252,7 @@ void proc_run(struct proc_struct *proc)
 */
 static void forkret(void)
 {
+    cprintf("forkret: pid = %d, name = \"%s\".\n", current->pid, current->name);
     forkrets(current->tf);
 }
 
@@ -303,7 +307,7 @@ int kernel_thread(int (*fn)(void *), void *arg, uint32_t clone_flags)
     // 下次进程运行的位置
     tf.tf_eip = (uint32_t)kernel_thread_entry;  // 0xC010b37b
     
-    return do_fork(clone_flags | CLONE_VM, 0, &tf);
+    return do_fork(clone_flags | CLONE_VM, 0, &tf, "");
 }
 
 // setup_kstack - alloc pages with size KSTACKPAGE as process kernel stack
@@ -473,7 +477,7 @@ static void put_fs(struct proc_struct *proc)
  如果多个 proc_struct 之间不共享虚拟地址和文件句柄，那可以把这些 proc_struct 看做
  独立的进程
 */
-int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf)
+int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf, const char *name)
 {
     int ret = -E_NO_FREE_PROC;
     struct proc_struct *proc;
@@ -509,6 +513,11 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf)
     {
         goto bad_fork_cleanup_fs;
     }
+    
+    char local_name[PROC_NAME_LEN + 1];
+    memset(local_name, 0, sizeof(local_name));
+    snprintf(local_name, sizeof(local_name), "%s", name);
+    set_proc_name(proc, local_name);
     
     // 调用copy_thread()函数复制父进程的中断帧和上下文信息
     copy_thread(proc, stack, tf);
@@ -604,7 +613,9 @@ int do_exit(int error_code)
     }
     local_intr_restore(intr_flag);
     
+    cprintf("proc exit: pid = %d, name = \"%s\", error = %d.\n", current->pid, current->name, error_code);
     schedule();
+    // 这下面的代码不会走到，是因为重新调度到 init 进程之后，当前进程资源已经被 init 释放，相关代码在内存已经不存在
     panic("do_exit will not return!! %d.\n", current->pid);
 }
 
@@ -820,7 +831,8 @@ bad_mm:
 // this function isn't very correct in LAB8
 static void put_kargv(int argc, char **kargv)
 {
-    while (argc > 0) {
+    while (argc > 0)
+    {
         kfree(kargv[-- argc]);
     }
 }
@@ -828,15 +840,19 @@ static void put_kargv(int argc, char **kargv)
 static int copy_kargv(struct mm_struct *mm, int argc, char **kargv, const char **argv)
 {
     int i, ret = -E_INVAL;
-    if (!user_mem_check(mm, (uintptr_t)argv, sizeof(const char *) * argc, 0)) {
+    if (!user_mem_check(mm, (uintptr_t)argv, sizeof(const char *) * argc, 0))
+    {
         return ret;
     }
-    for (i = 0; i < argc; i ++) {
+    for (i = 0; i < argc; i ++)
+    {
         char *buffer;
-        if ((buffer = kmalloc(EXEC_MAX_ARG_LEN + 1)) == NULL) {
+        if ((buffer = kmalloc(EXEC_MAX_ARG_LEN + 1)) == NULL)
+        {
             goto failed_nomem;
         }
-        if (!copy_string(mm, buffer, argv[i], EXEC_MAX_ARG_LEN + 1)) {
+        if (!copy_string(mm, buffer, argv[i], EXEC_MAX_ARG_LEN + 1))
+        {
             kfree(buffer);
             goto failed_cleanup;
         }
@@ -930,6 +946,7 @@ execve_exit:
 // do_yield - ask the scheduler to reschedule
 int do_yield(void)
 {
+    cprintf("do_yield: pid = %d, name = \"%s\".\n", current->pid, current->name);
     current->need_resched = 1;
     return 0;
 }
@@ -1075,7 +1092,7 @@ static int user_main(void *arg)
 #else
 //    KERNEL_EXECVE(sh);
     const char *argv[] = {"sh", NULL};
-    cprintf("kernel_execve: pid = %d, name = \"%s\".\n", current->pid, "sh");
+    cprintf("user_main execve: pid = %d, name = \"%s\".\n", current->pid, "sh");
     kernel_execve("sh", argv);
 #endif
     panic("user_main execve failed.\n");
@@ -1104,8 +1121,10 @@ static int init_main(void *arg)
     set_proc_name(userproc, "user_main");
     
     extern void check_sync(void);
-    check_sync();                // check philosopher sync problem
+//    check_sync();                // check philosopher sync problem
 
+    // init 在启动 shell 之后，就进入休眠等待状态了，不再进行调度，专门负责清理用户进程退出后的资源
+    // 后续由 idle 负责持续调度进程
     while (do_wait(0, NULL) == 0)
     {
         schedule();

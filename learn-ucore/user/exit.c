@@ -7,7 +7,7 @@ int main(void)
 {
     int pid, code;
     cprintf("I am the parent. Forking the child...\n");
-    if ((pid = fork()) == 0)
+    if ((pid = fork("child")) == 0)
     {
         cprintf("I am the child.\n");
         yield();

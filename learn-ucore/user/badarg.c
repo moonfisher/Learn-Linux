@@ -4,7 +4,7 @@
 int main(void)
 {
     int pid, exit_code;
-    if ((pid = fork()) == 0)
+    if ((pid = fork("badarg")) == 0)
     {
         cprintf("fork ok.\n");
         int i;

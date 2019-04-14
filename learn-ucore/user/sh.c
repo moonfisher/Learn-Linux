@@ -178,7 +178,7 @@ again:
               //  if ((ret = pipe(p)) != 0) {
               //      return ret;
               //  }
-                if ((ret = fork()) == 0)
+                if ((ret = fork("pipe")) == 0)
                 {
                     close(0);
                     if ((ret = dup2(p[0], 0)) < 0)
@@ -206,7 +206,7 @@ again:
             case 0:
                 goto runit;
             case ';':
-                if ((ret = fork()) == 0)
+                if ((ret = fork(";")) == 0)
                 {
                     goto runit;
                 }
@@ -250,12 +250,12 @@ runit:
         argv[0] = argv0;
     }
     argv[argc] = NULL;
-    return __exec(NULL, argv);
+    return __exec(argv[0], argv);
 }
 
 int main(int argc, char **argv)
 {
-    printf("user sh is running!!!");
+    printf("user sh is running!!!\n");
     int ret, interactive = 1;
     if (argc == 2)
     {
@@ -278,7 +278,7 @@ int main(int argc, char **argv)
     {
         shcwd[0] = '\0';
         int pid;
-        if ((pid = fork()) == 0)
+        if ((pid = fork("runcmd")) == 0)
         {
             ret = runcmd(buffer);
             exit(ret);

@@ -8,7 +8,11 @@ int main(void)
     int n, pid;
     for (n = 0; n < max_child; n ++)
     {
-        if ((pid = fork()) == 0)
+        char local_name[20];
+        memset(local_name, 0, sizeof(local_name));
+        snprintf(local_name, sizeof(local_name), "pid-%d", n);
+        
+        if ((pid = fork(local_name)) == 0)
         {
             cprintf("I am child %d\n", n);
             exit(0);

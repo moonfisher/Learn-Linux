@@ -21,7 +21,8 @@ static int sys_fork(uint32_t arg[])
 {
     struct trapframe *tf = current->tf;
     uintptr_t stack = tf->tf_esp;
-    return do_fork(0, stack, tf);
+    const char *name = (const char *)arg[0];
+    return do_fork(0, stack, tf, name);
 }
 
 static int sys_wait(uint32_t arg[])

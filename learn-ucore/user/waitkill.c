@@ -39,14 +39,14 @@ void work(void)
 int main(void)
 {
     parent = getpid();
-    if ((pid1 = fork()) == 0)
+    if ((pid1 = fork("pid1")) == 0)
     {
         loop();
     }
 
     assert(pid1 > 0);
 
-    if ((pid2 = fork()) == 0)
+    if ((pid2 = fork("pid2")) == 0)
     {
         work();
     }
