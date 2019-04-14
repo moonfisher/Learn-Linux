@@ -73,10 +73,10 @@ static uint32_t sys_gettime(uint32_t arg[])
     return (int)ticks;
 }
 
-static uint32_t sys_lab6_set_priority(uint32_t arg[])
+static uint32_t sys_set_priority(uint32_t arg[])
 {
     uint32_t priority = (uint32_t)arg[0];
-    lab6_set_priority(priority);
+    set_priority(priority);
     return 0;
 }
 
@@ -168,7 +168,7 @@ static int (*syscalls[])(uint32_t arg[]) = {
     [SYS_putc]              sys_putc,
     [SYS_pgdir]             sys_pgdir,
     [SYS_gettime]           sys_gettime,
-    [SYS_lab6_set_priority] sys_lab6_set_priority,
+    [SYS_set_priority] sys_set_priority,
     [SYS_sleep]             sys_sleep,
     [SYS_open]              sys_open,
     [SYS_close]             sys_close,

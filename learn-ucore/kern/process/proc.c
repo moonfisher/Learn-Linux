@@ -75,88 +75,14 @@ static list_entry_t hash_list[HASH_LIST_SIZE];
 // idle 进程 pid = 0，是系统创建的第一个进程（也是内核线程），没有父进程，
 // 也是唯一一个没有通过 fork 或者 kernel_thread 产生的进程。没有函数入口。
 // idle 创建之后，很快用 kernel_thread 创建了 pid = 1 的 init 内核线程
-/*
-{
-    state = 0x2,
-    pid = 0x0,
-    runs = 0x0,
-    kstack = 0xC0152000,
-    need_resched = 0x1,
-    parent = 0x0,
-    mm = 0x0,
-    context = {
-        eip = 0x0,
-        esp = 0x0,
-        ebx = 0x0,
-        ecx = 0x0,
-        edx = 0x0,
-        esi = 0x0,
-        edi = 0x0,
-        ebp = 0x0
-    },
-    tf = 0x0,
-    cr3 = 0x156000,
-    flags = 0x0,
-    name = {0x0 <repeats 50 times>, 0x35},
-    list_link = {prev = 0x28, next = 0x2a},
-    hash_link = {prev = 0x0, next = 0xC035b008},
-    exit_code = 0xC035b070,
-    wait_state = 0x0,
-    cptr = 0x0,
-    yptr = 0x0, optr = 0x0, rq = 0x0,
-    run_link = {prev = 0xC035b0ac, next = 0xC035b0ac},
-    time_slice = 0x0,
-    lab6_run_pool = {parent = 0x0, left = 0x0, right = 0x0},
-    lab6_stride = 0x0,
-    lab6_priority = 0x0,
-    filesp = 0xC035c000
-}
-*/
+// idle 只负责 schedule 调度
 struct proc_struct *idleproc = NULL;    // 0xC0159040
 
 // init 进程 pid = 1，是系统创建的第二个进程（也是内核线程），父进程是 idle，
-// init 入口函数是 init_main，内核初始化完成后，init 负责进程调度，交换，其余进程退出后清理资源等
-/*
-{
-    state = 0x2,
-    pid = 0x1,
-    runs = 0x0,
-    kstack = 0xC035d000,
-    need_resched = 0x0,
-    parent = 0xC035b008,
-    mm = 0x0,
-    context = {
-        eip = 0xC010baa3,
-        esp = 0xC035efb4,
-        ebx = 0x0,
-        ecx = 0x0,
-        edx = 0x0,
-        esi = 0x0,
-        edi = 0x0,
-        ebp = 0x0
-    },
-    tf = 0xC035efb4,
-    cr3 = 0x156000,
-    flags = 0x0,
-    name = {0x69, 0x6e, 0x69, 0x74, 0x0, 0x0, 0x0, 0x69, 0x64, 0x6c, 0x65, 0x70, 0x72, 0x6f, 0x63, 0x20, 0x21, 0x3d, 0x20, 0x4e, 0x55, 0x4c, 0x4c, 0x20, 0x26, 0x26, 0x20, 0x69, 0x64, 0x6c, 0x65, 0x70, 0x72, 0x6f, 0x63, 0x2d, 0x3e, 0x70, 0x69, 0x64, 0x20, 0x3d, 0x3d, 0x20, 0x30, 0x0, 0x0, 0x69, 0x6e, 0x69, 0x0},
-    list_link = {prev = 0xC015b37c, next = 0xC015b37c},
-    hash_link = {prev = 0xC0159420, next = 0xC0159420},
-    exit_code = 0xC035b150,
-    wait_state = 0x0,
-    cptr = 0x0,
-    yptr = 0x0,
-    optr = 0x0,
-    rq = 0xC015a0c4,
-    run_link = {prev = 0xC035b18c, next = 0xC035b18c},
-    time_slice = 0x5,
-    lab6_run_pool = {parent = 0x0, left = 0x0, right = 0x0},
-    lab6_stride = 0x0,
-    lab6_priority = 0x0,
-    filesp = 0xC035f000
- }
- */
+// init 入口函数是 init_main，在启动 shell 之后，后续只负责等待进程结束做清理工作
 struct proc_struct *initproc = NULL;    // 0xC0159044
-// current proc 标记当前正在运行的进程
+
+// current proc 标记当前正在运行的进程，相当于全局变量，很多地方都需要获取当前正在运行的进程
 struct proc_struct *current = NULL;     // 0xC0159048
 
 static int nr_process = 0;
@@ -188,9 +114,9 @@ static struct proc_struct *alloc_proc(void)
         proc->rq = NULL;
         list_init(&(proc->run_link));
         proc->time_slice = 0;
-        proc->lab6_run_pool.left = proc->lab6_run_pool.right = proc->lab6_run_pool.parent = NULL;
-        proc->lab6_stride = 0;
-        proc->lab6_priority = 0;
+        proc->run_pool.left = proc->run_pool.right = proc->run_pool.parent = NULL;
+        proc->stride = 0;
+        proc->priority = 0;
         proc->filesp = NULL;
     }
     return proc;
@@ -317,6 +243,10 @@ void proc_run(struct proc_struct *proc)
 // forkret -- the first kernel entry point of a new thread/process
 // NOTE: the addr of forkret is setted in copy_thread function
 //       after switch_to, the current proc will execute here.
+/*
+ 内核启动第一个用户进程的过程，实际上是从进程启动时的内核状态切换到该用户进程的内核状态的过程
+ 而且该用户进程在用户态的起始入口是 forkret。
+*/
 static void forkret(void)
 {
     forkrets(current->tf);
@@ -1174,7 +1104,7 @@ static int init_main(void *arg)
     set_proc_name(userproc, "user_main");
     
     extern void check_sync(void);
-//    check_sync();                // check philosopher sync problem
+    check_sync();                // check philosopher sync problem
 
     while (do_wait(0, NULL) == 0)
     {
@@ -1256,11 +1186,12 @@ void cpu_idle(void)
 }
 
 //FOR LAB6, set the process's priority (bigger value will get more CPU time) 
-void lab6_set_priority(uint32_t priority)
+void set_priority(uint32_t priority)
 {
     if (priority == 0)
-        current->lab6_priority = 1;
-    else current->lab6_priority = priority;
+        current->priority = 1;
+    else
+        current->priority = priority;
 }
 
 // do_sleep - set current process state to sleep and add timer with "time"

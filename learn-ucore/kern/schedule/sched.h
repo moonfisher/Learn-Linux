@@ -55,11 +55,14 @@ struct sched_class
 
 struct run_queue
 {
+    // 其运行队列的哨兵结构，可以看作是队列头和尾
     list_entry_t run_list;
+    // 表示其内部的进程总数
     unsigned int proc_num;
+    // 每个进程一轮占用的最多时间片
     int max_time_slice;
-    // For LAB6 ONLY
-    skew_heap_entry_t *lab6_run_pool;
+    // 优先队列形式的进程容器，只在 LAB6 中使用
+    skew_heap_entry_t *run_pool;
 };
 
 void sched_init(void);

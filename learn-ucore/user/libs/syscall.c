@@ -73,9 +73,9 @@ int sys_pgdir(void)
     return syscall(SYS_pgdir);
 }
 
-void sys_lab6_set_priority(uint32_t priority)
+void sys_set_priority(uint32_t priority)
 {
-    syscall(SYS_lab6_set_priority, priority);
+    syscall(SYS_set_priority, priority);
 }
 
 int sys_sleep(unsigned int time)

@@ -255,11 +255,9 @@ static void trap_dispatch(struct trapframe *tf)
             
         case IRQ_OFFSET + IRQ_KBD:
             c = cons_getc();
-            cprintf("kbd [%03d] %c\n", c, c);
-            {
-                extern void dev_stdin_write(char c);
-                dev_stdin_write(c);
-            }
+//            cprintf("kbd [%03d] %c\n", c, c);
+            extern void dev_stdin_write(char c);
+            dev_stdin_write(c);
             break;
             
         case T_SWITCH_TOU:
@@ -355,7 +353,13 @@ void trap(struct trapframe *tf)
     
         current->tf = otf;
         
-        // 下面的分支，说明当前是在用户态发生了中断
+        /*
+         这里表明了只有当进程在用户态执行到“任意”某处用户代码位置时发生了中断，
+         且当前进程控制块成员变量 need_resched 为 1（表示需要调度了）时，才会执行 shedule 函数。
+         这实际上体现了对用户进程的可抢占性。如果没有第一行的 if 语句，那么就可以体现对内核代码的可抢占性。
+         但如果要把这一行 if 语句去掉，我们就不得不实现对 ucore 中的所有全局变量的互斥访问操作，
+         以防止所谓的 race condition 现象，这样 ucore 的实现复杂度会增加不少。
+         */
         if (!in_kernel)
         {
             if (current->flags & PF_EXITING)

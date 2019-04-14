@@ -74,6 +74,7 @@ struct proc_struct
     mm：内存管理的信息，包括内存映射列表、页表指针等,即实验三中的描述进程虚拟内存的结构体.
     mm 里有个很重要的项 pgdir，记 录的是该进程使用的一级页表的物理地址。
     这个主要给用户进程使用，内核线程不需要使用 mm，因为内核的地址映射是一开始就静态映射好了
+    内核代码都在内存，不需要也不能 swap 交换到硬盘上去，所以内核进程不需要 mm 结构
  */
     struct mm_struct *mm;                       // Process's memory management field
 /*
@@ -106,12 +107,16 @@ struct proc_struct
     uint32_t wait_state;                        // waiting state
     struct proc_struct *cptr, *yptr, *optr;     // relations between processes
     struct run_queue *rq;                       // running queue contains Process
+    // 该进程的调度链表结构，该结构内部的连接组成了 运行队列 列表
     list_entry_t run_link;                      // the entry linked in run queue
     // 进程运行时间片
     int time_slice;                             // time slice for occupying the CPU
-    skew_heap_entry_t lab6_run_pool;            // FOR LAB6 ONLY: the entry in the run pool
-    uint32_t lab6_stride;                       // FOR LAB6 ONLY: the current stride of the process
-    uint32_t lab6_priority;                     // FOR LAB6 ONLY: the priority of process, set by lab6_set_priority(uint32_t)
+    // 该进程在优先队列中的节点，仅在 LAB6 使用
+    skew_heap_entry_t run_pool;            // FOR LAB6 ONLY: the entry in the run pool
+    // 该进程的调度步进值，仅在 LAB6 使用
+    uint32_t stride;                       // FOR LAB6 ONLY: the current stride of the process
+    // 该进程的调度优先级，仅在 LAB6 使用
+    uint32_t priority;                     // FOR LAB6 ONLY: the priority of process, set by set_priority(uint32_t)
     struct files_struct *filesp;                // the file related info(pwd, files_count, files_array, fs_semaphore) of process
 };
 
@@ -144,7 +149,7 @@ int do_execve(const char *name, int argc, const char **argv);
 int do_wait(int pid, int *code_store);
 int do_kill(int pid);
 //FOR LAB6, set the process's priority (bigger value will get more CPU time)
-void lab6_set_priority(uint32_t priority);
+void set_priority(uint32_t priority);
 int do_sleep(unsigned int time);
 #endif /* !__KERN_PROCESS_PROC_H__ */
 

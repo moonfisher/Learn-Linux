@@ -61,9 +61,9 @@ void print_pgdir(void)
     sys_pgdir();
 }
 
-void lab6_set_priority(uint32_t priority)
+void set_priority(uint32_t priority)
 {
-    sys_lab6_set_priority(priority);
+    sys_set_priority(priority);
 }
 
 int sleep(unsigned int time)
