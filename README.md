@@ -5,3 +5,4 @@
 3）bootloader-custom 自定义引导程序引导自定义操作系统内核<br>
 4）bootloader-grub 用 grub 引导自定义操作系统内核<br>
 5）learn-hurlex-II 学习笔记和代码注释
+6）learn-ucore 学习笔记和代码注释，以及一些改进点
