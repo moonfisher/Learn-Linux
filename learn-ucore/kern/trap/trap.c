@@ -311,6 +311,7 @@ static void trap_dispatch(struct trapframe *tf)
         case IRQ_OFFSET + IRQ_IDE1:
         case IRQ_OFFSET + IRQ_IDE2:
             /* do nothing */
+            print_trapframe(tf);
             break;
             
         default:

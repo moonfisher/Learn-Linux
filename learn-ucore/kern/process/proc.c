@@ -339,6 +339,7 @@ static int setup_pgdir(struct mm_struct *mm)
         return -E_NO_MEM;
     }
     pde_t *pgdir = page2kva(page);
+    // 先拷贝内核地址映射表，这样即使后续切换到用户进程页表，内核地址空间访问也还是正常的
     memcpy(pgdir, boot_pgdir, PGSIZE);
     pgdir[PDX(VPT)] = PADDR(pgdir) | PTE_P | PTE_W;
     mm->pgdir = pgdir;
@@ -644,7 +645,7 @@ static int load_icode(int fd, int argc, char **kargv)
 {
     assert(argc >= 0 && argc <= EXEC_MAX_ARG_NUM);
 
-    // mm 是根据下面要加载的程序 elf 格式来创建的，不可能一开始就有
+    // 走到这里来的时候，页表资源应该已经在上层函数释放过了才对
     if (current->mm != NULL)
     {
         panic("load_icode: current->mm must be empty.\n");
@@ -701,23 +702,34 @@ static int load_icode(int fd, int argc, char **kargv)
         
         vm_flags = 0; perm = PTE_U;
         if (ph->p_flags & ELF_PF_X)
+        {
             vm_flags |= VM_EXEC;
+        }
         if (ph->p_flags & ELF_PF_W)
+        {
             vm_flags |= VM_WRITE;
+        }
         if (ph->p_flags & ELF_PF_R)
+        {
             vm_flags |= VM_READ;
+        }
         if (vm_flags & VM_WRITE)
+        {
             perm |= PTE_W;
+        }
+        
         if ((ret = mm_map(mm, ph->p_va, ph->p_memsz, vm_flags, NULL)) != 0)
         {
             goto bad_cleanup_mmap;
         }
+        
         off_t offset = ph->p_offset;
         size_t off, size;
         uintptr_t start = ph->p_va, end, la = ROUNDDOWN(start, PGSIZE);
 
         ret = -E_NO_MEM;
 
+        // 用户进程空间地址映射，根据实际用到的虚拟地址来创建页表映射，并非映射整个 4G 地址空间
         end = ph->p_va + ph->p_filesz;
         while (start < end)
         {
@@ -774,12 +786,14 @@ static int load_icode(int fd, int argc, char **kargv)
     }
     sysfile_close(fd);
 
-    // 映射用户进程堆栈
+    // 映射用户进程堆栈地址空间
     vm_flags = VM_READ | VM_WRITE | VM_STACK;
     if ((ret = mm_map(mm, USTACKTOP - USTACKSIZE, USTACKSIZE, vm_flags, NULL)) != 0)
     {
         goto bad_cleanup_mmap;
     }
+    
+    // 创建页表，这里先只创建 4 个页面的页表
     assert(pgdir_alloc_page(mm->pgdir, USTACKTOP - PGSIZE , PTE_USER) != NULL);
     assert(pgdir_alloc_page(mm->pgdir, USTACKTOP - 2 * PGSIZE , PTE_USER) != NULL);
     assert(pgdir_alloc_page(mm->pgdir, USTACKTOP - 3 * PGSIZE , PTE_USER) != NULL);
@@ -874,6 +888,11 @@ failed_cleanup:
 
 // do_execve - call exit_mmap(mm)&put_pgdir(mm) to reclaim memory space of current process
 //           - call load_icode to setup new memory space accroding binary prog.
+/*
+ 当进程调用一种 exec 函数时，源进程完全由新程序代换，而新程序则从其 main 函数开始执行。
+ 因为调用 exec 并不创建新进程，所以前后的进程 ID 并未改变。
+ exec 只是用另一个新程序替换了当前进程的正文、数据、堆和栈段。特别地，在原进程中已经打开的文件描述符，
+*/
 int do_execve(const char *name, int argc, const char **argv)
 {
     static_assert(EXEC_MAX_ARG_LEN >= FS_MAX_FPATH_LEN);
@@ -921,9 +940,9 @@ int do_execve(const char *name, int argc, const char **argv)
         goto execve_exit;
     }
     
+    // 先释放目前进程的页表资源，后续再重建
     if (mm != NULL)
     {
-        // 当前进程创建之后，先加载内核页目录，要用物理地址。后面再加载操作系统给进程分配的页目录
         lcr3(boot_cr3);
         if (mm_count_dec(mm) == 0)
         {

@@ -450,6 +450,7 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr)
 
     pgfault_num++;
     //If the addr is in the range of a mm's vma?
+    // 缺页中断都是由当前进程代码引起的，先判断下是否访问了非法地址
     if (vma == NULL || vma->vm_start > addr)
     {
         cprintf("not valid addr %x, and  can not find it in vma\n", addr);
@@ -496,6 +497,7 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr)
     
     // try to find a pte, if pte's PT(Page Table) isn't existed, then create a PT.
     // (notice the 3th parameter '1')
+    // 获取当前要访问的地址的 pte，如果没有就创建一个
     if ((ptep = get_pte(mm->pgdir, addr, 1)) == NULL)
     {
         cprintf("get_pte in do_pgfault failed\n");
