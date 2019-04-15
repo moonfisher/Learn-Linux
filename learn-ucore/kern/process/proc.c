@@ -142,7 +142,8 @@ static void set_links(struct proc_struct *proc)
 {
     list_add(&proc_list, &(proc->list_link));
     proc->yptr = NULL;
-    if ((proc->optr = proc->parent->cptr) != NULL)
+    proc->optr = proc->parent->cptr;
+    if (proc->optr != NULL)
     {
         proc->optr->yptr = proc;
     }
@@ -589,13 +590,17 @@ int do_exit(int error_code)
         {
             wakeup_proc(proc);
         }
+        
+        // 如果退出的进程还包含子进程，后续 init 进程将直接接管这些子进程
+        // 这些子进程将和 user_main (shell) 平级
         while (current->cptr != NULL)
         {
             proc = current->cptr;
             current->cptr = proc->optr;
     
             proc->yptr = NULL;
-            if ((proc->optr = initproc->cptr) != NULL)
+            proc->optr = initproc->cptr;
+            if (proc->optr != NULL)
             {
                 initproc->cptr->yptr = proc;
             }
@@ -983,6 +988,8 @@ repeat:
     }
     else
     {
+        // pid = 0 一般只有 init 进程会这样使用
+        // 这表示去遍历自己所管理的所有子进程，看有没有退出的
         proc = current->cptr;
         for (; proc != NULL; proc = proc->optr)
         {

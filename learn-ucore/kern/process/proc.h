@@ -102,13 +102,18 @@ struct proc_struct
     而当它是内核线程的时候，cr3 等于 boot_cr3。 而 boot_cr3 指向了 ucore 启动时建立好的栈内核虚拟空间的页目
     录表首地址。
 */
-    uintptr_t cr3;                              // CR3 register: the base addr of Page Directroy Table(PDT)
+    uintptr_t cr3;                              // CR3: base addr of Page Directroy Table(PDT)
     uint32_t flags;                             // Process flag
     char name[PROC_NAME_LEN + 1];               // Process name
     list_entry_t list_link;                     // Process link list
     list_entry_t hash_link;                     // Process hash list
+    // 记录进程退出的原因，这个需要返回给父进程使用
     int exit_code;                              // exit code (be sent to parent proc)
+    // 记录当前进程是因为什么原因处于等待状态
     uint32_t wait_state;                        // waiting state
+    // cptr-->指向最新创建的子进程
+    // yptr-->指向同一个父进程下比自己后创建的子进程
+    // optr-->指向同一个父进程下比自己先创建的子进程
     struct proc_struct *cptr, *yptr, *optr;     // relations between processes
     struct run_queue *rq;                       // running queue contains Process
     // 该进程的调度链表结构，该结构内部的连接组成了 运行队列 列表
