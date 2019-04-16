@@ -234,6 +234,12 @@ static struct
  * cons_intr - called by device interrupt routines to feed input
  * characters into the circular console input buffer.
  * */
+/*
+ 虽然从 io 发过来的数据，是通过中断通知 cpu 的，比 cpu 去主动轮询 io 要好
+ 但 cpu 响应中断之后，还是需要 cpu 循环读取 io 上的数据到内存，为了能完整一批批读完，需要先关闭中断
+ 但假如此时 io 速度很高，数据量很大，必然导致 cpu 花长时间在处理 io 中断响应，以及 io 数据读取上
+ 这样会大大降低 cpu 的效率，导致别的进程无法得到及时的调度执行，解决这个问题的方案要采用 DMA
+*/
 static void cons_intr(int (*proc)(void))
 {
     int c;
@@ -471,6 +477,14 @@ void cons_putc(int c)
  * cons_getc - return the next input character from console,
  * or 0 if none waiting.
  * */
+/*
+ 要把外设的数据读入内存或把内存的数据传送到外设，一般都要通过 CPU 控制完成，
+ 如 CPU 程序查询或中断方式。利用中断进行数据传送，可以大大提高 CPU 的利用率。
+ 
+ 但是采用中断传送有它的缺点，对于一个高速 I/O 设备，以及批量交换数据的情况，
+ 只能采用 DMA 方式，才能解决效率和速度问题。
+ DMA 在外设与内存间直接进行数据交换，而不通过 CPU，这样数据传送的速度就取决于存储器和外设的工作速度。
+*/
 int cons_getc(void)
 {
     int c = 0;
@@ -480,7 +494,6 @@ int cons_getc(void)
         // poll for any pending input characters,
         // so that this function works even when interrupts are disabled
         // (e.g., when called from the kernel monitor).
-        // 这里是需要循环读取 io 上的数据，为了能完整一批批读完，需要先关闭中断
         serial_intr();
         kbd_intr();
 

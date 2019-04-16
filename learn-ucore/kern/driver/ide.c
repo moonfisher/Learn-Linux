@@ -57,6 +57,11 @@ static const struct {
 #define IO_BASE(ideno)          (channels[(ideno) >> 1].base)
 #define IO_CTRL(ideno)          (channels[(ideno) >> 1].ctrl)
 
+/*
+ ide 0:      10000(sectors), 'QEMU HARDDISK'.
+ ide 1:     262144(sectors), 'QEMU HARDDISK'.
+ ide 2:     262144(sectors), 'QEMU HARDDISK'.
+*/
 static struct ide_device
 {
     unsigned char valid;        // 0 or 1 (If Device Really Exists)
@@ -123,8 +128,8 @@ void ide_init(void)
         {
             sectors = *(unsigned int *)(ident + IDE_IDENT_MAX_LBA);
         }
-        ide_devices[ideno].sets = cmdsets;
-        ide_devices[ideno].size = sectors;
+        ide_devices[ideno].sets = cmdsets;  // 0x74004021
+        ide_devices[ideno].size = sectors;  // 0x2710
 
         /* check if supports LBA */
         assert((*(unsigned short *)(ident + IDE_IDENT_CAPABILITIES) & 0x200) != 0);
