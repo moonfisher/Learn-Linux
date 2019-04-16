@@ -226,10 +226,12 @@ static void trap_dispatch(struct trapframe *tf)
                 {
                     if (trap_in_kernel(tf))
                     {
+                        // 内核的地址空间是一开始都规划好，也分配好物理页面了，不可能发生缺页中断
+                        // 也不可能用到 swap 交换分区，否则内核就有严重问题
                         panic("handle pgfault failed in kernel mode. ret=%d\n", ret);
                     }
                     cprintf("killed by kernel.\n");
-                    panic("handle user mode pgfault failed. ret=%d\n", ret);
+                    //panic("handle user mode pgfault failed. ret=%d\n", ret);
                     do_exit(-E_KILLED);
                 }
             }

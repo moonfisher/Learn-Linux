@@ -5,7 +5,8 @@
 
 int main(void)
 {
-    asm volatile("movw $0x28,%ax; movw %ax,%ds");
+    // 会触发 T_GPFLT general protection fault 中断
+    asm volatile("movw $0x28, %ax; movw %ax, %ds");
     panic("FAIL: T.T\n");
 }
 

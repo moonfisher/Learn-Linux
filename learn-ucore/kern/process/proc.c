@@ -621,7 +621,7 @@ int do_exit(int error_code)
     }
     local_intr_restore(intr_flag);
     
-    cprintf("proc exit: pid = %d, name = \"%s\", error = %d.\n", current->pid, current->name, error_code);
+    cprintf("proc exit: pid = %d, name = \"%s\", error = %d - %e.\n", current->pid, current->name, error_code, error_code);
     schedule();
     // 这下面的代码不会走到，是因为重新调度到 init 进程之后，当前进程资源已经被 init 释放，相关代码在内存已经不存在
     panic("do_exit will not return!! %d.\n", current->pid);
