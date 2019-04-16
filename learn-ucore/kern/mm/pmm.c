@@ -276,7 +276,7 @@ static inline void lgdt(struct pseudodesc *pd)
     asm volatile ("movw %%ax, %%es" :: "a" (KERNEL_DS));
     asm volatile ("movw %%ax, %%ds" :: "a" (KERNEL_DS));
     asm volatile ("movw %%ax, %%ss" :: "a" (KERNEL_DS));
-    // reload cs 通过跳转指令重新更新 cs 到内核代码段
+    // reload cs 长跳转才能修改 cs 寄存器，通过跳转指令重新更新 cs 到内核代码段
     asm volatile ("ljmp %0, $1f\n 1:\n" :: "i" (KERNEL_CS));
 #endif
 }

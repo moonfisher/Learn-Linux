@@ -248,12 +248,14 @@ void proc_run(struct proc_struct *proc)
 // NOTE: the addr of forkret is setted in copy_thread function
 //       after switch_to, the current proc will execute here.
 /*
- 内核启动第一个用户进程的过程，实际上是从进程启动时的内核状态切换到该用户进程的内核状态的过程
- 而且该用户进程在用户态的起始入口是 forkret。
+ 在发生进程切换 switch_to 之后， 切换后的进程函数入口就是 forkret，这并非是进程上次执行的现场
+ 这里会根据进程之前构造的 trapframe 中断桢的内容，来修改各个寄存器的值(包括段寄存器 cs)，
+ 最终实现切换。无论是切换到用户进程，还是内核进程，流程是一样的，只是各个进程自己的 trapframe 结构不同
 */
 static void forkret(void)
 {
     cprintf("forkret: pid = %d, name = \"%s\".\n", current->pid, current->name);
+    print_trapframe(current->tf);
     forkrets(current->tf);
 }
 

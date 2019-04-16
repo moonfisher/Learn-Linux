@@ -45,6 +45,12 @@ __trapret:
     # get rid of the trap number and error code
     # 这里 add 0x8 是跳过之前压栈的中断码和错误码
     addl $0x8, %esp
+
+    # ret：也可以叫做近返回，即段内返回。处理器从堆栈中弹出IP或者EIP，
+    # 然后根据当前的 CS：IP 跳转到新的执行地址。如果之前压栈的还有其余的参数，则这些参数也会被弹出。
+
+    # iret：用于从中断返回，会弹出 EIP，CS，以及一些标志。然后从 CS：EIP 执行。
+    # 所以无论是进程切换，还是进程用户态内核态的切换，通过中断，构造返回的中断桢，能达到修改 CS 的目的
     iret
 
 .globl forkrets # 创建进程或者切换进程之后的入口

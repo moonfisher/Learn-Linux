@@ -104,6 +104,7 @@ static const char *trapname(int trapno)
 }
 
 /* trap_in_kernel - test if trap happened in kernel */
+// 如果当前 cs 指向内核代码段，则说明是在执行内核进程的时候发生了中断，否则是执行用户进程时发生中断
 bool trap_in_kernel(struct trapframe *tf)
 {
     return (tf->tf_cs == (uint16_t)KERNEL_CS);
