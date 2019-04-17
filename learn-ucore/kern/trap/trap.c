@@ -339,6 +339,7 @@ void trap(struct trapframe *tf)
 {
     // dispatch based on what type of trap occurred
     // used for previous projects
+    // current 为空说明当前还未创建进程就收到了中断，直接处理就行
     if (current == NULL)
     {
         trap_dispatch(tf);
@@ -366,6 +367,8 @@ void trap(struct trapframe *tf)
          */
         if (!in_kernel)
         {
+            // 如果一个进程被另外的进程 kill 掉，这个进程并不会马上销毁，只是给他设置上 PF_EXITING 标记
+            // 等到下次中断的时候，检测当前进程是否被 kill 过，再进行清理
             if (current->flags & PF_EXITING)
             {
                 do_exit(-E_KILLED);

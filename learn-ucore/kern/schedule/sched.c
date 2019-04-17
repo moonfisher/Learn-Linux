@@ -197,6 +197,7 @@ void run_timer_list(void)
                 }
                 else
                 {
+                    // 受定时器唤醒的进程，wait_state 不可能是 0，应该是 WT_TIMER
                     warn("process %d's wait_state == 0.\n", proc->pid);
                 }
                 wakeup_proc(proc);

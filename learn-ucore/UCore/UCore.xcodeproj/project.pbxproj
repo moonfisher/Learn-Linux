@@ -323,11 +323,11 @@
 		C4CB31BF2248F5820014426C /* schedule */ = {
 			isa = PBXGroup;
 			children = (
+				C4CB31C42248F5820014426C /* sched.h */,
+				C4CB31C22248F5820014426C /* sched.c */,
 				C4CB31C02248F5820014426C /* default_sched.c */,
 				C4CB31C12248F5820014426C /* default_sched_stride_c */,
-				C4CB31C22248F5820014426C /* sched.c */,
 				C4CB31C32248F5820014426C /* default_sched.h */,
-				C4CB31C42248F5820014426C /* sched.h */,
 			);
 			path = schedule;
 			sourceTree = "<group>";
@@ -335,17 +335,17 @@
 		C4CB31C52248F5820014426C /* driver */ = {
 			isa = PBXGroup;
 			children = (
-				C4CB31C62248F5820014426C /* console.h */,
 				C4CB31C72248F5820014426C /* kbdreg.h */,
+				C4CB31C62248F5820014426C /* console.h */,
+				C4CB31CC2248F5820014426C /* console.c */,
 				C4CB31C82248F5820014426C /* ide.h */,
+				C4CB31CE2248F5820014426C /* ide.c */,
+				C4CB31CD2248F5820014426C /* picirq.h */,
 				C4CB31C92248F5820014426C /* picirq.c */,
 				C4CB31CA2248F5820014426C /* intr.h */,
-				C4CB31CB2248F5820014426C /* clock.c */,
-				C4CB31CC2248F5820014426C /* console.c */,
-				C4CB31CD2248F5820014426C /* picirq.h */,
-				C4CB31CE2248F5820014426C /* ide.c */,
-				C4CB31CF2248F5820014426C /* clock.h */,
 				C4CB31D02248F5820014426C /* intr.c */,
+				C4CB31CF2248F5820014426C /* clock.h */,
+				C4CB31CB2248F5820014426C /* clock.c */,
 			);
 			path = driver;
 			sourceTree = "<group>";
@@ -354,8 +354,8 @@
 			isa = PBXGroup;
 			children = (
 				C4CB31D22248F5820014426C /* trap.h */,
-				C4CB31D32248F5820014426C /* vectors.S */,
 				C4CB31D42248F5820014426C /* trap.c */,
+				C4CB31D32248F5820014426C /* vectors.S */,
 				C4CB31D52248F5820014426C /* trapentry.S */,
 			);
 			path = trap;
@@ -374,19 +374,19 @@
 		C4CB31DA2248F5820014426C /* mm */ = {
 			isa = PBXGroup;
 			children = (
+				C4CB31E22248F5820014426C /* memlayout.h */,
+				C4CB31E12248F5820014426C /* mmu.h */,
+				C4CB31E52248F5820014426C /* pmm.h */,
 				C4CB31DB2248F5820014426C /* pmm.c */,
+				C4CB31E42248F5820014426C /* swap_fifo.h */,
 				C4CB31DC2248F5820014426C /* swap_fifo.c */,
+				C4CB31E32248F5820014426C /* kmalloc.h */,
 				C4CB31DD2248F5820014426C /* kmalloc.c */,
+				C4CB31E72248F5820014426C /* default_pmm.h */,
 				C4CB31DE2248F5820014426C /* default_pmm.c */,
+				C4CB31E62248F5820014426C /* vmm.h */,
 				C4CB31DF2248F5820014426C /* vmm.c */,
 				C4CB31E02248F5820014426C /* swap.h */,
-				C4CB31E12248F5820014426C /* mmu.h */,
-				C4CB31E22248F5820014426C /* memlayout.h */,
-				C4CB31E32248F5820014426C /* kmalloc.h */,
-				C4CB31E42248F5820014426C /* swap_fifo.h */,
-				C4CB31E52248F5820014426C /* pmm.h */,
-				C4CB31E62248F5820014426C /* vmm.h */,
-				C4CB31E72248F5820014426C /* default_pmm.h */,
 				C4CB31E82248F5820014426C /* swap.c */,
 			);
 			path = mm;
@@ -395,14 +395,14 @@
 		C4CB31E92248F5820014426C /* sync */ = {
 			isa = PBXGroup;
 			children = (
-				C4CB31EA2248F5820014426C /* sem.h */,
-				C4CB31EB2248F5820014426C /* monitor.c */,
 				C4CB31EC2248F5820014426C /* sync.h */,
-				C4CB31ED2248F5820014426C /* check_sync.c */,
-				C4CB31EE2248F5820014426C /* wait.h */,
+				C4CB31EA2248F5820014426C /* sem.h */,
 				C4CB31EF2248F5820014426C /* sem.c */,
-				C4CB31F02248F5820014426C /* monitor.h */,
+				C4CB31EE2248F5820014426C /* wait.h */,
 				C4CB31F12248F5820014426C /* wait.c */,
+				C4CB31F02248F5820014426C /* monitor.h */,
+				C4CB31EB2248F5820014426C /* monitor.c */,
+				C4CB31ED2248F5820014426C /* check_sync.c */,
 			);
 			path = sync;
 			sourceTree = "<group>";
@@ -410,8 +410,8 @@
 		C4CB31F22248F5820014426C /* syscall */ = {
 			isa = PBXGroup;
 			children = (
-				C4CB31F32248F5820014426C /* syscall.c */,
 				C4CB31F42248F5820014426C /* syscall.h */,
+				C4CB31F32248F5820014426C /* syscall.c */,
 			);
 			path = syscall;
 			sourceTree = "<group>";
@@ -422,15 +422,15 @@
 				C4CB31F62248F5820014426C /* vfs */,
 				C4CB31FF2248F5820014426C /* devs */,
 				C4CB32052248F5820014426C /* iobuf.h */,
+				C4CB320C2248F5820014426C /* iobuf.c */,
 				C4CB32062248F5820014426C /* file.h */,
+				C4CB32172248F5820014426C /* file.c */,
+				C4CB320D2248F5820014426C /* sysfile.h */,
 				C4CB32072248F5820014426C /* sysfile.c */,
 				C4CB32082248F5820014426C /* swap */,
 				C4CB320B2248F5820014426C /* fs.c */,
-				C4CB320C2248F5820014426C /* iobuf.c */,
-				C4CB320D2248F5820014426C /* sysfile.h */,
-				C4CB320E2248F5820014426C /* sfs */,
-				C4CB32172248F5820014426C /* file.c */,
 				C4CB32182248F5820014426C /* fs.h */,
+				C4CB320E2248F5820014426C /* sfs */,
 			);
 			path = fs;
 			sourceTree = "<group>";
@@ -438,14 +438,14 @@
 		C4CB31F62248F5820014426C /* vfs */ = {
 			isa = PBXGroup;
 			children = (
-				C4CB31F72248F5820014426C /* vfspath.c */,
 				C4CB31F82248F5820014426C /* inode.h */,
-				C4CB31F92248F5820014426C /* vfsfile.c */,
-				C4CB31FA2248F5820014426C /* vfs.h */,
 				C4CB31FB2248F5820014426C /* inode.c */,
+				C4CB31FA2248F5820014426C /* vfs.h */,
+				C4CB31FE2248F5820014426C /* vfs.c */,
+				C4CB31F72248F5820014426C /* vfspath.c */,
+				C4CB31F92248F5820014426C /* vfsfile.c */,
 				C4CB31FC2248F5820014426C /* vfslookup.c */,
 				C4CB31FD2248F5820014426C /* vfsdev.c */,
-				C4CB31FE2248F5820014426C /* vfs.c */,
 			);
 			path = vfs;
 			sourceTree = "<group>";
@@ -453,11 +453,11 @@
 		C4CB31FF2248F5820014426C /* devs */ = {
 			isa = PBXGroup;
 			children = (
-				C4CB32002248F5820014426C /* dev_disk0.c */,
 				C4CB32012248F5820014426C /* dev.h */,
+				C4CB32042248F5820014426C /* dev.c */,
+				C4CB32002248F5820014426C /* dev_disk0.c */,
 				C4CB32022248F5820014426C /* dev_stdin.c */,
 				C4CB32032248F5820014426C /* dev_stdout.c */,
-				C4CB32042248F5820014426C /* dev.c */,
 			);
 			path = devs;
 			sourceTree = "<group>";
@@ -474,13 +474,13 @@
 		C4CB320E2248F5820014426C /* sfs */ = {
 			isa = PBXGroup;
 			children = (
-				C4CB320F2248F5820014426C /* sfs_lock.c */,
+				C4CB32152248F5820014426C /* bitmap.h */,
 				C4CB32102248F5820014426C /* bitmap.c */,
 				C4CB32112248F5820014426C /* sfs.h */,
-				C4CB32122248F5820014426C /* sfs_inode.c */,
-				C4CB32132248F5820014426C /* sfs_fs.c */,
 				C4CB32142248F5820014426C /* sfs.c */,
-				C4CB32152248F5820014426C /* bitmap.h */,
+				C4CB32122248F5820014426C /* sfs_inode.c */,
+				C4CB320F2248F5820014426C /* sfs_lock.c */,
+				C4CB32132248F5820014426C /* sfs_fs.c */,
 				C4CB32162248F5820014426C /* sfs_io.c */,
 			);
 			path = sfs;
@@ -490,8 +490,8 @@
 			isa = PBXGroup;
 			children = (
 				C4CB321A2248F5830014426C /* proc.h */,
-				C4CB321B2248F5830014426C /* entry.S */,
 				C4CB321C2248F5830014426C /* proc.c */,
+				C4CB321B2248F5830014426C /* entry.S */,
 				C4CB321D2248F5830014426C /* switch.S */,
 			);
 			path = process;
@@ -500,13 +500,13 @@
 		C4CB321E2248F5830014426C /* debug */ = {
 			isa = PBXGroup;
 			children = (
-				C4CB321F2248F5830014426C /* kmonitor.h */,
-				C4CB32202248F5830014426C /* kdebug.c */,
-				C4CB32212248F5830014426C /* panic.c */,
+				C4CB32252248F5830014426C /* assert.h */,
 				C4CB32222248F5830014426C /* stab.h */,
+				C4CB321F2248F5830014426C /* kmonitor.h */,
 				C4CB32232248F5830014426C /* kmonitor.c */,
 				C4CB32242248F5830014426C /* kdebug.h */,
-				C4CB32252248F5830014426C /* assert.h */,
+				C4CB32202248F5830014426C /* kdebug.c */,
+				C4CB32212248F5830014426C /* panic.c */,
 			);
 			path = debug;
 			sourceTree = "<group>";
@@ -576,6 +576,9 @@
 		C4CB324F2248F5830014426C /* libs */ = {
 			isa = PBXGroup;
 			children = (
+				C4CB325E2248F5830014426C /* stdio.h */,
+				C4CB32602248F5830014426C /* string.h */,
+				C4CB32572248F5830014426C /* string.c */,
 				C4CB32502248F5830014426C /* error.h */,
 				C4CB32512248F5830014426C /* stdlib.h */,
 				C4CB32522248F5830014426C /* defs.h */,
@@ -583,16 +586,13 @@
 				C4CB32542248F5830014426C /* unistd.h */,
 				C4CB32552248F5830014426C /* stat.h */,
 				C4CB32562248F5830014426C /* dirent.h */,
-				C4CB32572248F5830014426C /* string.c */,
 				C4CB32582248F5830014426C /* hash.c */,
 				C4CB32592248F5830014426C /* x86.h */,
 				C4CB325A2248F5830014426C /* elf.h */,
 				C4CB325B2248F5830014426C /* list.h */,
 				C4CB325C2248F5830014426C /* printfmt.c */,
 				C4CB325D2248F5830014426C /* skew_heap.h */,
-				C4CB325E2248F5830014426C /* stdio.h */,
 				C4CB325F2248F5830014426C /* stdarg.h */,
-				C4CB32602248F5830014426C /* string.h */,
 				C4CB32612248F5830014426C /* atomic.h */,
 			);
 			name = libs;
