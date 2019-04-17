@@ -143,6 +143,7 @@ static void lpt_putc(int c)
 }
 
 /* cga_putc - print character to console */
+// 输入字符串到屏幕实际就是把字符一个字节一个字节的放到显存地址空间 0xB8000 里
 static void cga_putc(int c)
 {
     // set black on white
