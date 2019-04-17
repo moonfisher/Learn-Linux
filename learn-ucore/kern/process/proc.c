@@ -496,8 +496,9 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf, const c
         goto fork_out;
     }
 
-    //设置父节点为当前进程，如果是 shell 下执行的命令，current 就是 sh
+    // 设置父节点为当前进程，如果是 shell 下执行的命令，current 就是 sh
     proc->parent = current;
+    // 当前进程不可能处于阻塞等待的状态下，还在执行 fork
     assert(current->wait_state == 0);
 
     // 分配栈空间，2个页面，8k大小
@@ -612,6 +613,7 @@ int do_exit(int error_code)
             initproc->cptr = proc;
             if (proc->state == PROC_ZOMBIE)
             {
+                // 如果父进程在等待子进程退出，就唤醒父进程
                 if (initproc->wait_state == WT_CHILD)
                 {
                     wakeup_proc(initproc);
@@ -1024,8 +1026,10 @@ repeat:
     if (haskid)
     {
         current->state = PROC_SLEEPING;
+        // 记录进程处于等待的原因
         current->wait_state = WT_CHILD;
         schedule();
+        // 检测当前进程是否被 kill 过
         if (current->flags & PF_EXITING)
         {
             do_exit(-E_KILLED);
@@ -1062,7 +1066,9 @@ int do_kill(int pid)
     {
         if (!(proc->flags & PF_EXITING))
         {
+            // 标记当前进程处于被 kill 的状态，这里只是标记状态，并非直接干掉进程，等进程自己结束自己
             proc->flags |= PF_EXITING;
+            // 如果进程处于可中断的等待状态中，则进行唤醒，如果是处于 sem 信号量等待，则不唤醒
             if (proc->wait_state & WT_INTERRUPTED)
             {
                 wakeup_proc(proc);
@@ -1253,6 +1259,7 @@ int do_sleep(unsigned int time)
     local_intr_save(intr_flag);
     timer_t __timer, *timer = timer_init(&__timer, current, time);
     current->state = PROC_SLEEPING;
+    // 记录进程处于等待的原因
     current->wait_state = WT_TIMER;
     add_timer(timer);
     local_intr_restore(intr_flag);

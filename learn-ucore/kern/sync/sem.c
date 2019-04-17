@@ -25,6 +25,7 @@ static __noinline void __up(semaphore_t *sem, uint32_t wait_state)
         }
         else
         {
+            // 如果有进程处于信号等待状态，直接唤醒进程
             assert(wait->proc->wait_state == wait_state);
             wakeup_wait(&(sem->wait_queue), wait, wait_state, 1);
         }
@@ -42,6 +43,8 @@ static __noinline uint32_t __down(semaphore_t *sem, uint32_t wait_state)
         local_intr_restore(intr_flag);
         return 0;
     }
+    
+    // 把当前进程添加到等待队列，然后重新调度别的进程执行，当前进程进入睡眠态
     wait_t __wait, *wait = &__wait;
     wait_current_set(&(sem->wait_queue), wait, wait_state);
     local_intr_restore(intr_flag);
@@ -70,6 +73,7 @@ void down(semaphore_t *sem)
     assert(flags == 0);
 }
 
+// 尝试 down，这种操作不会引起进程阻塞，但也不一定能 down 成功
 bool try_down(semaphore_t *sem)
 {
     bool intr_flag, ret = 0;

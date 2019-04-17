@@ -70,7 +70,7 @@ typedef struct condvar
 {
     semaphore_t sem;        // the sem semaphore  is used to down the waiting proc, and the signaling proc should up the waiting proc
     int count;              // the number of waiters on condvar
-    monitor_t * owner;      // the owner(monitor) of this condvar
+    monitor_t *owner;      // the owner(monitor) of this condvar
 } condvar_t;
 
 typedef struct monitor
@@ -82,11 +82,11 @@ typedef struct monitor
 } monitor_t;
 
 // Initialize variables in monitor.
-void monitor_init (monitor_t *cvp, size_t num_cv);
+void monitor_init(monitor_t *cvp, size_t num_cv);
 // Unlock one of threads waiting on the condition variable. 
-void cond_signal (condvar_t *cvp);
+void cond_signal(condvar_t *cvp);
 // Suspend calling thread on a condition variable waiting for condition atomically unlock mutex in monitor,
 // and suspends calling thread on conditional variable after waking up locks mutex.
-void cond_wait (condvar_t *cvp);
+void cond_wait(condvar_t *cvp);
      
 #endif /* !__KERN_SYNC_MONITOR_CONDVAR_H__ */
