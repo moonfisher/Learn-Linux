@@ -222,7 +222,7 @@ int dup_mmap(struct mm_struct *to, struct mm_struct *from)
         insert_vma_struct(to, nvma);
 
         bool share = 0;
-        if (copy_range(to->pgdir, from->pgdir, vma->vm_start, vma->vm_end, share) != 0)
+        if (copy_range(to, from, vma->vm_start, vma->vm_end, share) != 0)
         {
             return -E_NO_MEM;
         }
@@ -507,7 +507,7 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr)
     if (*ptep == 0)
     {
         // if the phy addr isn't exist, then alloc a page & map the phy addr with logical addr
-        if (pgdir_alloc_page(mm->pgdir, addr, perm) == NULL)
+        if (pgdir_alloc_page(mm, addr, perm) == NULL)
         {
             cprintf("pgdir_alloc_page in do_pgfault failed\n");
             goto failed;
