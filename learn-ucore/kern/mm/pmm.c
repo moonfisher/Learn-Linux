@@ -855,6 +855,7 @@ int copy_range(struct mm_struct *to, struct mm_struct *from, uintptr_t start, ui
             extern struct mm_struct *check_mm_struct;
             check_mm_struct = to;
             struct Page *npage = alloc_page();
+            check_mm_struct = NULL;
             assert(page != NULL);
             assert(npage != NULL);
             int ret = 0;

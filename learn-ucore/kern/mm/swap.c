@@ -70,6 +70,23 @@ int swap_set_unswappable(struct mm_struct *mm, uintptr_t addr)
 
 volatile unsigned int swap_out_num = 0;
 
+// 换入是在缺页异常的时候，换出是在物理页帧满的时候
+/*
+ 换出页面的时机相对复杂一些，针对不同的策略有不同的时机。
+ ucore 目前大致有两种策略，即积极换出策略和消极换出策略。
+ 
+ 积极换出策略是指操作系统周期性地（或在系统不忙的时候）主动把某些认为“不常用”的页换出到硬盘上，
+ 从而确保系统中总有一定数量的空闲页存在，这样当需要空闲页时，基本上能够及时满足需求；
+ 
+ 消极换出策略是指，只是当试图得到空闲页时，发现当前没有空闲的物理页可供分配，这时才开始查找“不常用”页面，
+ 并把一个或多个这样的页换出到硬盘上。
+ 
+ 对于第一种积极换出策略，即每隔 1 秒执行一次的实现积极的换出策略，可考虑在扩展练习中实现。
+ 对于第二种消极的换出策略，则是在 ucore 调用 alloc_pages 函数获取空闲页时，
+ 此函数如果发现无法从物理内存页分配器获得空闲页，就会进一步调用 swap_out 函数换出某页，实现一种消极的换出策略。
+ 
+ FIFO替换算法会维护一个队列，队列按照页面调用的次序排列，越早被加载到内存的页面会越早被换出。
+*/
 int swap_out(struct mm_struct *mm, int n, int in_tick)
 {
     int i;
@@ -101,8 +118,8 @@ int swap_out(struct mm_struct *mm, int n, int in_tick)
         }
         else
         {
-            cprintf("swap_out: i %d, store page in vaddr 0x%x to disk swap entry %d\n", i, v, page->pra_vaddr/PGSIZE+1);
-            *ptep = (page->pra_vaddr/PGSIZE+1)<<8;
+            cprintf("swap_out: i %d, store page in vaddr 0x%x to disk swap entry %d\n", i, v, page->pra_vaddr / PGSIZE + 1);
+            *ptep = (page->pra_vaddr / PGSIZE + 1) << 8;
             free_page(page);
         }
 
@@ -124,7 +141,7 @@ int swap_in(struct mm_struct *mm, uintptr_t addr, struct Page **ptr_result)
     {
         assert(r != 0);
     }
-    cprintf("swap_in: load disk swap entry %d with swap_page in vadr 0x%x\n", (*ptep)>>8, addr);
+    cprintf("swap_in: load disk swap entry %d with swap_page in vadr 0x%x\n", (*ptep) >> 8, addr);
     *ptr_result = result;
     return 0;
 }
@@ -173,7 +190,7 @@ static void check_swap(void)
     {
         struct Page *p = le2page(le, page_link);
         assert(PageProperty(p));
-        count ++;
+        count++;
         total += p->property;
     }
     assert(total == nr_free_pages());
@@ -269,7 +286,7 @@ static void check_swap(void)
     while ((le = list_next(le)) != &free_list)
     {
         struct Page *p = le2page(le, page_link);
-        count --;
+        count--;
         total -= p->property;
     }
     cprintf("count is %d, total is %d\n", count, total);

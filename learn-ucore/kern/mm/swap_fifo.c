@@ -42,6 +42,7 @@ static int _fifo_init_mm(struct mm_struct *mm)
  * (3)_fifo_map_swappable: According FIFO PRA, we should link the most recent arrival page at the back of pra_list_head qeueue
  */
 // 添加可以被交换到 swap 分区的页面，主要是用户进程代码，内核代码独占内存，不能交换出去，否则出问题
+// 此时完成的是 FIFO 置换算法 因此 每次换出的都应该是 最先进来的页
 static int _fifo_map_swappable(struct mm_struct *mm, uintptr_t addr, struct Page *page, int swap_in)
 {
     list_entry_t *head = (list_entry_t *)mm->sm_priv;
@@ -49,6 +50,7 @@ static int _fifo_map_swappable(struct mm_struct *mm, uintptr_t addr, struct Page
  
     assert(entry != NULL && head != NULL);
     //record the page access situlation
+    // 就是将这一页加入到链表头中(最近访问过的放前面) 使其可以被置换算法使用到
     list_add(head, entry);
     return 0;
 }
@@ -64,6 +66,7 @@ static int _fifo_swap_out_victim(struct mm_struct *mm, struct Page ** ptr_page, 
     assert(in_tick == 0);
     /* Select the victim */
     /* Select the tail */
+    // 换出最先进来的页 (因为每次访问一个页 都是插入到头节点的后面，因此头节点的前面就是最先访问的页)
     list_entry_t *le = head->prev;
     assert(head != le);
     struct Page *p = le2page(le, pra_page_link);
