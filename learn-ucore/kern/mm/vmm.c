@@ -222,7 +222,7 @@ int dup_mmap(struct mm_struct *to, struct mm_struct *from)
         insert_vma_struct(to, nvma);
 
         bool share = 0;
-        if (copy_range(to->pgdir, from->pgdir, vma->vm_start, vma->vm_end, share) != 0)
+        if (copy_range(to, from, vma->vm_start, vma->vm_end, share) != 0)
         {
             return -E_NO_MEM;
         }
@@ -436,8 +436,8 @@ volatile unsigned int pgfault_num = 0;
  CPU会把产生异常的线性地址存储在 CR2 中，并且把表示页访问异常类型的值（简称页访问异常错误码，errorCode）保存在中断栈中
  页访问异常错误码有 32 位。
  位 0 为 １ 表示对应物理页不存在；
- 位 １ 为 １ 表示写异常（比如写了只读页)；
- 位 ２ 为 １ 表示访问权限异常（比如用户态程序访问内核空间的数据）
+ 位 1 为 １ 表示写异常（比如写了只读页)；
+ 位 2 为 １ 表示访问权限异常（比如用户态程序访问内核空间的数据）
  CR2 是页故障线性地址寄存器，保存最后一次出现页故障的全 32 位线性地址。
  CR2 用于发生页异常时报告出错信息。当发生页异常时，处理器把引起页异常的线性地址保存在 CR2 中。
  操作系统中对应的中断服务例程可以检查 CR2 的内容，从而查出线性地址空间中的哪个页引起本次异常。
@@ -468,9 +468,11 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr)
                 goto failed;
             }
             break;
+            
         case 1: /* error code flag : (W/R=0, P=1): read, present */
             cprintf("do_pgfault failed: error code flag = read AND present\n");
             goto failed;
+            
         case 0: /* error code flag : (W/R=0, P=0): read, not present */
             if (!(vma->vm_flags & (VM_READ | VM_EXEC)))
             {
@@ -497,7 +499,7 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr)
     
     // try to find a pte, if pte's PT(Page Table) isn't existed, then create a PT.
     // (notice the 3th parameter '1')
-    // 获取当前要访问的地址的 pte，如果没有就创建一个
+    // 根据引发缺页异常的地址去找到地址所对应的 PTE，如果找不到则创建一页表
     if ((ptep = get_pte(mm->pgdir, addr, 1)) == NULL)
     {
         cprintf("get_pte in do_pgfault failed\n");
@@ -507,7 +509,9 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr)
     if (*ptep == 0)
     {
         // if the phy addr isn't exist, then alloc a page & map the phy addr with logical addr
-        if (pgdir_alloc_page(mm->pgdir, addr, perm) == NULL)
+        // PTE 所指向的物理页表地址若不存在则分配一物理页并将逻辑地址和物理地址作映射
+        // 就是让 PTE 指向 物理页帧
+        if (pgdir_alloc_page(mm, addr, perm) == NULL)
         {
             cprintf("pgdir_alloc_page in do_pgfault failed\n");
             goto failed;
@@ -527,28 +531,33 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr)
         }
         else
         {
-           // if this pte is a swap entry, then load data from disk to a page with phy addr
-           // and call page_insert to map the phy addr with logical addr
-           if (swap_init_ok)
-           {
-               if ((ret = swap_in(mm, addr, &page)) != 0)
-               {
-                   cprintf("swap_in in do_pgfault failed\n");
-                   goto failed;
-               }
-           }  
-           else
-           {
+            // if this pte is a swap entry, then load data from disk to a page with phy addr
+            // and call page_insert to map the phy addr with logical addr
+            // 如果 PTE 存在 说明此时 P 位为 0 该页被换出到外存中 需要将其换入内存
+            if (swap_init_ok)
+            {
+                // 根据 PTE 找到 换出那页所在的硬盘地址 并将其从外存中换入
+                if ((ret = swap_in(mm, addr, &page)) != 0)
+                {
+                    cprintf("swap_in in do_pgfault failed\n");
+                    goto failed;
+                }
+            }
+            else
+            {
                 cprintf("no swap_init_ok but ptep is %x, failed\n",*ptep);
                 goto failed;
-           }
-       }
+            }
+        }
         
-       page_insert(mm->pgdir, page, addr, perm);
-       swap_map_swappable(mm, addr, page, 1);
-       page->pra_vaddr = addr;
-   }
-   ret = 0;
+        // 建立虚拟地址和物理地址之间的对应关系(更新 PTE 因为 已经被换入到内存中了)
+        page_insert(mm->pgdir, page, addr, perm);
+        // 使这一页可以置换
+        swap_map_swappable(mm, addr, page, 1);
+        // 设置这一页的虚拟地址
+        page->pra_vaddr = addr;
+    }
+    ret = 0;
 failed:
     return ret;
 }

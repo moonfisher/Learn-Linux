@@ -33,6 +33,11 @@ void pic_init(void)
 {
     did_init = 1;
 
+    // 重新映射 IRQ 表
+    // 两片级联的 Intel 8259A 芯片
+    // 主片端口 0x20 0x21
+    // 从片端口 0xA0 0xA1
+    
     // mask all interrupts
     outb(IO_PIC1 + 1, 0xFF);
     outb(IO_PIC2 + 1, 0xFF);

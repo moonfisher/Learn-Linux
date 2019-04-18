@@ -366,6 +366,7 @@ static int copy_mm(uint32_t clone_flags, struct proc_struct *proc)
         return 0;
     }
     
+    // 如果是 CLONE_VM 说明是多 task 共享地址空间，这就类似于多线程的模型
     if (clone_flags & CLONE_VM)
     {
         mm = oldmm;
@@ -737,7 +738,7 @@ static int load_icode(int fd, int argc, char **kargv)
         end = ph->p_va + ph->p_filesz;
         while (start < end)
         {
-            if ((page = pgdir_alloc_page(mm->pgdir, la, perm)) == NULL)
+            if ((page = pgdir_alloc_page(mm, la, perm)) == NULL)
             {
                 ret = -E_NO_MEM;
                 goto bad_cleanup_mmap;
@@ -774,7 +775,7 @@ static int load_icode(int fd, int argc, char **kargv)
         
         while (start < end)
         {
-            if ((page = pgdir_alloc_page(mm->pgdir, la, perm)) == NULL)
+            if ((page = pgdir_alloc_page(mm, la, perm)) == NULL)
             {
                 ret = -E_NO_MEM;
                 goto bad_cleanup_mmap;
@@ -798,10 +799,10 @@ static int load_icode(int fd, int argc, char **kargv)
     }
     
     // 创建页表，这里先只创建 4 个页面的页表
-    assert(pgdir_alloc_page(mm->pgdir, USTACKTOP - PGSIZE , PTE_USER) != NULL);
-    assert(pgdir_alloc_page(mm->pgdir, USTACKTOP - 2 * PGSIZE , PTE_USER) != NULL);
-    assert(pgdir_alloc_page(mm->pgdir, USTACKTOP - 3 * PGSIZE , PTE_USER) != NULL);
-    assert(pgdir_alloc_page(mm->pgdir, USTACKTOP - 4 * PGSIZE , PTE_USER) != NULL);
+    assert(pgdir_alloc_page(mm, USTACKTOP - PGSIZE , PTE_USER) != NULL);
+    assert(pgdir_alloc_page(mm, USTACKTOP - 2 * PGSIZE , PTE_USER) != NULL);
+    assert(pgdir_alloc_page(mm, USTACKTOP - 3 * PGSIZE , PTE_USER) != NULL);
+    assert(pgdir_alloc_page(mm, USTACKTOP - 4 * PGSIZE , PTE_USER) != NULL);
     
     mm_count_inc(mm);
     current->mm = mm;

@@ -49,10 +49,6 @@ int kern_init(void)
     clock_init();               // init clock interrupt
     intr_enable();              // enable irq interrupt
 
-    //LAB1: CAHLLENGE 1 If you try to do it, uncomment lab1_switch_test()
-    // user/kernel mode switch test
-//    lab1_switch_test();
-    
     cpu_idle();                 // run idle process
 }
 
@@ -96,7 +92,6 @@ static void lab1_print_cur_status(void)
 
 static void lab1_switch_to_user(void)
 {
-    //LAB1 CHALLENGE 1 : TODO
     /*
      转向用户态时，我们需要预留出8个字节来存放 iret 的返回，在调用中断之前先修改 esp，
      原因是切换特权级时，iret 指令会额外弹出 ss 和 esp，但实际在从内核态转向用户态的时候，
@@ -115,7 +110,6 @@ static void lab1_switch_to_user(void)
 
 static void lab1_switch_to_kernel(void)
 {
-    //LAB1 CHALLENGE 1 :  TODO
     /*
      转向内核态时，cpu 会将当前程序使用的用户态的 ss 和 esp 压到新的内核栈中保存起来。
      内核栈的地址通过 tss 获取

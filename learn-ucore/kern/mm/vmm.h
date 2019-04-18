@@ -39,21 +39,21 @@ struct vma_struct
 // the control struct for a set of vma using the same PDT
 /*
  mmap_list 是双向链表头，链接了所有属于同一页目录表的虚拟内存空间
- mmap_cache 是指向当前正在使用的虚拟内存空间，由于操作系统执行的“局部性”原理，
- 当前正在用到的虚拟内存空间在接下来的操作中可能还会用到，这时就不需要查链表，
- 而是直接使用此指针就可找到下一次要用到的虚拟内存空间。
- 由于 mmap_cache 的引入，可使得 mm_struct 数据结构的查询加速 30% 以上。
- pgdir 所指向的就是 mm_struct 数据结构所维护的页表。
- 通过访问 pgdir 可以查找某虚拟地址对应的页表项是否存在以及页表项的属性等。
- map_count 记录 mmap_list 里面链接的 vma_struct 的个数。
- sm_priv 指向用来链接记录页访问情况的链表头，这建立了 mm_struct 和 swap_manager 之间的联系。
 */
 struct mm_struct
 {
     list_entry_t mmap_list;        // linear list link which sorted by start addr of vma
+    // mmap_cache 是指向当前正在使用的虚拟内存空间，由于操作系统执行的“局部性”原理，
+    // 当前正在用到的虚拟内存空间在接下来的操作中可能还会用到，这时就不需要查链表，
+    // 而是直接使用此指针就可找到下一次要用到的虚拟内存空间。
+    // 由于 mmap_cache 的引入，可使得 mm_struct 数据结构的查询加速 30% 以上。
     struct vma_struct *mmap_cache; // current accessed vma, used for speed purpose
+    // pgdir 所指向的就是 mm_struct 数据结构所维护的页表。
+    // 通过访问 pgdir 可以查找某虚拟地址对应的页表项是否存在以及页表项的属性等。
     pde_t *pgdir;                  // the PDT of these vma
+    // map_count 记录 mmap_list 里面链接的 vma_struct 的个数。
     int map_count;                 // the count of these vma
+    // sm_priv 指向用来链接记录页访问情况的链表头，这建立了 mm_struct 和 swap_manager 之间的联系。
     void *sm_priv;                 // the private data for swap manager
     int mm_count;                  // the number ofprocess which shared the mm
     semaphore_t mm_sem;            // mutex for using dup_mmap fun to duplicat the mm 
