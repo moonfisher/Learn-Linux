@@ -945,7 +945,9 @@ int do_execve(const char *name, int argc, const char **argv)
         goto execve_exit;
     }
     
-    // 先释放目前进程的页表资源，后续再重建
+    // 采用 excecv 加载程序时，是先创建的进程，后加载的应用程序二进制文件
+    // 所以这里先释放到创建进程时建立的页面资源，页表资源，只保留一个 task 空壳
+    // 等后续把程序从磁盘上读到内存里之后，再重新构建页表结构
     if (mm != NULL)
     {
         lcr3(boot_cr3);

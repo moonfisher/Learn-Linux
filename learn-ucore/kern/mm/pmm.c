@@ -827,6 +827,7 @@ void exit_range(pde_t *pgdir, uintptr_t start, uintptr_t end)
  *
  * CALL GRAPH: copy_mm-->dup_mmap-->copy_range
  */
+// 拷贝父进程的内容到子进程
 int copy_range(struct mm_struct *to, struct mm_struct *from, uintptr_t start, uintptr_t end, bool share)
 {
     assert(start % PGSIZE == 0 && end % PGSIZE == 0);
@@ -852,8 +853,6 @@ int copy_range(struct mm_struct *to, struct mm_struct *from, uintptr_t start, ui
             //get page from ptep
             struct Page *page = pte2page(*ptep);
             // alloc a page for process B
-            extern struct mm_struct *check_mm_struct;
-            check_mm_struct = to;
             struct Page *npage = alloc_page();
             check_mm_struct = NULL;
             assert(page != NULL);
