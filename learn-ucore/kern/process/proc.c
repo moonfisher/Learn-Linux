@@ -413,13 +413,19 @@ bad_mm:
 //             - setup the kernel entry point and stack of process
 static void copy_thread(struct proc_struct *proc, uintptr_t esp, struct trapframe *tf)
 {
+    // 在内核堆栈的顶部设置中断帧大小的一块栈空间
     proc->tf = (struct trapframe *)(proc->kstack + KSTACKSIZE) - 1;
+    // 拷贝在 kernel_thread 函数建立的临时中断帧的初始值
     *(proc->tf) = *tf;
+    // 设置子进程/线程执行完 do_fork 后的返回值
     proc->tf->tf_regs.reg_eax = 0;
+    // 设置中断帧中的栈指针 esp
     proc->tf->tf_esp = esp;
+    // 使能中断
     proc->tf->tf_eflags |= FL_IF;
-
+    // 设置好新进程的入口地址
     proc->context.eip = (uintptr_t)forkret;
+    // 更新上下文sp指针位置
     proc->context.esp = (uintptr_t)(proc->tf);
 }
 

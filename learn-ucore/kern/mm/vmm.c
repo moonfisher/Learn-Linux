@@ -506,6 +506,7 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr)
         goto failed;
     }
     
+    // 为 0 代表没有与物理页面建立映射关系
     if (*ptep == 0)
     {
         // if the phy addr isn't exist, then alloc a page & map the phy addr with logical addr
@@ -519,6 +520,7 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr)
     }
     else
     {
+        // 表明已经将该虚拟地址对应的物理地址置换在 swap 分区了
         struct Page *page = NULL;
         cprintf("do pgfault: ptep %x, pte %x\n", ptep, *ptep);
         if (*ptep & PTE_P)
@@ -552,7 +554,7 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr)
         
         // 建立虚拟地址和物理地址之间的对应关系(更新 PTE 因为 已经被换入到内存中了)
         page_insert(mm->pgdir, page, addr, perm);
-        // 使这一页可以置换
+        // 维护一个页面替换队列, 使这一页可以置换
         swap_map_swappable(mm, addr, page, 1);
         // 设置这一页的虚拟地址
         page->pra_vaddr = addr;
