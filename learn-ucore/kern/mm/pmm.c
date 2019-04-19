@@ -827,7 +827,7 @@ void exit_range(pde_t *pgdir, uintptr_t start, uintptr_t end)
  *
  * CALL GRAPH: copy_mm-->dup_mmap-->copy_range
  */
-// 拷贝父进程的内容到子进程
+// copy_range 函数就是调用一个 memcpy 将父进程的内存直接复制给子进程
 int copy_range(struct mm_struct *to, struct mm_struct *from, uintptr_t start, uintptr_t end, bool share)
 {
     assert(start % PGSIZE == 0 && end % PGSIZE == 0);
@@ -859,11 +859,14 @@ int copy_range(struct mm_struct *to, struct mm_struct *from, uintptr_t start, ui
             assert(npage != NULL);
             int ret = 0;
 
+            // 返回父进程的内核虚拟页地址
             void *kva_src = page2kva(page);
+            // 返回子进程的内核虚拟页地址
             void *kva_dst = page2kva(npage);
         
+            // 复制父进程到子进程
             memcpy(kva_dst, kva_src, PGSIZE);
-
+            // 建立子进程页地址起始位置与物理地址的映射关系(prem是权限)
             ret = page_insert(to->pgdir, npage, start, perm);
             assert(ret == 0);
         }

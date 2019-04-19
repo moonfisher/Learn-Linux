@@ -205,6 +205,15 @@ out:
     return ret;
 }
 
+/*
+ 创建子进程的函数 do_fork 在执行中将拷贝当前进程（即父进程）的用户内存地址空间中的合法
+ 内容到新进程中（子进程），完成内存资源的复制。具体是通过 copy_range 函数
+ 
+ 如何实现 COW 快照（Copy-On-Write）
+ 在创建子进程时，将父进程的PDE直接赋值给子进程的 PDE，但是需要将允许写入的标志位置 0；
+ 当子进程需要进行写操作时，再次出发中断调用 do_pgfault()，此时应给子进程新建 PTE，
+ 并取代原先 PDE 中的项，然后才能写入。
+*/
 int dup_mmap(struct mm_struct *to, struct mm_struct *from)
 {
     assert(to != NULL && from != NULL);

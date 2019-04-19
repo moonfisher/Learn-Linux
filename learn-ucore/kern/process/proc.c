@@ -384,6 +384,7 @@ static int copy_mm(uint32_t clone_flags, struct proc_struct *proc)
         goto bad_pgdir_cleanup_mm;
     }
 
+    // 打开互斥锁，避免多个进程同时访问内存
     lock_mm(oldmm);
     {
         ret = dup_mmap(mm, oldmm);
@@ -651,7 +652,28 @@ static int load_icode_read(int fd, void *buf, size_t len, off_t offset)
     return 0;
 }
 
-// load_icode -  called by sys_exec-->do_execve
+/*
+ 用户进程入口地址是 0x800020，其下面的一部分地址可用于检测空指针什么的
+ 各个段的相对位置，可以查看一下 user.ld 文件．
+ 1，调用 mm_create 函数来申请进程的内存管理数据结构 mm 所需内存空间，并对 mm 进行初始化;
+ 2，调用 setup_pgdir 来申请一个页目录表所需的一个页大小的内存空间，并把描述 ucore 内核虚空间
+ 映射的内核页表 (boot_pgdir所指) 的内容拷贝到此新目录表中，最后让 mm->pgdir 指向此页目录表，
+ 这就是进程新的页目录表了，且能够正确映射内核虚空间;
+ 3，根据应用程序执行码的起始位置来解析此 ELF 格式的执行程序，并调用 mm_map 函数根据 ELF 格式的
+ 执行程序说明的各个段 (代码段、数据段、BSS段等) 的起始位置和大小建立对应的 vma 结构，并把 vma 插
+ 入到 mm 结构中，从而表明了用户进程的合法用户态虚拟地址空间;
+ 4，调用根据执行程序各个段的大小分配物理内存空间，并根据执行程序各个段的起始位置确定虚拟地址，并在页
+ 表中建立好物理地址和虚拟地址的映射关系，然后把执行程序各个段的内容拷贝到相应的内核虚拟地址中，至此应
+ 用程序执行码和数据已经根据编译时设定地址放置到虚拟内存中了;
+ 5，需要给用户进程设置用户栈，为此调用 mm_mmap 函数建立用户栈的 vma 结构，明确用户栈的位置在用户
+ 虚空间的顶端，大小为 256 个页，即 1MB，并分配一定数量的物理内存且建立好栈的 虚地址<-->物理地址 映射关系;
+ 6，至此，进程内的内存管理 vma 和 mm 数据结构已经建立完成，于是把 mm->pgdir 赋值到 cr3 寄存器中，
+ 即更新了用户进程的虚拟内存空间，此时的 initproc 已经被 sh 的代码和数据覆盖，成为了第一个用户进程，
+ 但此时这个用户进程的执行现场还没建立好;
+ 7，先清空进程的中断帧，再重新设置进程的中断帧，使得在执行中断返回指令 iret 后，能够让 CPU 转到用户态
+ 特权级，并回到用户态内存空间，使用用户态的代码段，数据段和堆栈，且能够跳转到用户进程的第一条指令执行
+ ,并确保在用户态能够响应中断;
+ */
 static int load_icode(int fd, int argc, char **kargv)
 {
     assert(argc >= 0 && argc <= EXEC_MAX_ARG_NUM);
@@ -804,7 +826,7 @@ static int load_icode(int fd, int argc, char **kargv)
         goto bad_cleanup_mmap;
     }
     
-    // 创建页表，这里先只创建 4 个页面的页表
+    // 创建页表，这里先只创建 4 个页面的页表，这里的权限是 PTE_USER 用户权限
     assert(pgdir_alloc_page(mm, USTACKTOP - PGSIZE , PTE_USER) != NULL);
     assert(pgdir_alloc_page(mm, USTACKTOP - 2 * PGSIZE , PTE_USER) != NULL);
     assert(pgdir_alloc_page(mm, USTACKTOP - 3 * PGSIZE , PTE_USER) != NULL);
@@ -823,6 +845,9 @@ static int load_icode(int fd, int argc, char **kargv)
     }
 
     // 用户进程的用户态堆栈地址，是根据虚拟空间地址规划出来的
+    // 栈空间只是在虚拟地址连续，物理地址未必连续，都是先分配的虚拟页面，然后写的时候触发写异常，
+    // 然后 page_fault 之后分配物理内存，这种做法避免一开始分配内存又不是实际使用，造成浪费
+    // 当然内核栈的那两页是连续的物理页面
     uintptr_t stacktop = USTACKTOP - (argv_size / sizeof(long) + 1) * sizeof(long);
     char **uargv = (char **)(stacktop  - argc * sizeof(char *));
     
