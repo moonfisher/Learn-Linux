@@ -343,6 +343,8 @@ static int setup_pgdir(struct mm_struct *mm)
     pde_t *pgdir = page2kva(page);
     // 先拷贝内核地址映射表，这样即使后续切换到用户进程页表，内核地址空间访问也还是正常的
     memcpy(pgdir, boot_pgdir, PGSIZE);
+    // 这里并没有设置 PTE_U 用户访问权限，所以在用户态下，无法直接访问内核地址空间，
+    // 会触发 T_PGFLT 中断
     pgdir[PDX(VPT)] = PADDR(pgdir) | PTE_P | PTE_W;
     mm->pgdir = pgdir;
     return 0;
@@ -733,7 +735,9 @@ static int load_icode(int fd, int argc, char **kargv)
             continue ;
         }
         
-        vm_flags = 0; perm = PTE_U;
+        vm_flags = 0;
+        // 用户进程，所有页表权限都要设置为 PTE_U，否则用户态访问地址出错
+        perm = PTE_U;
         if (ph->p_flags & ELF_PF_X)
         {
             vm_flags |= VM_EXEC;
@@ -826,7 +830,7 @@ static int load_icode(int fd, int argc, char **kargv)
         goto bad_cleanup_mmap;
     }
     
-    // 创建页表，这里先只创建 4 个页面的页表，这里的权限是 PTE_USER 用户权限
+    // 创建页表，这里先只创建 4 个页面的页表，这里要权限是 PTE_USER 用户权限，否则用户态无法访问堆栈
     assert(pgdir_alloc_page(mm, USTACKTOP - PGSIZE , PTE_USER) != NULL);
     assert(pgdir_alloc_page(mm, USTACKTOP - 2 * PGSIZE , PTE_USER) != NULL);
     assert(pgdir_alloc_page(mm, USTACKTOP - 3 * PGSIZE , PTE_USER) != NULL);
