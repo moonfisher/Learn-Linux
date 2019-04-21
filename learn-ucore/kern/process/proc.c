@@ -866,6 +866,7 @@ static int load_icode(int fd, int argc, char **kargv)
     stacktop = (uintptr_t)uargv - sizeof(int);
     *(int *)stacktop = argc;
     
+    // 用户进程是通过 sys_exec 系统调用作为入口进来加载的，实际也是中断，中断返回就需要构造中断帧
     // 这里中断桢设置的是 USER_CS 和 USER_DS，所以进程运行起来后直接是用户态
     struct trapframe *tf = current->tf;
     memset(tf, 0, sizeof(struct trapframe));
@@ -1119,6 +1120,7 @@ int do_kill(int pid)
 }
 
 // kernel_execve - do SYS_exec syscall to exec a user program called by user_main kernel_thread
+// 通过系统调动来执行用户进程
 static int kernel_execve(const char *name, const char **argv)
 {
     int argc = 0, ret;

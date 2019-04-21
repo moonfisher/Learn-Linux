@@ -61,7 +61,7 @@ void idt_init(void)
     // T_SYSCALL = int 0x80，80 中断设置的权限是 DPL_USER
     // 这是用户进程可以切换到内核态，执行内核代码的唯一入口，如果改成 DPL_KERNEL 则
     // 会触发 T_GPFLT general protection fault 中断，导致异常
-    SETGATE(idt[T_SYSCALL], 1, GD_KTEXT, __vectors[T_SYSCALL], DPL_USER);
+    SETGATE(idt[T_SYSCALL], 1, GD_UTEXT, __vectors[T_SYSCALL], DPL_USER);
     
     // set for switch from user to kernel
     SETGATE(idt[T_SWITCH_TOK], 0, GD_KTEXT, __vectors[T_SWITCH_TOK], DPL_USER);
