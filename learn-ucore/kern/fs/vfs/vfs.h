@@ -37,15 +37,16 @@ struct fs
     union
     {
         struct sfs_fs __sfs_info;                   
-    } fs_info;                                     // filesystem-specific data 
+    } fs_info;  // 具体的文件系统                      // filesystem-specific data
     enum
     {
         fs_type_sfs_info,
-    } fs_type;                                     // filesystem type 
-    int (*fs_sync)(struct fs *fs);                 // Flush all dirty buffers to disk 
-    struct inode *(*fs_get_root)(struct fs *fs);   // Return root inode of filesystem.
-    int (*fs_unmount)(struct fs *fs);              // Attempt unmount of filesystem.
-    void (*fs_cleanup)(struct fs *fs);             // Cleanup of filesystem.???
+    } fs_type;  // 文件系统类型                       // filesystem type
+    // 访问文件系统的函数指针
+    int (*fs_sync)(struct fs *fs);                  // Flush all dirty buffers to disk
+    struct inode *(*fs_get_root)(struct fs *fs);    // Return root inode of filesystem.
+    int (*fs_unmount)(struct fs *fs);               // Attempt unmount of filesystem.
+    void (*fs_cleanup)(struct fs *fs);              // Cleanup of filesystem.???
 };
 
 #define __fs_type(type)                                             fs_type_##type##_info

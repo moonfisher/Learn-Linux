@@ -17,7 +17,7 @@
 #include "sync.h"
 #include "proc.h"
 
-#define TICK_NUM 1000
+#define TICK_NUM 5000
 
 static void print_ticks()
 {
@@ -101,19 +101,27 @@ static const char *trapname(int trapno)
         "SIMD Floating-Point Exception"
     };
 
-    if (trapno < sizeof(excnames)/sizeof(const char * const))
+    if (trapno < sizeof(excnames) / sizeof(const char * const))
     {
         return excnames[trapno];
     }
+    
     if (trapno >= IRQ_OFFSET && trapno < IRQ_OFFSET + 16)
     {
         return "Hardware Interrupt";
     }
+    
+    if (trapno == T_SYSCALL)
+    {
+        return "Soft Int";
+    }
+    
     return "(unknown trap)";
 }
 
 /* trap_in_kernel - test if trap happened in kernel */
-// 如果当前 cs 指向内核代码段，则说明是在执行内核进程的时候发生了中断，否则是执行用户进程时发生中断
+// 判断中断发生时，CPU 压入堆栈的 cs 段描述符是否指向内核代码段，
+// 是则说明是在执行内核进程的时候发生了中断，否则是执行用户进程时发生中断
 bool trap_in_kernel(struct trapframe *tf)
 {
     return (tf->tf_cs == (uint16_t)KERNEL_CS);
@@ -127,45 +135,53 @@ static const char *IA32flags[] = {
 
 void print_trapframe(struct trapframe *tf)
 {
-    cprintf("trapframe at %p\n", tf);
+    cprintf("\ntrapframe at %p\n", tf);
+    
+    char *csDes = "Trap from User";
+    if (tf->tf_cs == (uint16_t)KERNEL_CS)
+    {
+        csDes = "Trap from Kernel";
+    }
+    
     print_regs(&(tf->tf_regs));
-    cprintf("  ds   0x----%04x\n", tf->tf_ds);
-    cprintf("  es   0x----%04x\n", tf->tf_es);
-    cprintf("  fs   0x----%04x\n", tf->tf_fs);
-    cprintf("  gs   0x----%04x\n", tf->tf_gs);
-    cprintf("  trap 0x%08x %s\n", tf->tf_trapno, trapname(tf->tf_trapno));
-    cprintf("  err  0x%08x\n", tf->tf_err);
-    cprintf("  eip  0x%08x\n", tf->tf_eip);
-    cprintf("  cs   0x----%04x\n", tf->tf_cs);
-    cprintf("  flag 0x%08x ", tf->tf_eflags);
+    cprintf("  ds       0x%08x\n", tf->tf_ds);
+    cprintf("  es       0x%08x\n", tf->tf_es);
+    cprintf("  fs       0x%08x\n", tf->tf_fs);
+    cprintf("  gs       0x%08x\n", tf->tf_gs);
+    cprintf("  trapno   0x%08x  %s\n", tf->tf_trapno, trapname(tf->tf_trapno));
+    cprintf("  err      0x%08x\n", tf->tf_err);
+    cprintf("  eip      0x%08x\n", tf->tf_eip);
+    cprintf("  cs       0x%08x  %s\n", tf->tf_cs, csDes);
+    cprintf("  flag     0x%08x ", tf->tf_eflags);
 
     int i, j;
     for (i = 0, j = 1; i < sizeof(IA32flags) / sizeof(IA32flags[0]); i ++, j <<= 1)
     {
         if ((tf->tf_eflags & j) && IA32flags[i] != NULL)
         {
-            cprintf("%s,", IA32flags[i]);
+            cprintf(" %s, ", IA32flags[i]);
         }
     }
-    cprintf("IOPL=%d\n", (tf->tf_eflags & FL_IOPL_MASK) >> 12);
+    cprintf("IOPL = %d\n", (tf->tf_eflags & FL_IOPL_MASK) >> 12);
 
-    if (!trap_in_kernel(tf))
+//    if (!trap_in_kernel(tf))
     {
-        cprintf("  esp  0x%08x\n", tf->tf_esp);
-        cprintf("  ss   0x----%04x\n", tf->tf_ss);
+        cprintf("  esp      0x%08x\n", tf->tf_esp);
+        cprintf("  ss       0x%08x\n", tf->tf_ss);
     }
+    cprintf("\n");
 }
 
 void print_regs(struct pushregs *regs)
 {
-    cprintf("  edi  0x%08x\n", regs->reg_edi);
-    cprintf("  esi  0x%08x\n", regs->reg_esi);
-    cprintf("  ebp  0x%08x\n", regs->reg_ebp);
-    cprintf("  oesp 0x%08x\n", regs->reg_oesp);
-    cprintf("  ebx  0x%08x\n", regs->reg_ebx);
-    cprintf("  edx  0x%08x\n", regs->reg_edx);
-    cprintf("  ecx  0x%08x\n", regs->reg_ecx);
-    cprintf("  eax  0x%08x\n", regs->reg_eax);
+    cprintf("  edi      0x%08x\n", regs->reg_edi);
+    cprintf("  esi      0x%08x\n", regs->reg_esi);
+    cprintf("  ebp      0x%08x\n", regs->reg_ebp);
+    cprintf("  oesp     0x%08x\n", regs->reg_oesp);
+    cprintf("  ebx      0x%08x\n", regs->reg_ebx);
+    cprintf("  edx      0x%08x\n", regs->reg_edx);
+    cprintf("  ecx      0x%08x\n", regs->reg_ecx);
+    cprintf("  eax      0x%08x\n", regs->reg_eax);
 }
 
 static inline void print_pgfault(struct trapframe *tf)

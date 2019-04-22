@@ -32,16 +32,16 @@ struct inode
     {
         struct device __device_info;
         struct sfs_inode __sfs_inode_info;
-    } in_info;
+    } in_info;  // 包括了不同文件系统特定 inode 信息的 union 成员信息
     enum
     {
         inode_type_device_info = 0x1234,
         inode_type_sfs_inode_info,
     } in_type;
-    int ref_count;
-    int open_count;
-    struct fs *in_fs;
-    const struct inode_ops *in_ops;
+    int ref_count;  // 此 inode 的引用计数
+    int open_count; // 打开此 inode 对应文件的个数
+    struct fs *in_fs;   // inode 所属的文件系统
+    const struct inode_ops *in_ops; // 访问 inode 的函数指针，和具体文件系统相关
 };
 
 #define __in_type(type)                                             inode_type_##type##_info

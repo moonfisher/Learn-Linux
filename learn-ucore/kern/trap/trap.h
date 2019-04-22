@@ -88,23 +88,23 @@ struct trapframe
     uint16_t tf_ds;
     uint16_t tf_padding3;
     uint32_t tf_trapno;         // 本次中断中断号
-    uint32_t tf_err;
     /* below here defined by x86 hardware */
-    // 下面3个参数，是在 cpu 执行 int x 中断，跳转到中断函数入口之前，往堆栈里压的数据
-    // cpu 只负责压栈了 cs，eip，eflags 这些，其余寄存器的当前状态由中断程序去保存并恢复
-    // 指的是CPU跳转到interrupt gate里的地址时，在将EFLAGS保存到栈上之后，清除EFLAGS里的IF位，以避免重复触发中断。
-    // 在中断处理例程里，操作系统可以将EFLAGS里的IF设上
-    // 从而允许嵌套中断。但是必须在此之前做好处理嵌套中断的必要准备，如保存必要的寄存器等。
-    // 在ucore中访问Trap Gate的目的是为了实现系统调用.
+    /* 下面 4 个参数，是在 cpu 执行 int x 中断，跳转到中断函数入口之前，往堆栈里压的数据
+       cpu 只负责压栈了 cs，eip，eflags，error code(不是每个中断都有) 这些，其余寄存器
+       的当前状态由中断程序根据需要去自行保存并恢复
+    */
+    uint32_t tf_err;
     uintptr_t tf_eip;
     uint16_t tf_cs;
     uint16_t tf_padding4;
     uint32_t tf_eflags;
     /* below here only when crossing rings, such as from user to kernel */
-    // 下面2个参数，记录 int x 中断执行之前的 esp 地址，中断执行完之后还要回到之前的堆栈
-    // 这2个只在用户态切换到内核态，发生特权转换的时候才会用到，此时 cpu 会把用户栈切换为内核栈，
-    // 并将当前程序使用的用户态的 ss 和 esp 压到新的内核栈中保存起来。内核栈的地址通过全局 tss 获取
-    // 但从内核态转向用户态的时候并未产生特权级切换，因此 cpu 并未压入对应 ss 和 esp，这2个参数没用
+    /* 下面 2 个参数，记录 int x 中断执行之前的堆栈 esp 地址，中断执行完之后还要回到之前的堆栈
+       这 2 个只在用户态切换到内核态，发生特权转换的时候才会用到，此时 cpu 会把用户栈切换为内核栈，
+       并将当前进程在用户态下的 ss 和 esp 压到新的内核栈中保存起来（因为栈发生切换，如果不保存，中
+       断处理完之后无法回到之前的用户栈地址）。内核栈的地址通过全局 tss 获取的，进程切换的时候更新 tss。
+       如果是从内核态转向用户态，这个过程并未产生特权级切换，cpu 并未压入对应 ss 和 esp，这 2 个参数没用
+    */
     uintptr_t tf_esp;
     uint16_t tf_ss;
     uint16_t tf_padding5;

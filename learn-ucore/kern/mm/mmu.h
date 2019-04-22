@@ -1,6 +1,11 @@
 #ifndef __KERN_MM_MMU_H__
 #define __KERN_MM_MMU_H__
 
+/*
+ CPU 是如何访问到内存的？-- MMU 最基本原理
+ http://www.10tiao.com/html/606/201802/2664605117/1.html
+*/
+
 /* Eflags register */
 #define FL_CF           0x00000001  // Carry Flag
 #define FL_PF           0x00000004  // Parity Flag

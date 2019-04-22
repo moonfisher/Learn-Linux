@@ -10,10 +10,11 @@ struct iobuf;
  * Filesystem-namespace-accessible device.
  * d_io is for both reads and writes; the iobuf will indicates the direction.
  */
+// I / O 设备数据结构和相关操作
 struct device
 {
-    size_t d_blocks;
-    size_t d_blocksize;
+    size_t d_blocks;    // 设备占用的数据块个数
+    size_t d_blocksize; // 数据块的大小
     int (*d_open)(struct device *dev, uint32_t open_flags);
     int (*d_close)(struct device *dev);
     int (*d_io)(struct device *dev, struct iobuf *iob, bool write);

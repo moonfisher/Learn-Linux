@@ -16,6 +16,7 @@ typedef struct
 {
     const char *devname;
     struct inode *devnode;
+    // 上面 device, 挂载在此虚拟文件系统（VFS）下面具体文件系统(sfs_fs)下属的 dev 节点
     struct fs *fs;
     bool mountable;
     list_entry_t vdev_link;
