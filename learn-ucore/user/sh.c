@@ -115,7 +115,8 @@ int reopen(int fd2, const char *filename, uint32_t open_flags)
     if ((ret = open(filename, open_flags)) >= 0 && ret != fd2)
     {
         close(fd2);
-        fd1 = ret, ret = dup2(fd1, fd2);
+        fd1 = ret;
+        ret = dup2(fd1, fd2);
         close(fd1);
     }
     return ret < 0 ? ret : 0;

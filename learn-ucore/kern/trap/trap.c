@@ -49,6 +49,13 @@ static struct pseudodesc idt_pd;
 #endif
 
 /* idt_init - initialize IDT to each of the entry points in kern/trap/vectors.S */
+/* 在执行 INT 指令时，实际完成了以下几条操作：
+（1） 由于 INT 指令发生了不同优先级之间的控制转移，所以首先从 TSS（任务状态段）中获取
+     高优先级的内核堆栈信息（SS 和 ESP）
+（2） 把低优先级堆栈信息（SS 和 ESP）保留到高优先级堆栈（即内核栈）中
+（3） 把 EFLAGS，外层CS，EIP推入高优先级堆栈（内核栈）中
+（4） 通过 IDT 加载 CS，EIP（控制转移至中断处理函数），所以进入 __vectors 中断函数时，cs 已经修改过了
+*/
 void idt_init(void)
 {
     extern uintptr_t __vectors[];
@@ -61,7 +68,7 @@ void idt_init(void)
     // T_SYSCALL = int 0x80，80 中断设置的权限是 DPL_USER
     // 这是用户进程可以切换到内核态，执行内核代码的唯一入口，如果改成 DPL_KERNEL 则
     // 会触发 T_GPFLT general protection fault 中断，导致异常
-    SETGATE(idt[T_SYSCALL], 1, GD_UTEXT, __vectors[T_SYSCALL], DPL_USER);
+    SETGATE(idt[T_SYSCALL], 1, GD_KTEXT, __vectors[T_SYSCALL], DPL_USER);
     
     // set for switch from user to kernel
     SETGATE(idt[T_SWITCH_TOK], 0, GD_KTEXT, __vectors[T_SWITCH_TOK], DPL_USER);

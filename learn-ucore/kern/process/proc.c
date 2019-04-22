@@ -254,7 +254,7 @@ void proc_run(struct proc_struct *proc)
 */
 static void forkret(void)
 {
-    cprintf("forkret: pid = %d, name = \"%s\".\n", current->pid, current->name);
+    cprintf("forkret: pid = %d, name = \"%s\", kstack = %x.\n", current->pid, current->name, current->kstack);
     print_trapframe(current->tf);
     forkrets(current->tf);
 }
@@ -958,6 +958,7 @@ int do_execve(const char *name, int argc, const char **argv)
     }
     else
     {
+        // 这里要 copy_string，不能直接用 name 这个变量，是因为当前是内核态，name 来自用户空间
         if (!copy_string(mm, local_name, name, sizeof(local_name)))
         {
             unlock_mm(mm);
@@ -965,6 +966,7 @@ int do_execve(const char *name, int argc, const char **argv)
         }
     }
     
+    // 这里要 copy_kargv，不能直接用 argv 这个变量，是因为当前是内核态，name 来自用户空间
     if ((ret = copy_kargv(mm, argc, kargv, argv)) != 0)
     {
         unlock_mm(mm);
@@ -1002,6 +1004,8 @@ int do_execve(const char *name, int argc, const char **argv)
     }
     put_kargv(argc, kargv);
     set_proc_name(current, local_name);
+    cprintf("do_execve: name = \"%s\", kstack = %x.\n", local_name, current->kstack);
+    print_trapframe(current->tf);
     return 0;
 
 execve_exit:
