@@ -26,7 +26,8 @@ void fd_array_init(struct file *fd_array)
 {
     int fd = 0;
     struct file *file = fd_array;
-    for (fd = 0; fd < FILES_STRUCT_NENTRY; fd ++, file ++)
+    int entry = FILES_STRUCT_NENTRY;
+    for (fd = 0; fd < entry; fd ++, file ++)
     {
         file->open_count = 0;
         file->status = FD_NONE;
@@ -38,6 +39,7 @@ void fd_array_init(struct file *fd_array)
 static int fd_array_alloc(int fd, struct file **file_store)
 {
 //    panic("debug");
+    // 从当前进程文件系统资源里分配，最多只有 FILES_STRUCT_NENTRY = 0x91 个
     struct file *file = get_fd_array();
     if (fd == NO_FD)
     {
@@ -191,6 +193,7 @@ int file_open(char *path, uint32_t open_flags)
 
     int ret = 0;
     struct file *file;
+    // 从当前进程文件系统资源里分配
     if ((ret = fd_array_alloc(NO_FD, &file)) != 0)
     {
         return ret;

@@ -631,7 +631,9 @@ bool copy_string(struct mm_struct *mm, char *dst, const char *src, size_t maxn)
             return 0;
         }
         memcpy(dst, src, part);
-        dst += part, src += part, maxn -= part;
+        dst += part;
+        src += part;
+        maxn -= part;
         part = PGSIZE;
     }
 }

@@ -191,7 +191,10 @@ void vprintfmt(void (*putch)(int, void*, int), int fd, void *putdat, const char 
 
         process_precision:
             if (width < 0)
-                width = precision, precision = -1;
+            {
+                width = precision;
+                precision = -1;
+            }
             goto reswitch;
 
         // long flag (doubled for long long)

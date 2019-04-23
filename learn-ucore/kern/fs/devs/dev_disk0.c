@@ -140,6 +140,7 @@ static void disk0_device_init(struct device *dev)
     }
 }
 
+// 这里只是初始化了设备，挂载里虚拟设备节点，还没安装文件系统
 void dev_init_disk0(void)
 {
     struct inode *node;

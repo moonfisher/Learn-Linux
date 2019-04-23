@@ -526,7 +526,7 @@ static void page_init(void)
                     cprintf("begin: %08x\n", begin);    // 0x005E0000
                     cprintf("end: %08x\n", end);        // 0x1FFE0000
                     // 从真正空闲的页面开始初始化，出去内核占用，页表本身占用等
-                    init_memmap(pa2page(begin), (end - begin) / PGSIZE);
+                    init_memmap(pa2page((uintptr_t)begin), (size_t)((end - begin) / PGSIZE));
                 }
             }
         }

@@ -94,7 +94,9 @@ int sysfile_read(int fd, void *base, size_t len)
                 if (copy_to_user(mm, base, buffer, alen))
                 {
                     assert(len >= alen);
-                    base += alen, len -= alen, copied += alen;
+                    base += alen;
+                    len -= alen;
+                    copied += alen;
                 }
                 else if (ret == 0)
                 {
@@ -157,7 +159,9 @@ int sysfile_write(int fd, void *base, size_t len)
             if (alen != 0)
             {
                 assert(len >= alen);
-                base += alen, len -= alen, copied += alen;
+                base += alen;
+                len -= alen;
+                copied += alen;
             }
         }
         if (ret != 0 || alen == 0)
@@ -238,7 +242,8 @@ int sysfile_link(const char *__path1, const char *__path2)
         return ret;
     }
     ret = vfs_link(old_path, new_path);
-    kfree(old_path), kfree(new_path);
+    kfree(old_path);
+    kfree(new_path);
     return ret;
 }
 
@@ -257,7 +262,8 @@ int sysfile_rename(const char *__path1, const char *__path2)
         return ret;
     }
     ret = vfs_rename(old_path, new_path);
-    kfree(old_path), kfree(new_path);
+    kfree(old_path);
+    kfree(new_path);
     return ret;
 }
 

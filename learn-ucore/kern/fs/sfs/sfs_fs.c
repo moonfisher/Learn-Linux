@@ -285,8 +285,7 @@ failed_cleanup_fs:
 }
 
 /*
- 其中这里面最重要的就是对回调函数 sfs_do_mount 的调用，sfs_do_mount 主要完成对 struct sfs
- 数据结构的初始化，这里的 sfs 是 simple file system 的缩写
+ 挂载 disk0，并安装 sfs 文件系统
  */
 int sfs_mount(const char *devname)
 {

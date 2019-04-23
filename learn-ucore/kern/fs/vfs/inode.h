@@ -31,6 +31,7 @@ struct iobuf;
  open_count 表示一个文件被进程打开的次数，当 open_count = 0 时我们可以在 kernel 移除这个 inode 结点。
  这个 inode 是系统管理文件用的，因此用户层的程序不需要关心这个数据结构。
  device 这个数据结构只有当 inode 表示设备时才会有用。
+ stdin, stdout, disk0 都属于 inode
 */
 struct inode
 {

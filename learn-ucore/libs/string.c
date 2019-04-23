@@ -238,10 +238,12 @@ long strtol(const char *s, char **endptr, int base)
 
     // hex or octal base prefix
     if ((base == 0 || base == 16) && (s[0] == '0' && s[1] == 'x')) {
-        s += 2, base = 16;
+        s += 2;
+        base = 16;
     }
     else if (base == 0 && s[0] == '0') {
-        s ++, base = 8;
+        s ++;
+        base = 8;
     }
     else if (base == 0) {
         base = 10;
@@ -266,7 +268,8 @@ long strtol(const char *s, char **endptr, int base)
         if (dig >= base) {
             break;
         }
-        s ++, val = (val * base) + dig;
+        s ++;
+        val = (val * base) + dig;
         // we don't properly detect overflow!
     }
 
@@ -379,7 +382,8 @@ int memcmp(const void *v1, const void *v2, size_t n)
         if (*s1 != *s2) {
             return (int)((unsigned char)*s1 - (unsigned char)*s2);
         }
-        s1 ++, s2 ++;
+        s1 ++;
+        s2 ++;
     }
     return 0;
 }

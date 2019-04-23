@@ -24,6 +24,10 @@ static int get_device(char *path, char **subpath, struct inode **node_store)
          * or is also absent, so this is a relative path or just a bare filename. Start from
          * the current directory, and use the whole thing as the subpath.
          * */
+        /*
+         斜杠前没有冒号，因此没有指定设备名称，并且斜杠不是前导或者也不存在，
+         所以这是一个相对路径或只是一个裸文件名。 从当前目录开始搜索，并使用整个作为子路径。
+        */
         *subpath = path;
         return vfs_get_curdir(node_store);
     }

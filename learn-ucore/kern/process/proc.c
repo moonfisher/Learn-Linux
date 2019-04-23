@@ -698,7 +698,7 @@ static int load_icode(int fd, int argc, char **kargv)
         goto bad_pgdir_cleanup_mm;
     }
 
-    struct Page *page;
+    struct Page *page = NULL;
 
     struct elfhdr __elf, *elf = &__elf;
     if ((ret = load_icode_read(fd, elf, sizeof(struct elfhdr), 0)) != 0)
@@ -1182,7 +1182,8 @@ static int user_main(void *arg)
 // init_main - the second kernel thread used to create user_main kernel threads
 static int init_main(void *arg)
 {
-    int ret;
+    int ret = 0;
+    // initproc 只分配了文件系统资源，但没有关联实际的文件系统
     if ((ret = vfs_set_bootfs("disk0:")) != 0)
     {
         panic("set boot fs failed: %e.\n", ret);
@@ -1248,6 +1249,7 @@ void proc_init(void)
     idleproc->kstack = (uintptr_t)bootstack;    //0xC0152000
     idleproc->need_resched = 1;
     
+    // idleproc 只分配了文件系统资源，但没有关联实际的文件系统
     if ((idleproc->filesp = files_create()) == NULL)
     {
         panic("create filesp (idleproc) failed.\n");

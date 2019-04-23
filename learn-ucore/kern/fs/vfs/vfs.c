@@ -8,6 +8,7 @@
 #include "error.h"
 
 static semaphore_t bootfs_sem;
+// 根目录 “/” 对应的 inode
 static struct inode *bootfs_node = NULL;
 
 extern void vfs_devlist_init(void);

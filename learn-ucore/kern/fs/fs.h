@@ -40,8 +40,10 @@ struct files_struct
     semaphore_t files_sem;  // lock protect sem
 };
 
-#define FILES_STRUCT_BUFSIZE                       (PGSIZE - sizeof(struct files_struct))
-#define FILES_STRUCT_NENTRY                        (FILES_STRUCT_BUFSIZE / sizeof(struct file))
+// 4096 - 24 = 4072 = 0xFE8
+#define FILES_STRUCT_BUFSIZE    (PGSIZE - sizeof(struct files_struct))
+// 4072 / 28 = 145 = 0x91
+#define FILES_STRUCT_NENTRY     (FILES_STRUCT_BUFSIZE / sizeof(struct file))
 
 void lock_files(struct files_struct *filesp);
 void unlock_files(struct files_struct *filesp);

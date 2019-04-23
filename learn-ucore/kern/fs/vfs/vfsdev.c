@@ -11,13 +11,15 @@
 #include "error.h"
 #include "assert.h"
 
-// device info entry in vdev_list 
+// device info entry in vdev_list
+// 挂载在 vdev_list 下的虚拟设备
 typedef struct
 {
     const char *devname;
     struct inode *devnode;
     // 上面 device, 挂载在此虚拟文件系统（VFS）下面具体文件系统(sfs_fs)下属的 dev 节点
     struct fs *fs;
+    // 设备可挂载，可安装文件系统
     bool mountable;
     list_entry_t vdev_link;
 } vfs_dev_t;
@@ -152,6 +154,10 @@ static bool check_devname_conflict(const char *devname)
 * If "mountable" is set, the device will be treated as one that expects
 * to have a filesystem mounted on it, and a raw device will be created
 * for direct access.
+*/
+/*
+ 添加设备到虚拟文件设备列表里，devname 设备名字是不重复的
+ 如果设置了“mountable”，则设备将被视为预期的设备在其上安装文件系统，并创建原始设备直接访问。
 */
 static int vfs_do_add(const char *devname, struct inode *devnode, struct fs *fs, bool mountable)
 {

@@ -41,14 +41,17 @@ void unlock_files(struct files_struct *filesp)
 }
 
 //Called when a new proc init
+// 进程创建的时候，就会分配文件系统相关资源空间
 struct files_struct *files_create(void)
 {
     //cprintf("[files_create]\n");
 //    static_assert((int)FILES_STRUCT_NENTRY > 128);
     struct files_struct *filesp;
+    // filesp 指向一个 4k 的空间
     if ((filesp = kmalloc(sizeof(struct files_struct) + FILES_STRUCT_BUFSIZE)) != NULL)
     {
         filesp->pwd = NULL;
+        // 设置 fd_array 起始地址，文件 fd 个数 FILES_STRUCT_NENTRY = 0x91
         filesp->fd_array = (void *)(filesp + 1);
         filesp->files_count = 0;
         sem_init(&(filesp->files_sem), 1);
