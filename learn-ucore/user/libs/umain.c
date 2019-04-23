@@ -7,11 +7,12 @@ int main(int argc, char *argv[]);
 
 static int initfd(int fd2, const char *path, uint32_t open_flags)
 {
-    int fd1, ret;
+    int fd1 = 0, ret = 0;
     if ((fd1 = open(path, open_flags)) < 0) {
         return fd1;
     }
-    if (fd1 != fd2) {
+    if (fd1 != fd2)
+    {
         close(fd2);
         ret = dup2(fd1, fd2);
         close(fd1);

@@ -118,6 +118,12 @@ static void stdin_device_init(struct device *dev)
     dev->d_io = stdin_io;
     dev->d_ioctl = stdin_ioctl;
 
+    /*
+     stdin 相对于 stdout 多了一个输入缓冲区，需要额外的两个指针 p_rpos, p_wpos 分别记录当前读
+     的位置和写的位置，当 p_rpos < p_wpos 时，说明当前有从键盘输入到缓冲区的数据但是还没有读到
+     进程里，需要唤醒进程从缓冲区进行读操作，当 p_rpos = p_wpos 而进程发起读的系统调用时
+     （如调用 c 库的 scanf），这时需要阻塞进程，等待键盘输入时产生中断唤醒对应进程。
+    */
     p_rpos = p_wpos = 0;
     wait_queue_init(wait_queue);
 }
@@ -129,8 +135,14 @@ void dev_init_stdin(void)
     {
         panic("stdin: dev_create_node.\n");
     }
-    stdin_device_init(vop_info(node, device));
-
+    
+    // 完成设置 inode 为设备文件，初始化设备文件
+    // vop_info 它完成返回 in_info 这个联合体里 device 的地址
+    // stdin_device_init(vop_info(node, device));
+    struct inode *__node = node;
+    assert(__node != NULL && (__node->in_type == inode_type_device_info));
+    stdin_device_init(&(__node->in_info.__device_info));
+    
     int ret;
     if ((ret = vfs_add_dev("stdin", node, 0)) != 0)
     {

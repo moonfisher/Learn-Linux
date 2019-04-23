@@ -1,5 +1,6 @@
 #include "ulib.h"
 #include "stdio.h"
+#include "string.h"
 
 const int max_child = 32;
 

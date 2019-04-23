@@ -69,12 +69,12 @@ static int sys_pgdir(uint32_t arg[])
     return 0;
 }
 
-static uint32_t sys_gettime(uint32_t arg[])
+static int sys_gettime(uint32_t arg[])
 {
     return (int)ticks;
 }
 
-static uint32_t sys_set_priority(uint32_t arg[])
+static int sys_set_priority(uint32_t arg[])
 {
     uint32_t priority = (uint32_t)arg[0];
     set_priority(priority);
@@ -159,28 +159,28 @@ static int sys_dup(uint32_t arg[])
 }
 
 static int (*syscalls[])(uint32_t arg[]) = {
-    [SYS_exit]              sys_exit,
-    [SYS_fork]              sys_fork,
-    [SYS_wait]              sys_wait,
-    [SYS_exec]              sys_exec,
-    [SYS_yield]             sys_yield,
-    [SYS_kill]              sys_kill,
-    [SYS_getpid]            sys_getpid,
-    [SYS_putc]              sys_putc,
-    [SYS_pgdir]             sys_pgdir,
-    [SYS_gettime]           sys_gettime,
-    [SYS_set_priority] sys_set_priority,
-    [SYS_sleep]             sys_sleep,
-    [SYS_open]              sys_open,
-    [SYS_close]             sys_close,
-    [SYS_read]              sys_read,
-    [SYS_write]             sys_write,
-    [SYS_seek]              sys_seek,
-    [SYS_fstat]             sys_fstat,
-    [SYS_fsync]             sys_fsync,
-    [SYS_getcwd]            sys_getcwd,
-    [SYS_getdirentry]       sys_getdirentry,
-    [SYS_dup]               sys_dup,
+    [SYS_exit]              = sys_exit,
+    [SYS_fork]              = sys_fork,
+    [SYS_wait]              = sys_wait,
+    [SYS_exec]              = sys_exec,
+    [SYS_yield]             = sys_yield,
+    [SYS_kill]              = sys_kill,
+    [SYS_getpid]            = sys_getpid,
+    [SYS_putc]              = sys_putc,
+    [SYS_pgdir]             = sys_pgdir,
+    [SYS_gettime]           = sys_gettime,
+    [SYS_set_priority]      = sys_set_priority,
+    [SYS_sleep]             = sys_sleep,
+    [SYS_open]              = sys_open,
+    [SYS_close]             = sys_close,
+    [SYS_read]              = sys_read,
+    [SYS_write]             = sys_write,
+    [SYS_seek]              = sys_seek,
+    [SYS_fstat]             = sys_fstat,
+    [SYS_fsync]             = sys_fsync,
+    [SYS_getcwd]            = sys_getcwd,
+    [SYS_getdirentry]       = sys_getdirentry,
+    [SYS_dup]               = sys_dup,
 };
 
 #define NUM_SYSCALLS        ((sizeof(syscalls)) / (sizeof(syscalls[0])))

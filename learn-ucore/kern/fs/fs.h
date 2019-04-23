@@ -22,11 +22,21 @@ struct file;
 /*
  * process's file related informaction
  */
+/*
+ 进程访问文件的数据接口
+ 当创建一个进程后，该进程的 files_struct 将会被初始化或复制父进程的 files_struct。
+ 当用户进程打开一个文件时，将从 filemap 数组中取得一个空闲 file 项，然后会把此 file 的成员
+ 变量 node 指针指向一个代表此文件的 inode 的起始地址。
+*/
 struct files_struct
 {
+    // 进程当前执行目录的内存 inode 指针
     struct inode *pwd;      // inode of present working directory
+    // 进程打开文件的数组
     struct file *fd_array;  // opened files array
+    // 访问此文件的线程个数
     int files_count;        // the number of opened files
+    // 确保对进程控制块中 files_struct 的互斥访问
     semaphore_t files_sem;  // lock protect sem
 };
 
@@ -40,6 +50,7 @@ struct files_struct *files_create(void);
 void files_destroy(struct files_struct *filesp);
 void files_closeall(struct files_struct *filesp);
 int dup_files(struct files_struct *to, struct files_struct *from);
+int dup_fs(struct files_struct *to, struct files_struct *from);
 
 static inline int files_count(struct files_struct *filesp)
 {

@@ -292,8 +292,9 @@ static inline void *__memcpy(void *dst, const void *src, size_t n) __attribute__
 #define __HAVE_ARCH_STRCMP
 static inline int __strcmp(const char *s1, const char *s2)
 {
-    int d0, d1, ret;
+    int ret = 0;
 #if ASM_NO_64
+    int d0, d1;
     asm volatile (
         "1: lodsb;"
         "scasb;"
@@ -318,8 +319,8 @@ static inline int __strcmp(const char *s1, const char *s2)
 #define __HAVE_ARCH_STRCPY
 static inline char *__strcpy(char *dst, const char *src)
 {
-    int d0, d1, d2;
 #if ASM_NO_64
+    int d0, d1, d2;
     asm volatile (
         "1: lodsb;"
         "stosb;"
@@ -336,8 +337,8 @@ static inline char *__strcpy(char *dst, const char *src)
 #define __HAVE_ARCH_MEMSET
 static inline void *__memset(void *s, char c, size_t n)
 {
-    int d0, d1;
 #if ASM_NO_64
+    int d0, d1;
     asm volatile (
         "rep; stosb;"
         : "=&c" (d0), "=&D" (d1)
@@ -356,8 +357,9 @@ static inline void *__memmove(void *dst, const void *src, size_t n)
     {
         return __memcpy(dst, src, n);
     }
-    int d0, d1, d2;
+    
 #if ASM_NO_64
+    int d0, d1, d2;
     asm volatile (
         "std;"
         "rep; movsb;"
@@ -374,8 +376,8 @@ static inline void *__memmove(void *dst, const void *src, size_t n)
 #define __HAVE_ARCH_MEMCPY
 static inline void *__memcpy(void *dst, const void *src, size_t n)
 {
-    int d0, d1, d2;
 #if ASM_NO_64
+    int d0, d1, d2;
     asm volatile (
         "rep; movsl;"
         "movl %4, %%ecx;"

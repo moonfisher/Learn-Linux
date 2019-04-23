@@ -96,7 +96,8 @@ static int sfs_block_alloc(struct sfs_fs *sfs, uint32_t *ino_store)
         return ret;
     }
     assert(sfs->super.unused_blocks > 0);
-    sfs->super.unused_blocks --, sfs->super_dirty = 1;
+    sfs->super.unused_blocks --;
+    sfs->super_dirty = 1;
     assert(sfs_block_inuse(sfs, *ino_store));
     return sfs_clear_block(sfs, *ino_store, 1);
 }
@@ -108,7 +109,8 @@ static void sfs_block_free(struct sfs_fs *sfs, uint32_t ino)
 {
     assert(sfs_block_inuse(sfs, ino));
     bitmap_free(sfs->freemap, ino);
-    sfs->super.unused_blocks ++, sfs->super_dirty = 1;
+    sfs->super.unused_blocks ++;
+    sfs->super_dirty = 1;
 }
 
 /*
@@ -121,7 +123,10 @@ static int sfs_create_inode(struct sfs_fs *sfs, struct sfs_disk_inode *din, uint
     {
         vop_init(node, sfs_get_ops(din->type), info2fs(sfs, sfs));
         struct sfs_inode *sin = vop_info(node, sfs_inode);
-        sin->din = din, sin->ino = ino, sin->dirty = 0, sin->reclaim_count = 1;
+        sin->din = din;
+        sin->ino = ino;
+        sin->dirty = 0;
+        sin->reclaim_count = 1;
         sem_init(&(sin->sem), 1);
         *node_store = node;
         return 0;
@@ -387,6 +392,12 @@ static int sfs_bmap_free_nolock(struct sfs_fs *sfs, struct sfs_inode *sin, uint3
  * @index:    the logical index of disk block in inode
  * @ino_store:the NO. of disk block
  */
+/*
+ 将对应 sfs_inode 的第 index 个索引指向的 block 的索引值取出存到相应的指针指向的单元（ino_store）。
+ 该函数只接受 index <= inode-<blocks 的参数。当 index == inode-&ltblocks 时，该函数理解为需要
+ 为 inode 增长一个 block。并标记 inode 为 dirty（所有对 inode 数据的修改都要做这样的操作，这样，
+ 当 inode 不再使用的时候，sfs 能够保证 inode 数据能够被写回到磁盘）
+*/
 static int sfs_bmap_load_nolock(struct sfs_fs *sfs, struct sfs_inode *sin, uint32_t index, uint32_t *ino_store)
 {
     struct sfs_disk_inode *din = sin->din;
@@ -413,6 +424,13 @@ static int sfs_bmap_load_nolock(struct sfs_fs *sfs, struct sfs_inode *sin, uint3
 /*
  * sfs_bmap_truncate_nolock - free the disk block at the end of file
  */
+/*
+ 将多级数据索引表的最后一个 entry 释放掉。他可以认为是 sfs_bmap_load_nolock 中，
+ index == inode->blocks 的逆操作。当一个文件或目录被删除时，sfs 会循环调用该函数
+ 直到 inode->blocks 减为 0，释放所有的数据页。函数通过 sfs_bmap_free_nolock 来实现，
+ 他应该是 sfs_bmap_get_nolock 的逆操作。和 sfs_bmap_get_nolock 一样，调用
+ sfs_bmap_free_nolock 也要格外小心。
+*/
 static int sfs_bmap_truncate_nolock(struct sfs_fs *sfs, struct sfs_inode *sin)
 {
     struct sfs_disk_inode *din = sin->din;
@@ -434,6 +452,7 @@ static int sfs_bmap_truncate_nolock(struct sfs_fs *sfs, struct sfs_inode *sin)
  * @slot:     the index of file entry
  * @entry:    file entry
  */
+// 将目录的第 slot 个 entry 读取到指定的内存空间
 static int sfs_dirent_read_nolock(struct sfs_fs *sfs, struct sfs_inode *sin, int slot, struct sfs_disk_entry *entry)
 {
     assert(sin->din->type == SFS_TYPE_DIR && (slot >= 0 && slot < sin->din->blocks));
@@ -480,6 +499,13 @@ static int sfs_dirent_read_nolock(struct sfs_fs *sfs, struct sfs_inode *sin, int
  * @slot:       logical index of file entry (NOTICE: each file entry ocupied one  disk block)
  * @empty_slot: the empty logical index of file entry.
  */
+/*
+ 常用的查找函数。他在目录下查找 name，并且返回相应的搜索结果（文件或文件夹）的 inode
+ 的编号（也是磁盘编号），和相应的 entry 在该目录的 index 编号以及目录下的数据页是否有
+ 空闲的 entry。（SFS 实现里文件的数据页是连续的，不存在任何空洞；而对于目录，数据页不是连续的，
+ 当某个 entry 删除的时候，SFS 通过设置 entry->ino 为0将该 entry 所在的 block 标记为 free，
+ 在需要添加新 entry 的时候，SFS 优先使用这些 free 的 entry，其次才会去在数据页尾追加新的 entry。
+*/
 static int sfs_dirent_search_nolock(struct sfs_fs *sfs, struct sfs_inode *sin, const char *name, uint32_t *ino_store, int *slot, int *empty_slot)
 {
     assert(strlen(name) <= SFS_MAX_FNAME_LEN);
@@ -637,11 +663,13 @@ static int sfs_io_nolock(struct sfs_fs *sfs, struct sfs_inode *sin, void *buf, o
     int (*sfs_block_op)(struct sfs_fs *sfs, void *buf, uint32_t blkno, uint32_t nblks);
     if (write)
     {
-        sfs_buf_op = sfs_wbuf, sfs_block_op = sfs_wblock;
+        sfs_buf_op = sfs_wbuf;
+        sfs_block_op = sfs_wblock;
     }
     else
     {
-        sfs_buf_op = sfs_rbuf, sfs_block_op = sfs_rblock;
+        sfs_buf_op = sfs_rbuf;
+        sfs_block_op = sfs_rblock;
     }
 
     int ret = 0;
@@ -676,7 +704,9 @@ static int sfs_io_nolock(struct sfs_fs *sfs, struct sfs_inode *sin, void *buf, o
         {
             goto out;
         }
-        buf += size, blkno ++, nblks --;
+        buf += size;
+        blkno ++;
+        nblks --;
     }
 
     size = SFS_BLKSIZE;
@@ -690,7 +720,10 @@ static int sfs_io_nolock(struct sfs_fs *sfs, struct sfs_inode *sin, void *buf, o
         {
             goto out;
         }
-        alen += size, buf += size, blkno ++, nblks --;
+        alen += size;
+        buf += size;
+        blkno ++;
+        nblks --;
     }
 
     if ((size = endpos % SFS_BLKSIZE) != 0)
@@ -828,7 +861,8 @@ static int sfs_namefile(struct inode *node, struct iobuf *iob)
             break;
         }
 
-        node = parent, sin = vop_info(node, sfs_inode);
+        node = parent;
+        sin = vop_info(node, sfs_inode);
         assert(ino != sin->ino && sin->din->type == SFS_TYPE_DIR);
 
         lock_sin(sin);
@@ -846,13 +880,15 @@ static int sfs_namefile(struct inode *node, struct iobuf *iob)
         {
             goto failed_nomem;
         }
-        resid -= alen, ptr -= alen;
+        resid -= alen;
+        ptr -= alen;
         memcpy(ptr, entry->name, alen - 1);
         ptr[alen - 1] = '/';
     }
     alen = iob->io_resid - resid - 2;
     ptr = memmove(iob->io_base + 1, ptr, alen);
-    ptr[-1] = '/', ptr[alen] = '\0';
+    ptr[-1] = '/';
+    ptr[alen] = '\0';
     iobuf_skip(iob, alen);
     kfree(entry);
     return 0;

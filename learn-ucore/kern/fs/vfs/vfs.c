@@ -24,6 +24,7 @@ struct fs *__alloc_fs(int type)
 }
 
 // vfs_init -  vfs initialize
+// 对于 vfs_init，它只是完成了对 vfs 访问的信号量和 devlist 的初始化
 void vfs_init(void)
 {
     sem_init(&bootfs_sem, 1);
@@ -48,7 +49,8 @@ static void change_bootfs(struct inode *node)
     struct inode *old;
     lock_bootfs();
     {
-        old = bootfs_node, bootfs_node = node;
+        old = bootfs_node;
+        bootfs_node = node;
     }
     unlock_bootfs();
     if (old != NULL)

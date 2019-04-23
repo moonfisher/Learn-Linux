@@ -484,7 +484,7 @@ static void page_init(void)
     
     // maxpa = 0x1FFE0000 PGSIZE = 0x1000 = 4k
     // 这里 npage 记录的是所有物理内存空间总页数，npage 最大值就是 KMEMSIZE / PGSIZE = 224k
-    npage = maxpa / PGSIZE; // 0x0001FFE0
+    npage = (size_t)(maxpa / PGSIZE); // 0x0001FFE0
     
     // pages 指向内核代码结束后的第一个空闲 4k 页面，0xC015F384 的下一个 4k 起始是 0xC0160000
     pages = (struct Page *)ROUNDUP((void *)end, PGSIZE);    // 0xC0160000
@@ -609,38 +609,38 @@ static void page_init(void)
     0xC0156f90:    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000
     0xC0156fa0:    0x0000    0x0000    0x0000    0x0000    0x0000    0x0000    0x6003    0x0015
 */
-static void boot_map_segment(pde_t *pgdir, uintptr_t la, size_t size, uintptr_t pa, uint32_t perm)
-{
-    assert(PGOFF(la) == PGOFF(pa));
-    size_t n = ROUNDUP(size + PGOFF(la), PGSIZE) / PGSIZE;  // 0x38000
-    la = ROUNDDOWN(la, PGSIZE);
-    pa = ROUNDDOWN(pa, PGSIZE);
-    for (; n > 0; n --, la += PGSIZE, pa += PGSIZE)
-    {
-        /*
-         获取这个虚拟地址在所在的页表地址，如果没有页表就从空闲内存里分配一个空闲 4k 页面当做页表
-         第 1 ~ 4 页表 ptep 的虚拟地址是 0xC0157000，页目录起始地址是 0xC0156000，1k个页目录，
-         每个四字节，0xC0156000 + 0x400 * 4 = 0xC0157000，这个空间在 entry.S 里就已经分配好了
-         第 5 个页表 ptep 的虚拟地址和第一个 ptep 并不连续，是因为从第 5 页表开始，内存空间
-         是通过 alloc_page 分配过来的，不是之前规划的
-        */
-        pte_t *ptep = get_pte(pgdir, la, 1);
-        assert(ptep != NULL);
-        *ptep = pa | PTE_P | perm;
-    }
-}
+//static void boot_map_segment(pde_t *pgdir, uintptr_t la, size_t size, uintptr_t pa, uint32_t perm)
+//{
+//    assert(PGOFF(la) == PGOFF(pa));
+//    size_t n = ROUNDUP(size + PGOFF(la), PGSIZE) / PGSIZE;  // 0x38000
+//    la = ROUNDDOWN(la, PGSIZE);
+//    pa = ROUNDDOWN(pa, PGSIZE);
+//    for (; n > 0; n --, la += PGSIZE, pa += PGSIZE)
+//    {
+//        /*
+//         获取这个虚拟地址在所在的页表地址，如果没有页表就从空闲内存里分配一个空闲 4k 页面当做页表
+//         第 1 ~ 4 页表 ptep 的虚拟地址是 0xC0157000，页目录起始地址是 0xC0156000，1k个页目录，
+//         每个四字节，0xC0156000 + 0x400 * 4 = 0xC0157000，这个空间在 entry.S 里就已经分配好了
+//         第 5 个页表 ptep 的虚拟地址和第一个 ptep 并不连续，是因为从第 5 页表开始，内存空间
+//         是通过 alloc_page 分配过来的，不是之前规划的
+//        */
+//        pte_t *ptep = get_pte(pgdir, la, 1);
+//        assert(ptep != NULL);
+//        *ptep = pa | PTE_P | perm;
+//    }
+//}
 
 //boot_alloc_page - allocate one page using pmm->alloc_pages(1) 
 // return value: the kernel virtual address of this allocated page
 //note: this function is used to get the memory for PDT(Page Directory Table)&PT(Page Table)
-static void *boot_alloc_page(void)
-{
-    struct Page *p = alloc_page();
-    if (p == NULL) {
-        panic("boot_alloc_page failed.\n");
-    }
-    return page2kva(p);
-}
+//static void *boot_alloc_page(void)
+//{
+//    struct Page *p = alloc_page();
+//    if (p == NULL) {
+//        panic("boot_alloc_page failed.\n");
+//    }
+//    return page2kva(p);
+//}
 
 static void extracted()
 {

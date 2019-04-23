@@ -42,7 +42,8 @@ static int sfs_rwblock(struct sfs_fs *sfs, void *buf, uint32_t blkno, uint32_t n
             {
                 break;
             }
-            blkno ++, nblks --;
+            blkno ++;
+            nblks --;
             buf += SFS_BLKSIZE;
         }
     }
@@ -154,7 +155,7 @@ int sfs_sync_freemap(struct sfs_fs *sfs)
  */
 int sfs_clear_block(struct sfs_fs *sfs, uint32_t blkno, uint32_t nblks)
 {
-    int ret;
+    int ret = 0;
     lock_sfs_io(sfs);
     {
         memset(sfs->sfs_buffer, 0, SFS_BLKSIZE);
@@ -164,7 +165,8 @@ int sfs_clear_block(struct sfs_fs *sfs, uint32_t blkno, uint32_t nblks)
             {
                 break;
             }
-            blkno ++, nblks --;
+            blkno ++;
+            nblks --;
         }
     }
     unlock_sfs_io(sfs);

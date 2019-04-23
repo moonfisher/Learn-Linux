@@ -6,6 +6,10 @@
 #include "unistd.h"
 #include "error.h"
 
+void dev_init_stdin(void);
+void dev_init_stdout(void);
+void dev_init_disk0(void);
+
 /*
  * dev_open - Called for each open().
  */
@@ -154,6 +158,8 @@ static const struct inode_ops dev_node_ops = {
     } while (0)
 
 /* dev_init - Initialization functions for builtin vfs-level devices. */
+// dev_init 则完成了对设备的初始化，这里的 stdin 代表输入设备，即键盘，
+// stdout 代表输出设备，包括 UART 串口和显示器，disk0 代表磁盘
 void dev_init(void)
 {
 //    init_device(null);

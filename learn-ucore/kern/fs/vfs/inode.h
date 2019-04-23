@@ -26,6 +26,12 @@ struct iobuf;
  * vfs_open() and vfs_close(). Code above the VFS layer should not
  * need to worry about it.
  */
+/*
+ inode 代表的是一个抽象意义的文件，根据 in_info 和 in_type 的值的不同，它既可以表示文件也可以表示外设，
+ open_count 表示一个文件被进程打开的次数，当 open_count = 0 时我们可以在 kernel 移除这个 inode 结点。
+ 这个 inode 是系统管理文件用的，因此用户层的程序不需要关心这个数据结构。
+ device 这个数据结构只有当 inode 表示设备时才会有用。
+*/
 struct inode
 {
     union
@@ -169,6 +175,15 @@ void inode_kill(struct inode *node);
  *                      refers to. May destroy PATHNAME. Should increment
  *                      refcount on inode handed back.
  */
+/*
+ index node 是位于内存的索引节点，它是 VFS 结构中的重要数据结构，因为它实际负责把不同
+ 文件系统的特定索引节点信息（甚至不能算是一个索引节点）统一封装起来，避免了进程直接访问具体
+ 文件系统。在 inode 中，有一个成员变量 in_ops，这是对此 inode 的操作函数指针列表.
+ 
+ inode_ops 是对常规文件、目录、设备文件所有操作的一个抽象函数表示。对于某一具体的文件系统
+ 中的文件或目录，只需实现相关的函数，就可以被用户进程访问具体的文件了，且用户进程无需了解具体
+ 文件系统的实现细节。
+*/
 struct inode_ops
 {
     unsigned long vop_magic;

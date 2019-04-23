@@ -92,7 +92,7 @@ static void *__slob_get_free_pages(gfp_t gfp, int order)
 
 static inline void __slob_free_pages(unsigned long kva, int order)
 {
-    free_pages(kva2page(kva), 1 << order);
+    free_pages(kva2page((void *)kva), 1 << order);
 }
 
 static void slob_free(void *b, int size);
@@ -103,7 +103,7 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align)
 
 	slob_t *prev, *cur, *aligned = 0;
 	int delta = 0, units = SLOB_UNITS(size);
-	unsigned long flags;
+	bool flags;
 
     // 分配内存需要先关闭中断，防止出错
 	spin_lock_irqsave(&slob_lock, flags);
@@ -113,7 +113,7 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align)
 		if (align)
         {
 			aligned = (slob_t *)ALIGN((unsigned long)cur, align);
-			delta = aligned - cur;
+			delta = (int)(aligned - cur);
 		}
         
 		if (cur->units >= units + delta)
@@ -168,7 +168,7 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align)
 static void slob_free(void *block, int size)
 {
 	slob_t *cur, *b = (slob_t *)block;
-	unsigned long flags;
+	bool flags;
 
 	if (!block)
 		return;
@@ -247,7 +247,7 @@ static void *__kmalloc(size_t size, gfp_t gfp)
 {
 	slob_t *m;
 	bigblock_t *bb;
-	unsigned long flags;
+	bool flags;
 
     // 分配空间小于 4k 的，按小内存方式分配
 	if (size < PAGE_SIZE - SLOB_UNIT)
@@ -284,7 +284,7 @@ void *kmalloc(size_t size)
 void kfree(void *block)
 {
 	bigblock_t *bb, **last = &bigblocks;
-	unsigned long flags;
+	bool flags;
 
 	if (!block)
 		return;
@@ -314,7 +314,7 @@ void kfree(void *block)
 unsigned int ksize(const void *block)
 {
 	bigblock_t *bb;
-	unsigned long flags;
+	bool flags;
 
 	if (!block)
 		return 0;

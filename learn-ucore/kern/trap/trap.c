@@ -16,6 +16,7 @@
 #include "sched.h"
 #include "sync.h"
 #include "proc.h"
+#include "string.h"
 
 #define TICK_NUM 5000
 
@@ -226,7 +227,7 @@ static int pgfault_handler(struct trapframe *tf)
     return do_pgfault(mm, tf->tf_err, rcr2());
 }
 
-static volatile int in_swap_tick_event = 0;
+//static volatile int in_swap_tick_event = 0;
 extern struct mm_struct *check_mm_struct;
 
 /* temporary trapframe or pointer to trapframe */

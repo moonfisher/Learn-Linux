@@ -29,7 +29,8 @@ void fd_array_init(struct file *fd_array)
     for (fd = 0; fd < FILES_STRUCT_NENTRY; fd ++, file ++)
     {
         file->open_count = 0;
-        file->status = FD_NONE, file->fd = fd;
+        file->status = FD_NONE;
+        file->fd = fd;
     }
 }
 
@@ -64,7 +65,8 @@ static int fd_array_alloc(int fd, struct file **file_store)
     }
 found:
     assert(fopen_count(file) == 0);
-    file->status = FD_INIT, file->node = NULL;
+    file->status = FD_INIT;
+    file->node = NULL;
     *file_store = file;
     return 0;
 }
@@ -127,7 +129,8 @@ void fd_array_dup(struct file *to, struct file *from)
     to->readable = from->readable;
     to->writable = from->writable;
     struct inode *node = from->node;
-    vop_ref_inc(node), vop_open_inc(node);
+    vop_ref_inc(node);
+    vop_open_inc(node);
     to->node = node;
     fd_array_open(to);
 }

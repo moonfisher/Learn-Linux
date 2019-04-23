@@ -138,7 +138,8 @@ void ide_init(void)
         unsigned int i, length = 40;
         for (i = 0; i < length; i += 2)
         {
-            model[i] = data[i + 1], model[i + 1] = data[i];
+            model[i] = data[i + 1];
+            model[i + 1] = data[i];
         }
         do {
             model[i] = '\0';

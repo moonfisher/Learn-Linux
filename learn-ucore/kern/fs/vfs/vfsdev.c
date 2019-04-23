@@ -95,7 +95,8 @@ int vfs_get_root(const char *devname, struct inode **node_store)
                     }
                     if (found != NULL)
                     {
-                        ret = 0, *node_store = found;
+                        ret = 0;
+                        *node_store = found;
                     }
                     else
                     {
@@ -241,6 +242,10 @@ static int find_mount(const char *devname, vfs_dev_t **vdev_store)
  *
  * The DATA argument is passed through unchanged to MOUNTFUNC.
  */
+/*
+ 其中这里面最重要的就是对回调函数 sfs_do_mount(mountfunc) 的调用，sfs_do_mount 主要完成对 struct sfs
+ 数据结构的初始化，这里的 sfs 是 simple file system 的缩写
+*/
 int vfs_mount(const char *devname, int (*mountfunc)(struct device *dev, struct fs **fs_store))
 {
     int ret;

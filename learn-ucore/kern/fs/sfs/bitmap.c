@@ -35,7 +35,8 @@ struct bitmap *bitmap_create(uint32_t nbits)
         return NULL;
     }
 
-    bitmap->nbits = nbits, bitmap->nwords = nwords;
+    bitmap->nbits = nbits;
+    bitmap->nwords = nwords;
     bitmap->map = memset(map, 0xFF, sizeof(WORD_TYPE) * nwords);
 
     /* mark any leftover bits at the end in use(0) */

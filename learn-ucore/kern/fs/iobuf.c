@@ -38,10 +38,12 @@ int iobuf_move(struct iobuf *iob, void *data, size_t len, bool m2b, size_t *copi
         if (m2b)
         {
             void *tmp = src;
-            src = dst, dst = tmp;
+            src = dst;
+            dst = tmp;
         }
         memmove(dst, src, alen);
-        iobuf_skip(iob, alen), len -= alen;
+        iobuf_skip(iob, alen);
+        len -= alen;
     }
     if (copiedp != NULL)
     {
@@ -64,7 +66,8 @@ int iobuf_move_zeros(struct iobuf *iob, size_t len, size_t *copiedp)
     if (alen > 0)
     {
         memset(iob->io_base, 0, alen);
-        iobuf_skip(iob, alen), len -= alen;
+        iobuf_skip(iob, alen);
+        len -= alen;
     }
     if (copiedp != NULL)
     {
@@ -79,6 +82,8 @@ int iobuf_move_zeros(struct iobuf *iob, size_t len, size_t *copiedp)
 void iobuf_skip(struct iobuf *iob, size_t n)
 {
     assert(iob->io_resid >= n);
-    iob->io_base += n, iob->io_offset += n, iob->io_resid -= n;
+    iob->io_base += n;
+    iob->io_offset += n;
+    iob->io_resid -= n;
 }
 

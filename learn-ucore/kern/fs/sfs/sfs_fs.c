@@ -91,7 +91,7 @@ static void sfs_cleanup(struct fs *fs)
     uint32_t blocks = sfs->super.blocks, unused_blocks = sfs->super.unused_blocks;
     cprintf("sfs: cleanup: '%s' (%d/%d/%d)\n", sfs->super.info,
             blocks - unused_blocks, unused_blocks, blocks);
-    int i, ret;
+    int i = 0, ret = 0;
     for (i = 0; i < 32; i ++)
     {
         if ((ret = fsop_sync(fs)) == 0)
@@ -145,7 +145,9 @@ static int sfs_init_freemap(struct device *dev, struct bitmap *freemap, uint32_t
         {
             return ret;
         }
-        blkno ++, nblks --, data += SFS_BLKSIZE;
+        blkno ++;
+        nblks --;
+        data += SFS_BLKSIZE;
     }
     return 0;
 }
@@ -156,6 +158,10 @@ static int sfs_init_freemap(struct device *dev, struct bitmap *freemap, uint32_t
  * @dev:        the block device contains sfs file system
  * @fs_store:   the fs struct in memroy
  */
+/*
+  在 sfs_do_mount 函数中，完成了加载位于硬盘上的 SFS 文件系统的超级块 superblock 和 freemap
+  的工作。这样，在内存中就有了 SFS 文件系统的全局信息。
+*/
 static int sfs_do_mount(struct device *dev, struct fs **fs_store)
 {
     static_assert(SFS_BLKSIZE >= sizeof(struct sfs_super));
@@ -173,7 +179,11 @@ static int sfs_do_mount(struct device *dev, struct fs **fs_store)
     {
         return -E_NO_MEM;
     }
-    struct sfs_fs *sfs = fsop_info(fs, sfs);
+    
+//    struct sfs_fs *sfs = fsop_info(fs, sfs);
+    struct fs *__fs = fs;
+    assert(__fs != NULL && (__fs->fs_type == fs_type_sfs_info));
+    struct sfs_fs *sfs = &(__fs->fs_info.__sfs_info);
     sfs->dev = dev;
 
     int ret = -E_NO_MEM;
@@ -274,6 +284,10 @@ failed_cleanup_fs:
     return ret;
 }
 
+/*
+ 其中这里面最重要的就是对回调函数 sfs_do_mount 的调用，sfs_do_mount 主要完成对 struct sfs
+ 数据结构的初始化，这里的 sfs 是 simple file system 的缩写
+ */
 int sfs_mount(const char *devname)
 {
     return vfs_mount(devname, sfs_do_mount);

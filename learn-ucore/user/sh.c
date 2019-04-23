@@ -2,7 +2,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "dir.h"
-#include "file.h"
+#include "../libs/file.h"
 #include "error.h"
 #include "unistd.h"
 
@@ -35,7 +35,8 @@ int gettoken(char **p1, char **p2)
     int token = 'w';
     if (strchr(SYMBOLS, *s) != NULL)
     {
-        token = *s, *s ++ = '\0';
+        token = *s;
+        *s ++ = '\0';
     }
     else
     {
@@ -44,7 +45,8 @@ int gettoken(char **p1, char **p2)
         {
             if (*s == '"')
             {
-                *s = ' ', flag = !flag;
+                *s = ' ';
+                flag = !flag;
             }
             s++;
         }
@@ -135,10 +137,10 @@ int testfile(const char *name)
 
 int runcmd(char *cmd)
 {
-    static char argv0[BUFSIZE];
-    const char *argv[EXEC_MAX_ARG_NUM + 1];
-    char *t;
-    int argc, token, ret, p[2];
+    static char argv0[BUFSIZE] = {0};
+    const char *argv[EXEC_MAX_ARG_NUM + 1] = {0};
+    char *t = NULL;
+    int argc = 0, token = 0, ret = 0, p[2] = {0};
 again:
     argc = 0;
     while (1)
@@ -186,7 +188,8 @@ again:
                     {
                         return ret;
                     }
-                    close(p[0]), close(p[1]);
+                    close(p[0]);
+                    close(p[1]);
                     goto again;
                 }
                 else
@@ -200,7 +203,8 @@ again:
                     {
                         return ret;
                     }
-                    close(p[0]), close(p[1]);
+                    close(p[0]);
+                    close(p[1]);
                     goto runit;
                 }
                 break;

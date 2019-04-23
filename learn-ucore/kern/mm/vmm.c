@@ -286,7 +286,7 @@ void vmm_init(void)
 // check_vmm - check correctness of vmm
 static void check_vmm(void)
 {
-    size_t nr_free_pages_store = nr_free_pages();
+//    size_t nr_free_pages_store = nr_free_pages();
     
     check_vma_struct();
     check_pgfault();
@@ -298,7 +298,7 @@ static void check_vmm(void)
 
 static void check_vma_struct(void)
 {
-    size_t nr_free_pages_store = nr_free_pages();
+//    size_t nr_free_pages_store = nr_free_pages();
 
     struct mm_struct *mm = mm_create();
     assert(mm != NULL);

@@ -44,6 +44,7 @@ int sysfile_open(const char *__path, uint32_t open_flags)
 {
     int ret;
     char *path;
+    // 需要把位于用户空间的字符串 __path 拷贝到内核空间中的字符串 path 中
     if ((ret = copy_path(&path, __path)) != 0)
     {
         return ret;

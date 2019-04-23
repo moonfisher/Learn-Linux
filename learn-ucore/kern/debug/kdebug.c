@@ -172,7 +172,7 @@ int debuginfo_eip(uintptr_t addr, struct eipdebuginfo *info)
         if (!user_mem_check(mm, (uintptr_t)stabs, (uintptr_t)stab_end - (uintptr_t)stabs, 0)) {
             return -1;
         }
-        if (!user_mem_check(mm, (uintptr_t)stabstr, stabstr_end - stabstr, 0)) {
+        if (!user_mem_check(mm, (uintptr_t)stabstr, (size_t)(stabstr_end - stabstr), 0)) {
             return -1;
         }
     }
@@ -188,7 +188,7 @@ int debuginfo_eip(uintptr_t addr, struct eipdebuginfo *info)
     // for the line number.
 
     // Search the entire set of stabs for the source file (type N_SO).
-    int lfile = 0, rfile = (stab_end - stabs) - 1;
+    int lfile = 0, rfile = (int)((stab_end - stabs) - 1);
     stab_binsearch(stabs, &lfile, &rfile, N_SO, addr);
     if (lfile == 0)
         return -1;
@@ -217,7 +217,7 @@ int debuginfo_eip(uintptr_t addr, struct eipdebuginfo *info)
         lline = lfile;
         rline = rfile;
     }
-    info->eip_fn_namelen = strfind(info->eip_fn_name, ':') - info->eip_fn_name;
+    info->eip_fn_namelen = (int)(strfind(info->eip_fn_name, ':') - info->eip_fn_name);
 
     // Search within [lline, rline] for the line number stab.
     // If found, set info->eip_line to the right line number.

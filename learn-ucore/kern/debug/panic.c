@@ -3,6 +3,7 @@
 #include "intr.h"
 #include "kmonitor.h"
 
+void print_stackframe(void);
 static bool is_panic = 0;
 
 /* *

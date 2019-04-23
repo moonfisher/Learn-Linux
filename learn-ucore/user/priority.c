@@ -13,8 +13,8 @@ int pids[TOTAL];
 
 static void spin_delay(void)
 {
-     int i;
-     volatile int j;
+     int i = 0;
+     volatile int j = 0;
      for (i = 0; i != 200; ++i)
      {
           j = !j;

@@ -93,7 +93,8 @@ char *strncpy(char *dst, const char *src, size_t len)
         if ((*p = *src) != '\0') {
             src ++;
         }
-        p ++, len --;
+        p ++;
+        len --;
     }
     return dst;
 }
@@ -138,8 +139,11 @@ int strcmp(const char *s1, const char *s2)
  * */
 int strncmp(const char *s1, const char *s2, size_t n)
 {
-    while (n > 0 && *s1 != '\0' && *s1 == *s2) {
-        n --, s1 ++, s2 ++;
+    while (n > 0 && *s1 != '\0' && *s1 == *s2)
+    {
+        n --;
+        s1 ++;
+        s2 ++;
     }
     return (n == 0) ? 0 : (int)((unsigned char)*s1 - (unsigned char)*s2);
 }
@@ -228,7 +232,8 @@ long strtol(const char *s, char **endptr, int base)
         s ++;
     }
     else if (*s == '-') {
-        s ++, neg = 1;
+        s ++;
+        neg = 1;
     }
 
     // hex or octal base prefix

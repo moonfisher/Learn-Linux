@@ -9,6 +9,15 @@
 #include "assert.h"
 
 //called when init_main proc start
+/*
+ Ucore 文件系统介绍
+ https://www.cnblogs.com/miachel-zheng/p/6795025.html
+ 
+ 应用程序操作文件（打开/创建/删除/读写），首先需要通过文件系统的通用文件系统访问接口层给
+ 用户空间提供的访问接口进入文件系统内部，接着由文件系统抽象层把访问请求转发给某一具体文件
+ 系统（比如 SFS 文件系统），具体文件系统（Simple FS文件系统层）把应用程序的访问请求转化
+ 为对磁盘上的 block 的处理请求，并通过外设接口层交给磁盘驱动例程来完成具体的磁盘操作。
+*/
 void fs_init(void)
 {
     vfs_init();

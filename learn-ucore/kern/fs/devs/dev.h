@@ -11,6 +11,10 @@ struct iobuf;
  * d_io is for both reads and writes; the iobuf will indicates the direction.
  */
 // I / O 设备数据结构和相关操作
+/*
+ device 这个数据结构只有当 inode 表示设备时才会有用，其中 d_blocks 表示设备占据的数据块个数，
+ d_blocksize 表示数据占据的数据块大小
+*/
 struct device
 {
     size_t d_blocks;    // 设备占用的数据块个数
