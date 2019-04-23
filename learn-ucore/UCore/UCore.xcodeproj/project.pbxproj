@@ -7,6 +7,58 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		73DD7D47226F6A8500998EEC /* priority.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32272248F5830014426C /* priority.c */; };
+		73DD7D48226F6A8500998EEC /* forktree.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32282248F5830014426C /* forktree.c */; };
+		73DD7D49226F6A8500998EEC /* sleepkill.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32292248F5830014426C /* sleepkill.c */; };
+		73DD7D4A226F6A8500998EEC /* forktest.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB322A2248F5830014426C /* forktest.c */; };
+		73DD7D4B226F6A8500998EEC /* hello.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB322B2248F5830014426C /* hello.c */; };
+		73DD7D4C226F6A8500998EEC /* ls.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB322C2248F5830014426C /* ls.c */; };
+		73DD7D4D226F6A8500998EEC /* badarg.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB322D2248F5830014426C /* badarg.c */; };
+		73DD7D4E226F6A8500998EEC /* softint.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB322E2248F5830014426C /* softint.c */; };
+		73DD7D4F226F6A8500998EEC /* exit.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB322F2248F5830014426C /* exit.c */; };
+		73DD7D50226F6A8500998EEC /* ulib.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32312248F5830014426C /* ulib.h */; };
+		73DD7D51226F6A8500998EEC /* lock.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32322248F5830014426C /* lock.h */; };
+		73DD7D52226F6A8500998EEC /* file.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32332248F5830014426C /* file.h */; };
+		73DD7D53226F6A8500998EEC /* panic.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32342248F5830014426C /* panic.c */; };
+		73DD7D54226F6A8500998EEC /* stdio.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32352248F5830014426C /* stdio.c */; };
+		73DD7D55226F6A8500998EEC /* dir.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32362248F5830014426C /* dir.c */; };
+		73DD7D56226F6A8500998EEC /* syscall.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32372248F5830014426C /* syscall.c */; };
+		73DD7D57226F6A8500998EEC /* umain.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32382248F5830014426C /* umain.c */; };
+		73DD7D59226F6A8500998EEC /* file.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB323A2248F5830014426C /* file.c */; };
+		73DD7D5A226F6A8500998EEC /* ulib.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB323B2248F5830014426C /* ulib.c */; };
+		73DD7D5B226F6A8500998EEC /* syscall.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB323C2248F5830014426C /* syscall.h */; };
+		73DD7D5C226F6A8500998EEC /* dir.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB323D2248F5830014426C /* dir.h */; };
+		73DD7D5D226F6A8500998EEC /* sleep.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB323E2248F5830014426C /* sleep.c */; };
+		73DD7D5E226F6A8500998EEC /* badsegment.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB323F2248F5830014426C /* badsegment.c */; };
+		73DD7D5F226F6A8500998EEC /* waitkill.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32402248F5830014426C /* waitkill.c */; };
+		73DD7D60226F6A8500998EEC /* sh.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32412248F5830014426C /* sh.c */; };
+		73DD7D61226F6A8500998EEC /* divzero.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32422248F5830014426C /* divzero.c */; };
+		73DD7D62226F6A8500998EEC /* faultread.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32432248F5830014426C /* faultread.c */; };
+		73DD7D63226F6A8500998EEC /* pgdir.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32442248F5830014426C /* pgdir.c */; };
+		73DD7D64226F6A8500998EEC /* sfs_filetest1.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32452248F5830014426C /* sfs_filetest1.c */; };
+		73DD7D65226F6A8500998EEC /* spin.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32462248F5830014426C /* spin.c */; };
+		73DD7D66226F6A8500998EEC /* testbss.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32472248F5830014426C /* testbss.c */; };
+		73DD7D67226F6A8500998EEC /* yield.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32482248F5830014426C /* yield.c */; };
+		73DD7D68226F6A8500998EEC /* matrix.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32492248F5830014426C /* matrix.c */; };
+		73DD7D69226F6A8500998EEC /* faultreadkernel.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB324A2248F5830014426C /* faultreadkernel.c */; };
+		73DD7D6A226F6B0400998EEC /* stdio.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB325E2248F5830014426C /* stdio.h */; };
+		73DD7D6B226F6B0400998EEC /* string.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32602248F5830014426C /* string.h */; };
+		73DD7D6C226F6B0400998EEC /* string.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32572248F5830014426C /* string.c */; };
+		73DD7D6D226F6B0400998EEC /* error.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32502248F5830014426C /* error.h */; };
+		73DD7D6E226F6B0400998EEC /* stdlib.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32512248F5830014426C /* stdlib.h */; };
+		73DD7D6F226F6B0400998EEC /* defs.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32522248F5830014426C /* defs.h */; };
+		73DD7D70226F6B0400998EEC /* rand.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32532248F5830014426C /* rand.c */; };
+		73DD7D71226F6B0400998EEC /* unistd.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32542248F5830014426C /* unistd.h */; };
+		73DD7D72226F6B0400998EEC /* stat.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32552248F5830014426C /* stat.h */; };
+		73DD7D73226F6B0400998EEC /* dirent.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32562248F5830014426C /* dirent.h */; };
+		73DD7D74226F6B0400998EEC /* hash.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32582248F5830014426C /* hash.c */; };
+		73DD7D75226F6B0400998EEC /* x86.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32592248F5830014426C /* x86.h */; };
+		73DD7D76226F6B0400998EEC /* elf.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB325A2248F5830014426C /* elf.h */; };
+		73DD7D77226F6B0400998EEC /* list.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB325B2248F5830014426C /* list.h */; };
+		73DD7D78226F6B0400998EEC /* printfmt.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB325C2248F5830014426C /* printfmt.c */; };
+		73DD7D79226F6B0400998EEC /* skew_heap.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB325D2248F5830014426C /* skew_heap.h */; };
+		73DD7D7A226F6B0400998EEC /* stdarg.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB325F2248F5830014426C /* stdarg.h */; };
+		73DD7D7B226F6B0400998EEC /* atomic.h in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32612248F5830014426C /* atomic.h */; };
 		C4CB326C2248F5830014426C /* init.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB31BD2248F5820014426C /* init.c */; };
 		C4CB326E2248F5830014426C /* default_sched.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB31C02248F5820014426C /* default_sched.c */; };
 		C4CB326F2248F5830014426C /* sched.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB31C22248F5820014426C /* sched.c */; };
@@ -55,35 +107,6 @@
 		C4CB329E2248F5830014426C /* kdebug.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32202248F5830014426C /* kdebug.c */; };
 		C4CB329F2248F5830014426C /* panic.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32212248F5830014426C /* panic.c */; };
 		C4CB32A02248F5830014426C /* kmonitor.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32232248F5830014426C /* kmonitor.c */; };
-		C4CB32A12248F5830014426C /* priority.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32272248F5830014426C /* priority.c */; };
-		C4CB32A22248F5830014426C /* forktree.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32282248F5830014426C /* forktree.c */; };
-		C4CB32A32248F5830014426C /* sleepkill.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32292248F5830014426C /* sleepkill.c */; };
-		C4CB32A42248F5830014426C /* forktest.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB322A2248F5830014426C /* forktest.c */; };
-		C4CB32A52248F5830014426C /* hello.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB322B2248F5830014426C /* hello.c */; };
-		C4CB32A62248F5830014426C /* ls.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB322C2248F5830014426C /* ls.c */; };
-		C4CB32A72248F5830014426C /* badarg.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB322D2248F5830014426C /* badarg.c */; };
-		C4CB32A82248F5830014426C /* softint.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB322E2248F5830014426C /* softint.c */; };
-		C4CB32A92248F5830014426C /* exit.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB322F2248F5830014426C /* exit.c */; };
-		C4CB32AA2248F5830014426C /* panic.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32342248F5830014426C /* panic.c */; };
-		C4CB32AB2248F5830014426C /* stdio.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32352248F5830014426C /* stdio.c */; };
-		C4CB32AC2248F5830014426C /* dir.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32362248F5830014426C /* dir.c */; };
-		C4CB32AD2248F5830014426C /* syscall.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32372248F5830014426C /* syscall.c */; };
-		C4CB32AE2248F5830014426C /* umain.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32382248F5830014426C /* umain.c */; };
-		C4CB32B02248F5830014426C /* file.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB323A2248F5830014426C /* file.c */; };
-		C4CB32B12248F5830014426C /* ulib.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB323B2248F5830014426C /* ulib.c */; };
-		C4CB32B22248F5830014426C /* sleep.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB323E2248F5830014426C /* sleep.c */; };
-		C4CB32B32248F5830014426C /* badsegment.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB323F2248F5830014426C /* badsegment.c */; };
-		C4CB32B42248F5830014426C /* waitkill.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32402248F5830014426C /* waitkill.c */; };
-		C4CB32B52248F5830014426C /* sh.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32412248F5830014426C /* sh.c */; };
-		C4CB32B62248F5830014426C /* divzero.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32422248F5830014426C /* divzero.c */; };
-		C4CB32B72248F5830014426C /* faultread.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32432248F5830014426C /* faultread.c */; };
-		C4CB32B82248F5830014426C /* pgdir.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32442248F5830014426C /* pgdir.c */; };
-		C4CB32B92248F5830014426C /* sfs_filetest1.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32452248F5830014426C /* sfs_filetest1.c */; };
-		C4CB32BA2248F5830014426C /* spin.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32462248F5830014426C /* spin.c */; };
-		C4CB32BB2248F5830014426C /* testbss.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32472248F5830014426C /* testbss.c */; };
-		C4CB32BC2248F5830014426C /* yield.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32482248F5830014426C /* yield.c */; };
-		C4CB32BD2248F5830014426C /* matrix.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32492248F5830014426C /* matrix.c */; };
-		C4CB32BE2248F5830014426C /* faultreadkernel.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB324A2248F5830014426C /* faultreadkernel.c */; };
 		C4CB32BF2248F5830014426C /* bootmain.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB324C2248F5830014426C /* bootmain.c */; };
 		C4CB32C12248F5830014426C /* rand.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32532248F5830014426C /* rand.c */; };
 		C4CB32C22248F5830014426C /* string.c in Sources */ = {isa = PBXBuildFile; fileRef = C4CB32572248F5830014426C /* string.c */; };
@@ -92,6 +115,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		73DD7D42226F6A4700998EEC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		C4CB31AF2248F53F0014426C /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -104,6 +136,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		73DD7D46226F6A4700998EEC /* User */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = User; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4CB31B12248F53F0014426C /* UCore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = UCore; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4CB31BD2248F5820014426C /* init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = init.c; sourceTree = "<group>"; };
 		C4CB31BE2248F5820014426C /* entry.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = entry.S; sourceTree = "<group>"; };
@@ -255,6 +288,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		73DD7D41226F6A4700998EEC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C4CB31AE2248F53F0014426C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -277,6 +317,7 @@
 			isa = PBXGroup;
 			children = (
 				C4CB31B12248F53F0014426C /* UCore */,
+				73DD7D46226F6A4700998EEC /* User */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -602,6 +643,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		73DD7D0A226F6A4700998EEC /* User */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 73DD7D43226F6A4700998EEC /* Build configuration list for PBXNativeTarget "User" */;
+			buildPhases = (
+				73DD7D0B226F6A4700998EEC /* Sources */,
+				73DD7D41226F6A4700998EEC /* Frameworks */,
+				73DD7D42226F6A4700998EEC /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = User;
+			productName = UCore;
+			productReference = 73DD7D46226F6A4700998EEC /* User */;
+			productType = "com.apple.product-type.tool";
+		};
 		C4CB31B02248F53F0014426C /* UCore */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C4CB31B82248F53F0014426C /* Build configuration list for PBXNativeTarget "UCore" */;
@@ -647,18 +705,77 @@
 			projectRoot = "";
 			targets = (
 				C4CB31B02248F53F0014426C /* UCore */,
+				73DD7D0A226F6A4700998EEC /* User */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		73DD7D0B226F6A4700998EEC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				73DD7D6A226F6B0400998EEC /* stdio.h in Sources */,
+				73DD7D6B226F6B0400998EEC /* string.h in Sources */,
+				73DD7D6C226F6B0400998EEC /* string.c in Sources */,
+				73DD7D6D226F6B0400998EEC /* error.h in Sources */,
+				73DD7D6E226F6B0400998EEC /* stdlib.h in Sources */,
+				73DD7D6F226F6B0400998EEC /* defs.h in Sources */,
+				73DD7D70226F6B0400998EEC /* rand.c in Sources */,
+				73DD7D71226F6B0400998EEC /* unistd.h in Sources */,
+				73DD7D72226F6B0400998EEC /* stat.h in Sources */,
+				73DD7D73226F6B0400998EEC /* dirent.h in Sources */,
+				73DD7D74226F6B0400998EEC /* hash.c in Sources */,
+				73DD7D75226F6B0400998EEC /* x86.h in Sources */,
+				73DD7D76226F6B0400998EEC /* elf.h in Sources */,
+				73DD7D77226F6B0400998EEC /* list.h in Sources */,
+				73DD7D78226F6B0400998EEC /* printfmt.c in Sources */,
+				73DD7D79226F6B0400998EEC /* skew_heap.h in Sources */,
+				73DD7D7A226F6B0400998EEC /* stdarg.h in Sources */,
+				73DD7D7B226F6B0400998EEC /* atomic.h in Sources */,
+				73DD7D47226F6A8500998EEC /* priority.c in Sources */,
+				73DD7D48226F6A8500998EEC /* forktree.c in Sources */,
+				73DD7D49226F6A8500998EEC /* sleepkill.c in Sources */,
+				73DD7D4A226F6A8500998EEC /* forktest.c in Sources */,
+				73DD7D4B226F6A8500998EEC /* hello.c in Sources */,
+				73DD7D4C226F6A8500998EEC /* ls.c in Sources */,
+				73DD7D4D226F6A8500998EEC /* badarg.c in Sources */,
+				73DD7D4E226F6A8500998EEC /* softint.c in Sources */,
+				73DD7D4F226F6A8500998EEC /* exit.c in Sources */,
+				73DD7D50226F6A8500998EEC /* ulib.h in Sources */,
+				73DD7D51226F6A8500998EEC /* lock.h in Sources */,
+				73DD7D52226F6A8500998EEC /* file.h in Sources */,
+				73DD7D53226F6A8500998EEC /* panic.c in Sources */,
+				73DD7D54226F6A8500998EEC /* stdio.c in Sources */,
+				73DD7D55226F6A8500998EEC /* dir.c in Sources */,
+				73DD7D56226F6A8500998EEC /* syscall.c in Sources */,
+				73DD7D57226F6A8500998EEC /* umain.c in Sources */,
+				73DD7D59226F6A8500998EEC /* file.c in Sources */,
+				73DD7D5A226F6A8500998EEC /* ulib.c in Sources */,
+				73DD7D5B226F6A8500998EEC /* syscall.h in Sources */,
+				73DD7D5C226F6A8500998EEC /* dir.h in Sources */,
+				73DD7D5D226F6A8500998EEC /* sleep.c in Sources */,
+				73DD7D5E226F6A8500998EEC /* badsegment.c in Sources */,
+				73DD7D5F226F6A8500998EEC /* waitkill.c in Sources */,
+				73DD7D60226F6A8500998EEC /* sh.c in Sources */,
+				73DD7D61226F6A8500998EEC /* divzero.c in Sources */,
+				73DD7D62226F6A8500998EEC /* faultread.c in Sources */,
+				73DD7D63226F6A8500998EEC /* pgdir.c in Sources */,
+				73DD7D64226F6A8500998EEC /* sfs_filetest1.c in Sources */,
+				73DD7D65226F6A8500998EEC /* spin.c in Sources */,
+				73DD7D66226F6A8500998EEC /* testbss.c in Sources */,
+				73DD7D67226F6A8500998EEC /* yield.c in Sources */,
+				73DD7D68226F6A8500998EEC /* matrix.c in Sources */,
+				73DD7D69226F6A8500998EEC /* faultreadkernel.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C4CB31AD2248F53F0014426C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				C4CB32842248F5830014426C /* wait.c in Sources */,
 				C4CB327C2248F5830014426C /* swap_fifo.c in Sources */,
-				C4CB32BA2248F5830014426C /* spin.c in Sources */,
 				C4CB327B2248F5830014426C /* pmm.c in Sources */,
 				C4CB32732248F5830014426C /* ide.c in Sources */,
 				C4CB32832248F5830014426C /* sem.c in Sources */,
@@ -666,30 +783,19 @@
 				C4CB32982248F5830014426C /* sfs.c in Sources */,
 				C4CB32912248F5830014426C /* swapfs.c in Sources */,
 				C4CB328B2248F5830014426C /* vfs.c in Sources */,
-				C4CB32B22248F5830014426C /* sleep.c in Sources */,
 				C4CB329E2248F5830014426C /* kdebug.c in Sources */,
 				C4CB328A2248F5830014426C /* vfsdev.c in Sources */,
-				C4CB32AA2248F5830014426C /* panic.c in Sources */,
-				C4CB32AD2248F5830014426C /* syscall.c in Sources */,
 				C4CB32922248F5830014426C /* fs.c in Sources */,
 				C4CB32812248F5830014426C /* monitor.c in Sources */,
 				C4CB32C32248F5830014426C /* hash.c in Sources */,
-				C4CB32A62248F5830014426C /* ls.c in Sources */,
-				C4CB32B62248F5830014426C /* divzero.c in Sources */,
 				C4CB328E2248F5830014426C /* dev_stdout.c in Sources */,
 				C4CB32972248F5830014426C /* sfs_fs.c in Sources */,
-				C4CB32B92248F5830014426C /* sfs_filetest1.c in Sources */,
-				C4CB32AE2248F5830014426C /* umain.c in Sources */,
 				C4CB32762248F5830014426C /* trap.c in Sources */,
 				C4CB327E2248F5830014426C /* default_pmm.c in Sources */,
-				C4CB32BE2248F5830014426C /* faultreadkernel.c in Sources */,
 				C4CB32BF2248F5830014426C /* bootmain.c in Sources */,
 				C4CB327F2248F5830014426C /* vmm.c in Sources */,
 				C4CB329F2248F5830014426C /* panic.c in Sources */,
 				C4CB32742248F5830014426C /* intr.c in Sources */,
-				C4CB32A82248F5830014426C /* softint.c in Sources */,
-				C4CB32B42248F5830014426C /* waitkill.c in Sources */,
-				C4CB32B02248F5830014426C /* file.c in Sources */,
 				C4CB327A2248F5830014426C /* readline.c in Sources */,
 				C4CB32862248F5830014426C /* vfspath.c in Sources */,
 				C4CB328D2248F5830014426C /* dev_stdin.c in Sources */,
@@ -700,50 +806,79 @@
 				C4CB329A2248F5830014426C /* file.c in Sources */,
 				C4CB32952248F5830014426C /* bitmap.c in Sources */,
 				C4CB32882248F5830014426C /* inode.c in Sources */,
-				C4CB32B72248F5830014426C /* faultread.c in Sources */,
 				C4CB32962248F5830014426C /* sfs_inode.c in Sources */,
-				C4CB32B52248F5830014426C /* sh.c in Sources */,
 				C4CB32792248F5830014426C /* string.c in Sources */,
 				C4CB32C42248F5830014426C /* printfmt.c in Sources */,
 				C4CB32A02248F5830014426C /* kmonitor.c in Sources */,
-				C4CB32A12248F5830014426C /* priority.c in Sources */,
 				C4CB32C22248F5830014426C /* string.c in Sources */,
 				C4CB32C12248F5830014426C /* rand.c in Sources */,
-				C4CB32A22248F5830014426C /* forktree.c in Sources */,
 				C4CB326C2248F5830014426C /* init.c in Sources */,
-				C4CB32BC2248F5830014426C /* yield.c in Sources */,
 				C4CB32892248F5830014426C /* vfslookup.c in Sources */,
-				C4CB32A32248F5830014426C /* sleepkill.c in Sources */,
 				C4CB32802248F5830014426C /* swap.c in Sources */,
 				C4CB327D2248F5830014426C /* kmalloc.c in Sources */,
 				C4CB32942248F5830014426C /* sfs_lock.c in Sources */,
 				C4CB32722248F5830014426C /* console.c in Sources */,
 				C4CB32902248F5830014426C /* sysfile.c in Sources */,
 				C4CB326E2248F5830014426C /* default_sched.c in Sources */,
-				C4CB32AC2248F5830014426C /* dir.c in Sources */,
 				C4CB329C2248F5830014426C /* proc.c in Sources */,
-				C4CB32A92248F5830014426C /* exit.c in Sources */,
 				C4CB32852248F5830014426C /* syscall.c in Sources */,
-				C4CB32BB2248F5830014426C /* testbss.c in Sources */,
-				C4CB32A52248F5830014426C /* hello.c in Sources */,
 				C4CB32872248F5830014426C /* vfsfile.c in Sources */,
-				C4CB32A42248F5830014426C /* forktest.c in Sources */,
 				C4CB32992248F5830014426C /* sfs_io.c in Sources */,
-				C4CB32AB2248F5830014426C /* stdio.c in Sources */,
-				C4CB32B12248F5830014426C /* ulib.c in Sources */,
 				C4CB32702248F5830014426C /* picirq.c in Sources */,
-				C4CB32BD2248F5830014426C /* matrix.c in Sources */,
 				C4CB328C2248F5830014426C /* dev_disk0.c in Sources */,
-				C4CB32A72248F5830014426C /* badarg.c in Sources */,
-				C4CB32B82248F5830014426C /* pgdir.c in Sources */,
 				C4CB326F2248F5830014426C /* sched.c in Sources */,
-				C4CB32B32248F5830014426C /* badsegment.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		73DD7D44226F6A4700998EEC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = B5Y4Q4J39L;
+				HEADER_SEARCH_PATHS = (
+					../libs,
+					../user/libs,
+					../kern/sync,
+					../kern/driver,
+					../kern/mm,
+					../kern/trap,
+					../kern/fs/vfs,
+					../kern/fs,
+					../kern/process,
+					../kern/fs/devs,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Debug;
+		};
+		73DD7D45226F6A4700998EEC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = B5Y4Q4J39L;
+				HEADER_SEARCH_PATHS = (
+					../libs,
+					../user/libs,
+					../kern/sync,
+					../kern/driver,
+					../kern/mm,
+					../kern/trap,
+					../kern/fs/vfs,
+					../kern/fs,
+					../kern/process,
+					../kern/fs/devs,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Release;
+		};
 		C4CB31B62248F53F0014426C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -904,6 +1039,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		73DD7D43226F6A4700998EEC /* Build configuration list for PBXNativeTarget "User" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				73DD7D44226F6A4700998EEC /* Debug */,
+				73DD7D45226F6A4700998EEC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C4CB31AC2248F53F0014426C /* Build configuration list for PBXProject "UCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

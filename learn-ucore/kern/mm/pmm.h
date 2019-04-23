@@ -162,8 +162,5 @@ static inline int page_ref_dec(struct Page *page)
     return page->ref;
 }
 
-// 内核栈，内核栈顶
-extern char bootstack[], bootstacktop[];
-
 #endif /* !__KERN_MM_PMM_H__ */
 

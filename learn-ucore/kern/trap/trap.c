@@ -44,9 +44,9 @@ static struct gatedesc idt[256] = {{0}};    // 0xC0158780
 }
 */
 #if ASM_NO_64
-static struct pseudodesc idt_pd = {sizeof(idt) - 1, (uintptr_t)idt};
+    static struct pseudodesc idt_pd = {sizeof(idt) - 1, (uintptr_t)idt};
 #else
-static struct pseudodesc idt_pd;
+    static struct pseudodesc idt_pd;
 #endif
 
 /* idt_init - initialize IDT to each of the entry points in kern/trap/vectors.S */
@@ -59,7 +59,11 @@ static struct pseudodesc idt_pd;
 */
 void idt_init(void)
 {
+#if ASM_NO_64
     extern uintptr_t __vectors[];
+#else
+    uintptr_t __vectors[1];
+#endif
     int i = 0;
     for (i = 0; i < sizeof(idt) / sizeof(struct gatedesc); i ++)
     {

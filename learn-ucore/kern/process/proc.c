@@ -87,9 +87,15 @@ struct proc_struct *current = NULL;     // 0xC0159048
 
 static int nr_process = 0;
 
-void kernel_thread_entry(void);
-void forkrets(struct trapframe *tf);
-void switch_to(struct context *from, struct context *to);
+#if ASM_NO_64
+    void kernel_thread_entry(void);
+    void forkrets(struct trapframe *tf);
+    void switch_to(struct context *from, struct context *to);
+#else
+    void kernel_thread_entry(void) {}
+    void forkrets(struct trapframe *tf) {}
+    void switch_to(struct context *from, struct context *to) {}
+#endif
 
 // alloc_proc - alloc a proc_struct and init all fields of proc_struct
 static struct proc_struct *alloc_proc(void)
@@ -1246,6 +1252,7 @@ void proc_init(void)
     idleproc->state = PROC_RUNNABLE;
     
     // 只有 idleproc 使用最早创建的内核栈，后续无论再创建别的内核线程，还是用户进程，都是重新分配的内核栈空间
+    extern char bootstack[];
     idleproc->kstack = (uintptr_t)bootstack;    //0xC0152000
     idleproc->need_resched = 1;
     

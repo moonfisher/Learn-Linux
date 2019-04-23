@@ -10,13 +10,21 @@
 #include "kdebug.h"
 #include "kmonitor.h"
 #include "assert.h"
+#include "pmm.h"
 
 #define STACKFRAME_DEPTH 20
 
-extern const struct stab __STAB_BEGIN__[];  // beginning of stabs table
-extern const struct stab __STAB_END__[];    // end of stabs table
-extern const char __STABSTR_BEGIN__[];      // beginning of string table
-extern const char __STABSTR_END__[];        // end of string table
+#if ASM_NO_64
+    extern const struct stab __STAB_BEGIN__[];  // beginning of stabs table
+    extern const struct stab __STAB_END__[];    // end of stabs table
+    extern const char __STABSTR_BEGIN__[];      // beginning of string table
+    extern const char __STABSTR_END__[];        // end of string table
+#else
+    const struct stab __STAB_BEGIN__[1];
+    const struct stab __STAB_END__[1];
+    const char __STABSTR_BEGIN__[1];
+    const char __STABSTR_END__[1];        // end of string tabl
+#endif
 
 /* debug information about a particular instruction pointer */
 struct eipdebuginfo {
@@ -279,7 +287,12 @@ int debuginfo_eip(uintptr_t addr, struct eipdebuginfo *info)
  */
 void print_kerninfo(void)
 {
+#if ASM_NO_64
     extern char kern_entry[], etext[], edata[], end[], kern_init[], bootstack[], bootstacktop[], __boot_pgdir[], __boot_pte[], __vectors[];
+#else
+    char kern_entry[1], etext[1], edata[1], end[1], kern_init[1], bootstack[1], bootstacktop[1], __boot_pte[1], __vectors[1];
+    extern char __boot_pgdir[];
+#endif
     cprintf("Special kernel symbols:\n");
     cprintf("  kern_entry           0x%08x (phys)\n", kern_entry);
     cprintf("  kern_init            0x%08x (phys)\n", kern_init);

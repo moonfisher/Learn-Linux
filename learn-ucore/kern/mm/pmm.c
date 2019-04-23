@@ -12,6 +12,13 @@
 #include "vmm.h"
 #include "kmalloc.h"
 
+// 内核栈，内核栈顶
+#if ASM_NO_64
+    extern char bootstack[], bootstacktop[];
+#else
+    char bootstack[1], bootstacktop[1];
+#endif
+
 /* *
  * Task State Segment:
  *
@@ -82,7 +89,11 @@ size_t npage = 0;
 
 // virtual address of boot-time page directory 0xC0156000
 // 内核页目录，不用用户进程有属于自己的页目录
-extern pde_t __boot_pgdir;
+#if ASM_NO_64
+    extern pde_t __boot_pgdir;
+#else
+    pde_t __boot_pgdir;
+#endif
 pde_t *boot_pgdir = &__boot_pgdir;
 // physical address of boot-time page directory 0x156000
 uintptr_t boot_cr3;
@@ -254,9 +265,9 @@ static struct segdesc gdt[] = {
     }
 */
 #if ASM_NO_64
-static struct pseudodesc gdt_pd = {sizeof(gdt) - 1, (uintptr_t)gdt};
+    static struct pseudodesc gdt_pd = {sizeof(gdt) - 1, (uintptr_t)gdt};
 #else
-static struct pseudodesc gdt_pd;
+    static struct pseudodesc gdt_pd;
 #endif
 
 static void check_alloc_page(void);
@@ -479,7 +490,11 @@ static void page_init(void)
     cprintf("maxpa: %08x\n", maxpa);
     
     // 从内核在内存里结束的地方往后统计
+#if ASM_NO_64
     extern char end[];  // 0xC015B384
+#else
+    char end[1];
+#endif
     cprintf("end: %08x\n", end);
     
     // maxpa = 0x1FFE0000 PGSIZE = 0x1000 = 4k

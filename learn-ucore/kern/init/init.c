@@ -20,10 +20,16 @@ int mon_backtrace(int argc, char **argv, struct trapframe *tf);
 //static void lab1_switch_test(void);
 void grade_backtrace(void);
 
+int main(void) {}
+
 int kern_init(void)
 {
     // 对于位于BSS段中未初始化的全局变量，需要初始化为0，确保代码能正确执行
+#if ASM_NO_64
     extern char edata[], end[];
+#else
+    char edata[1], end[1];
+#endif
     memset(edata, 0, (size_t)(end - edata));
 
     cons_init();                // init the console
