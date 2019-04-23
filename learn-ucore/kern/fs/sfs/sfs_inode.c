@@ -119,10 +119,10 @@ static void sfs_block_free(struct sfs_fs *sfs, uint32_t ino)
 static int sfs_create_inode(struct sfs_fs *sfs, struct sfs_disk_inode *din, uint32_t ino, struct inode **node_store)
 {
     struct inode *node;
-    if ((node = alloc_inode(sfs_inode)) != NULL)
+    if ((node = __alloc_inode(inode_type_sfs_inode_info)) != NULL)
     {
         vop_init(node, sfs_get_ops(din->type), info2fs(sfs, sfs));
-        struct sfs_inode *sin = vop_info(node, sfs_inode);
+        struct sfs_inode *sin = sfs_vop_info(node);
         sin->din = din;
         sin->ino = ino;
         sin->dirty = 0;
@@ -149,7 +149,7 @@ static struct inode *lookup_sfs_nolock(struct sfs_fs *sfs, uint32_t ino)
         if (sin->ino == ino)
         {
             node = info2node(sin, sfs_inode);
-            if (vop_ref_inc(node) == 1)
+            if (inode_ref_inc(node)== 1)
             {
                 sin->reclaim_count ++;
             }
@@ -190,7 +190,7 @@ int sfs_load_inode(struct sfs_fs *sfs, struct inode **node_store, uint32_t ino)
     {
         goto failed_cleanup_din;
     }
-    sfs_set_links(sfs, vop_info(node, sfs_inode));
+    sfs_set_links(sfs, sfs_vop_info(node));
 
 out_unlock:
     unlock_sfs_fs(sfs);
@@ -754,8 +754,8 @@ out:
  */
 static inline int sfs_io(struct inode *node, struct iobuf *iob, bool write)
 {
-    struct sfs_fs *sfs = fsop_info(vop_fs(node), sfs);
-    struct sfs_inode *sin = vop_info(node, sfs_inode);
+    struct sfs_fs *sfs = fsop_info(((node)->in_fs), sfs);
+    struct sfs_inode *sin = sfs_vop_info(node);
     int ret;
     lock_sin(sin);
     {
@@ -793,7 +793,7 @@ static int sfs_fstat(struct inode *node, struct stat *stat)
     {
         return ret;
     }
-    struct sfs_disk_inode *din = vop_info(node, sfs_inode)->din;
+    struct sfs_disk_inode *din = sfs_vop_info(node)->din;
     stat->st_nlinks = din->nlinks;
     stat->st_blocks = din->blocks;
     stat->st_size = din->size;
@@ -805,8 +805,8 @@ static int sfs_fstat(struct inode *node, struct stat *stat)
  */
 static int sfs_fsync(struct inode *node)
 {
-    struct sfs_fs *sfs = fsop_info(vop_fs(node), sfs);
-    struct sfs_inode *sin = vop_info(node, sfs_inode);
+    struct sfs_fs *sfs = fsop_info(((node)->in_fs), sfs);
+    struct sfs_inode *sin = sfs_vop_info(node);
     int ret = 0;
     if (sin->dirty)
     {
@@ -838,13 +838,13 @@ static int sfs_namefile(struct inode *node, struct iobuf *iob)
         return -E_NO_MEM;
     }
 
-    struct sfs_fs *sfs = fsop_info(vop_fs(node), sfs);
-    struct sfs_inode *sin = vop_info(node, sfs_inode);
+    struct sfs_fs *sfs = fsop_info(((node)->in_fs), sfs);
+    struct sfs_inode *sin = sfs_vop_info(node);
 
     int ret;
     char *ptr = iob->io_base + iob->io_resid;
     size_t alen, resid = iob->io_resid - 2;
-    vop_ref_inc(node);
+    inode_ref_inc(node);
     while (1)
     {
         struct inode *parent;
@@ -854,15 +854,15 @@ static int sfs_namefile(struct inode *node, struct iobuf *iob)
         }
 
         uint32_t ino = sin->ino;
-        vop_ref_dec(node);
+        inode_ref_dec(node);
         if (node == parent)
         {
-            vop_ref_dec(node);
+            inode_ref_dec(node);
             break;
         }
 
         node = parent;
-        sin = vop_info(node, sfs_inode);
+        sin = sfs_vop_info(node);
         assert(ino != sin->ino && sin->din->type == SFS_TYPE_DIR);
 
         lock_sin(sin);
@@ -896,7 +896,7 @@ static int sfs_namefile(struct inode *node, struct iobuf *iob)
 failed_nomem:
     ret = -E_NO_MEM;
 failed:
-    vop_ref_dec(node);
+    inode_ref_dec(node);
     kfree(entry);
     return ret;
 }
@@ -937,8 +937,8 @@ static int sfs_getdirentry(struct inode *node, struct iobuf *iob)
         return -E_NO_MEM;
     }
 
-    struct sfs_fs *sfs = fsop_info(vop_fs(node), sfs);
-    struct sfs_inode *sin = vop_info(node, sfs_inode);
+    struct sfs_fs *sfs = fsop_info(((node)->in_fs), sfs);
+    struct sfs_inode *sin = sfs_vop_info(node);
 
     int ret, slot;
     off_t offset = iob->io_offset;
@@ -970,8 +970,8 @@ out:
  */
 static int sfs_reclaim(struct inode *node)
 {
-    struct sfs_fs *sfs = fsop_info(vop_fs(node), sfs);
-    struct sfs_inode *sin = vop_info(node, sfs_inode);
+    struct sfs_fs *sfs = fsop_info(((node)->in_fs), sfs);
+    struct sfs_inode *sin = sfs_vop_info(node);
 
     int  ret = -E_BUSY;
     uint32_t ent;
@@ -1020,7 +1020,7 @@ failed_unlock:
  */
 static int sfs_gettype(struct inode *node, uint32_t *type_store)
 {
-    struct sfs_disk_inode *din = vop_info(node, sfs_inode)->din;
+    struct sfs_disk_inode *din = sfs_vop_info(node)->din;
     switch (din->type)
     {
         case SFS_TYPE_DIR:
@@ -1045,7 +1045,7 @@ static int sfs_tryseek(struct inode *node, off_t pos)
     {
         return -E_INVAL;
     }
-    struct sfs_inode *sin = vop_info(node, sfs_inode);
+    struct sfs_inode *sin = sfs_vop_info(node);
     if (pos > sin->din->size)
     {
         return vop_truncate(node, pos);
@@ -1062,8 +1062,8 @@ static int sfs_truncfile(struct inode *node, off_t len)
     {
         return -E_INVAL;
     }
-    struct sfs_fs *sfs = fsop_info(vop_fs(node), sfs);
-    struct sfs_inode *sin = vop_info(node, sfs_inode);
+    struct sfs_fs *sfs = fsop_info(((node)->in_fs), sfs);
+    struct sfs_inode *sin = sfs_vop_info(node);
     struct sfs_disk_inode *din = sin->din;
 
     int ret = 0;
@@ -1118,19 +1118,19 @@ out_unlock:
  */
 static int sfs_lookup(struct inode *node, char *path, struct inode **node_store)
 {
-    struct sfs_fs *sfs = fsop_info(vop_fs(node), sfs);
+    struct sfs_fs *sfs = fsop_info(((node)->in_fs), sfs);
     assert(*path != '\0' && *path != '/');
-    vop_ref_inc(node);
-    struct sfs_inode *sin = vop_info(node, sfs_inode);
+    inode_ref_inc(node);
+    struct sfs_inode *sin = sfs_vop_info(node);
     if (sin->din->type != SFS_TYPE_DIR)
     {
-        vop_ref_dec(node);
+        inode_ref_dec(node);
         return -E_NOTDIR;
     }
     struct inode *subnode;
     int ret = sfs_lookup_once(sfs, sin, path, &subnode, NULL);
 
-    vop_ref_dec(node);
+    inode_ref_dec(node);
     if (ret != 0)
     {
         return ret;

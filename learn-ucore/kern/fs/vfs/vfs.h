@@ -66,8 +66,6 @@ struct fs
 
 struct fs *__alloc_fs(int type);
 
-#define alloc_fs(type)                                              __alloc_fs(__fs_type(type))
-
 // Macros to shorten the calling sequences.
 #define fsop_sync(fs)                       ((fs)->fs_sync(fs))
 #define fsop_get_root(fs)                   ((fs)->fs_get_root(fs))

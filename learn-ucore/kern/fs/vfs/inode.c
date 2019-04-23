@@ -31,7 +31,7 @@ void inode_init(struct inode *node, const struct inode_ops *ops, struct fs *fs)
     node->open_count = 0;
     node->in_ops = ops;
     node->in_fs = fs;
-    vop_ref_inc(node);
+    inode_ref_inc(node);
 }
 
 /* *
@@ -121,3 +121,16 @@ void inode_check(struct inode *node, const char *opstr)
     assert(ref_count < MAX_INODE_COUNT && open_count < MAX_INODE_COUNT);
 }
 
+struct device *device_vop_info(struct inode *node)
+{
+    struct inode *__node = node;
+    assert(__node != NULL && (__node->in_type == inode_type_device_info));
+    return &(__node->in_info.__device_info);
+}
+
+struct sfs_inode *sfs_vop_info(struct inode *node)
+{
+    struct inode *__node = node;
+    assert(__node != NULL && (__node->in_type == inode_type_sfs_inode_info));
+    return &(__node->in_info.__sfs_inode_info);
+}

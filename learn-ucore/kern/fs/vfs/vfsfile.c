@@ -60,17 +60,17 @@ int vfs_open(char *path, uint32_t open_flags, struct inode **node_store)
     
     if ((ret = vop_open(node, open_flags)) != 0)
     {
-        vop_ref_dec(node);
+        inode_ref_dec(node);
         return ret;
     }
 
-    vop_open_inc(node);
+    inode_open_inc(node);
     if (open_flags & O_TRUNC || create)
     {
         if ((ret = vop_truncate(node, 0)) != 0)
         {
-            vop_open_dec(node);
-            vop_ref_dec(node);
+            inode_open_dec(node);
+            inode_ref_dec(node);
             return ret;
         }
     }
@@ -81,8 +81,8 @@ int vfs_open(char *path, uint32_t open_flags, struct inode **node_store)
 // close file in vfs
 int vfs_close(struct inode *node)
 {
-    vop_open_dec(node);
-    vop_ref_dec(node);
+    inode_open_dec(node);
+    inode_ref_dec(node);
     return 0;
 }
 

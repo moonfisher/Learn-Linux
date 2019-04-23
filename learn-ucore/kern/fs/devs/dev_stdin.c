@@ -138,11 +138,8 @@ void dev_init_stdin(void)
     
     // 完成设置 inode 为设备文件，初始化设备文件
     // vop_info 它完成返回 in_info 这个联合体里 device 的地址
-    // stdin_device_init(vop_info(node, device));
-    struct inode *__node = node;
-    assert(__node != NULL && (__node->in_type == inode_type_device_info));
-    stdin_device_init(&(__node->in_info.__device_info));
-    
+    stdin_device_init(device_vop_info(node));
+
     int ret;
     if ((ret = vfs_add_dev("stdin", node, 0)) != 0)
     {

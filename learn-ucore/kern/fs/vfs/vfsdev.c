@@ -92,7 +92,7 @@ int vfs_get_root(const char *devname, struct inode **node_store)
                     }
                     else if (!vdev->mountable)
                     {
-                        vop_ref_inc(vdev->devnode);
+                        inode_ref_inc(vdev->devnode);
                         found = vdev->devnode;
                     }
                     if (found != NULL)
@@ -162,7 +162,7 @@ static bool check_devname_conflict(const char *devname)
 static int vfs_do_add(const char *devname, struct inode *devnode, struct fs *fs, bool mountable)
 {
     assert(devname != NULL);
-    assert((devnode == NULL && !mountable) || (devnode != NULL && check_inode_type(devnode, device)));
+    assert((devnode == NULL && !mountable) || (devnode != NULL && ((devnode)->in_type == inode_type_device_info)));
     if (strlen(devname) > FS_MAX_DNAME_LEN)
     {
         return -E_TOO_BIG;
@@ -268,7 +268,7 @@ int vfs_mount(const char *devname, int (*mountfunc)(struct device *dev, struct f
     }
     assert(vdev->devname != NULL && vdev->mountable);
 
-    struct device *dev = vop_info(vdev->devnode, device);
+    struct device *dev = device_vop_info(vdev->devnode);
     if ((ret = mountfunc(dev, &(vdev->fs))) == 0)
     {
         assert(vdev->fs != NULL);

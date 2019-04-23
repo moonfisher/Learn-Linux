@@ -51,25 +51,10 @@ struct inode
     const struct inode_ops *in_ops; // 访问 inode 的函数指针，和具体文件系统相关
 };
 
-#define __in_type(type)                                             inode_type_##type##_info
-
-#define check_inode_type(node, type)                                ((node)->in_type == __in_type(type))
-
-#define __vop_info(node, type)                                      \
-    ({                                                              \
-        struct inode *__node = (node);                              \
-        assert(__node != NULL && check_inode_type(__node, type));   \
-        &(__node->in_info.__##type##_info);                         \
-     })
-
-#define vop_info(node, type)                                        __vop_info(node, type)
-
 #define info2node(info, type)                                       \
     to_struct((info), struct inode, in_info.__##type##_info)
 
 struct inode *__alloc_inode(int type);
-
-#define alloc_inode(type)                                           __alloc_inode(__in_type(type))
 
 #define MAX_INODE_COUNT                     0x10000
 
@@ -80,6 +65,9 @@ int inode_open_dec(struct inode *node);
 
 void inode_init(struct inode *node, const struct inode_ops *ops, struct fs *fs);
 void inode_kill(struct inode *node);
+
+struct device *device_vop_info(struct inode *node);
+struct sfs_inode *sfs_vop_info(struct inode *node);
 
 #define VOP_MAGIC                           0x8c4ba476
 
@@ -235,23 +223,9 @@ void inode_check(struct inode *node, const char *opstr);
 #define vop_lookup(node, path, node_store)                          (__vop_op(node, lookup)(node, path, node_store))
 
 
-#define vop_fs(node)                                                ((node)->in_fs)
+//#define ((node)->in_fs)                                                ((node)->in_fs)
 #define vop_init(node, ops, fs)                                     inode_init(node, ops, fs)
 #define vop_kill(node)                                              inode_kill(node)
-
-/*
- * Reference count manipulation (handled above filesystem level)
- */
-#define vop_ref_inc(node)                                           inode_ref_inc(node)
-#define vop_ref_dec(node)                                           inode_ref_dec(node)
-/*
- * Open count manipulation (handled above filesystem level)
- *
- * VOP_INCOPEN is called by vfs_open. VOP_DECOPEN is called by vfs_close.
- * Neither of these should need to be called from above the vfs layer.
- */
-#define vop_open_inc(node)                                          inode_open_inc(node)
-#define vop_open_dec(node)                                          inode_open_dec(node)
 
 static inline int inode_ref_count(struct inode *node)
 {

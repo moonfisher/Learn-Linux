@@ -67,7 +67,7 @@ void files_destroy(struct files_struct *filesp)
     assert(filesp != NULL && files_count(filesp) == 0);
     if (filesp->pwd != NULL)
     {
-        vop_ref_dec(filesp->pwd);
+        inode_ref_dec(filesp->pwd);
     }
     int i;
     struct file *file = filesp->fd_array;
@@ -105,7 +105,7 @@ int dup_fs(struct files_struct *to, struct files_struct *from)
     assert(files_count(to) == 0 && files_count(from) > 0);
     if ((to->pwd = from->pwd) != NULL)
     {
-        vop_ref_inc(to->pwd);
+        inode_ref_inc(to->pwd);
     }
     
     int i;

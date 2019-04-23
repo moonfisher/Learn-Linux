@@ -56,7 +56,7 @@ static void change_bootfs(struct inode *node)
     unlock_bootfs();
     if (old != NULL)
     {
-        vop_ref_dec(old);
+        inode_ref_dec(old);
     }
 }
 
@@ -95,7 +95,7 @@ int vfs_get_bootfs(struct inode **node_store)
         {
             if ((node = bootfs_node) != NULL)
             {
-                vop_ref_inc(bootfs_node);
+                inode_ref_inc(bootfs_node);
             }
         }
         unlock_bootfs();

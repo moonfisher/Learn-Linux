@@ -131,8 +131,8 @@ void fd_array_dup(struct file *to, struct file *from)
     to->readable = from->readable;
     to->writable = from->writable;
     struct inode *node = from->node;
-    vop_ref_inc(node);
-    vop_open_inc(node);
+    inode_ref_inc(node);
+    inode_open_inc(node);
     to->node = node;
     fd_array_open(to);
 }

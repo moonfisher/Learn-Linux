@@ -118,7 +118,7 @@ static void sfs_cleanup(struct fs *fs)
 static int sfs_init_read(struct device *dev, uint32_t blkno, void *blk_buffer)
 {
     struct iobuf __iob, *iob = iobuf_init(&__iob, blk_buffer, SFS_BLKSIZE, blkno * SFS_BLKSIZE);
-    return dop_io(dev, iob, 0);
+    return dev->d_io(dev, iob, 0);
 }
 
 /*
@@ -175,7 +175,7 @@ static int sfs_do_mount(struct device *dev, struct fs **fs_store)
 
     /* allocate fs structure */
     struct fs *fs;
-    if ((fs = alloc_fs(sfs)) == NULL)
+    if ((fs = __alloc_fs(fs_type_sfs_info)) == NULL)
     {
         return -E_NO_MEM;
     }

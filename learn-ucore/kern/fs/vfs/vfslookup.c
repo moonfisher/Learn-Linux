@@ -66,7 +66,7 @@ static int get_device(char *path, char **subpath, struct inode **node_store)
         /* The current directory may not be a device, so it must have a fs. */
         assert(node->in_fs != NULL);
         *node_store = fsop_get_root(node->in_fs);
-        vop_ref_dec(node);
+        inode_ref_dec(node);
     }
 
     /* ///... or :/... */
@@ -89,7 +89,7 @@ int vfs_lookup(char *path, struct inode **node_store)
     if (*path != '\0')
     {
         ret = vop_lookup(node, path, node_store);
-        vop_ref_dec(node);
+        inode_ref_dec(node);
         return ret;
     }
     *node_store = node;

@@ -19,8 +19,8 @@ static int dev_open(struct inode *node, uint32_t open_flags)
     {
         return -E_INVAL;
     }
-    struct device *dev = vop_info(node, device);
-    return dop_open(dev, open_flags);
+    struct device *dev = device_vop_info(node);
+    return dev->d_open(dev, open_flags);
 }
 
 /*
@@ -28,8 +28,8 @@ static int dev_open(struct inode *node, uint32_t open_flags)
  */
 static int dev_close(struct inode *node)
 {
-    struct device *dev = vop_info(node, device);
-    return dop_close(dev);
+    struct device *dev = device_vop_info(node);
+    return dev->d_close(dev);
 }
 
 /*
@@ -37,8 +37,8 @@ static int dev_close(struct inode *node)
  */
 static int dev_read(struct inode *node, struct iobuf *iob)
 {
-    struct device *dev = vop_info(node, device);
-    return dop_io(dev, iob, 0);
+    struct device *dev = device_vop_info(node);
+    return dev->d_io(dev, iob, 0);
 }
 
 /*
@@ -46,8 +46,8 @@ static int dev_read(struct inode *node, struct iobuf *iob)
  */
 static int dev_write(struct inode *node, struct iobuf *iob)
 {
-    struct device *dev = vop_info(node, device);
-    return dop_io(dev, iob, 1);
+    struct device *dev = device_vop_info(node);
+    return dev->d_io(dev, iob, 1);
 }
 
 /*
@@ -55,8 +55,8 @@ static int dev_write(struct inode *node, struct iobuf *iob)
  */
 static int dev_ioctl(struct inode *node, int op, void *data)
 {
-    struct device *dev = vop_info(node, device);
-    return dop_ioctl(dev, op, data);
+    struct device *dev = device_vop_info(node);
+    return dev->d_ioctl(dev, op, data);
 }
 
 /*
@@ -72,7 +72,7 @@ static int dev_fstat(struct inode *node, struct stat *stat)
     {
         return ret;
     }
-    struct device *dev = vop_info(node, device);
+    struct device *dev = device_vop_info(node);
     stat->st_nlinks = 1;
     stat->st_blocks = dev->d_blocks;
     stat->st_size = stat->st_blocks * dev->d_blocksize;
@@ -86,7 +86,7 @@ static int dev_fstat(struct inode *node, struct stat *stat)
  */
 static int dev_gettype(struct inode *node, uint32_t *type_store)
 {
-    struct device *dev = vop_info(node, device);
+    struct device *dev = device_vop_info(node);
     *type_store = (dev->d_blocks > 0) ? S_IFBLK : S_IFCHR;
     return 0;
 }
@@ -98,7 +98,7 @@ static int dev_gettype(struct inode *node, uint32_t *type_store)
  */
 static int dev_tryseek(struct inode *node, off_t pos)
 {
-    struct device *dev = vop_info(node, device);
+    struct device *dev = device_vop_info(node);
     if (dev->d_blocks > 0)
     {
         if ((pos % dev->d_blocksize) == 0)
@@ -130,7 +130,7 @@ static int dev_lookup(struct inode *node, char *path, struct inode **node_store)
     {
         return -E_NOENT;
     }
-    vop_ref_inc(node);
+    inode_ref_inc(node);
     *node_store = node;
     return 0;
 }
@@ -151,21 +151,11 @@ static const struct inode_ops dev_node_ops = {
     .vop_lookup                     = dev_lookup,
 };
 
-#define init_device(x)                                  \
-    do {                                                \
-        extern void dev_init_##x(void);                 \
-        dev_init_##x();                                 \
-    } while (0)
-
 /* dev_init - Initialization functions for builtin vfs-level devices. */
 // dev_init 则完成了对设备的初始化，这里的 stdin 代表输入设备，即键盘，
 // stdout 代表输出设备，包括 UART 串口和显示器，disk0 代表磁盘
 void dev_init(void)
 {
-//    init_device(null);
-//    init_device(stdin);
-//    init_device(stdout);
-//    init_device(disk0);
     dev_init_stdin();
     dev_init_stdout();
     dev_init_disk0();
@@ -175,7 +165,7 @@ void dev_init(void)
 struct inode *dev_create_inode(void)
 {
     struct inode *node;
-    if ((node = alloc_inode(device)) != NULL)
+    if ((node = __alloc_inode(inode_type_device_info)) != NULL)
     {
         vop_init(node, &dev_node_ops, NULL);
     }

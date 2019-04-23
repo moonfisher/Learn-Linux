@@ -46,7 +46,7 @@ int vfs_get_curdir(struct inode **dir_store)
     struct inode *node;
     if ((node = get_cwd_nolock()) != NULL)
     {
-        vop_ref_inc(node);
+        inode_ref_inc(node);
         *dir_store = node;
         return 0;
     }
@@ -76,12 +76,12 @@ int vfs_set_curdir(struct inode *dir)
                 ret = -E_NOTDIR;
                 goto out;
             }
-            vop_ref_inc(dir);
+            inode_ref_inc(dir);
         }
         set_cwd_nolock(dir);
         if (old_dir != NULL)
         {
-            vop_ref_dec(old_dir);
+            inode_ref_dec(old_dir);
         }
     }
 out:
@@ -100,7 +100,7 @@ int vfs_chdir(char *path)
     if ((ret = vfs_lookup(path, &node)) == 0)
     {
         ret = vfs_set_curdir(node);
-        vop_ref_dec(node);
+        inode_ref_dec(node);
     }
     return ret;
 }
@@ -130,7 +130,7 @@ int vfs_getcwd(struct iobuf *iob)
     ret = vop_namefile(node, iob);
 
 out:
-    vop_ref_dec(node);
+    inode_ref_dec(node);
     return ret;
 }
 
