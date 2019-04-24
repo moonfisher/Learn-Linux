@@ -27,7 +27,7 @@ struct iobuf;
  * need to worry about it.
  */
 /*
- inode 代表的是一个抽象意义的文件，根据 in_info 和 in_type 的值的不同，它既可以表示文件也可以表示外设，
+ inode 代表的是一个抽象意义的节点，根据 in_info 和 in_type 的值的不同，它既可以表示文件也可以表示设备，
  open_count 表示一个文件被进程打开的次数，当 open_count = 0 时我们可以在 kernel 移除这个 inode 结点。
  这个 inode 是系统管理文件用的，因此用户层的程序不需要关心这个数据结构。
  device 这个数据结构只有当 inode 表示设备时才会有用。
@@ -35,16 +35,20 @@ struct iobuf;
 */
 struct inode
 {
+    // 包括了不同文件系统特定 inode 信息的 union 成员信息，这里是结构体
     union
     {
         struct device __device_info;
         struct sfs_inode __sfs_inode_info;
-    } in_info;  // 包括了不同文件系统特定 inode 信息的 union 成员信息
+    } in_info;
+    
+    // 节点类型
     enum
     {
         inode_type_device_info = 0x1234,
         inode_type_sfs_inode_info,
     } in_type;
+    
     int ref_count;  // 此 inode 的引用计数
     int open_count; // 打开此 inode 对应文件的个数
     struct fs *in_fs;   // inode 所属的文件系统
@@ -221,11 +225,6 @@ void inode_check(struct inode *node, const char *opstr);
 #define vop_truncate(node, len)                                     (__vop_op(node, truncate)(node, len))
 #define vop_create(node, name, excl, node_store)                    (__vop_op(node, create)(node, name, excl, node_store))
 #define vop_lookup(node, path, node_store)                          (__vop_op(node, lookup)(node, path, node_store))
-
-
-//#define ((node)->in_fs)                                                ((node)->in_fs)
-#define vop_init(node, ops, fs)                                     inode_init(node, ops, fs)
-#define vop_kill(node)                                              inode_kill(node)
 
 static inline int inode_ref_count(struct inode *node)
 {

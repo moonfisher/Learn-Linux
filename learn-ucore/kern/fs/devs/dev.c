@@ -167,7 +167,7 @@ struct inode *dev_create_inode(void)
     struct inode *node;
     if ((node = __alloc_inode(inode_type_device_info)) != NULL)
     {
-        vop_init(node, &dev_node_ops, NULL);
+        inode_init(node, &dev_node_ops, NULL);
     }
     return node;
 }

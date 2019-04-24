@@ -137,6 +137,16 @@
 
 /* Begin PBXFileReference section */
 		73DD7D46226F6A4700998EEC /* User */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = User; sourceTree = BUILT_PRODUCTS_DIR; };
+		C403E689226FEE5C00B4A959 /* boot.ld */ = {isa = PBXFileReference; lastKnownFileType = text; path = boot.ld; sourceTree = "<group>"; };
+		C403E68A226FEE5C00B4A959 /* mksfs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mksfs.c; sourceTree = "<group>"; };
+		C403E68B226FEE5C00B4A959 /* vector.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vector.c; sourceTree = "<group>"; };
+		C403E68C226FEE5C00B4A959 /* user.ld */ = {isa = PBXFileReference; lastKnownFileType = text; path = user.ld; sourceTree = "<group>"; };
+		C403E68D226FEE5C00B4A959 /* function.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = function.mk; sourceTree = "<group>"; };
+		C403E68E226FEE5C00B4A959 /* gdbinit */ = {isa = PBXFileReference; lastKnownFileType = text; path = gdbinit; sourceTree = "<group>"; };
+		C403E68F226FEE5C00B4A959 /* grade.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = grade.sh; sourceTree = "<group>"; };
+		C403E690226FEE5C00B4A959 /* sign.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sign.c; sourceTree = "<group>"; };
+		C403E691226FEE5C00B4A959 /* kernel.ld */ = {isa = PBXFileReference; lastKnownFileType = text; path = kernel.ld; sourceTree = "<group>"; };
+		C403E692226FEE5C00B4A959 /* sign */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = sign; sourceTree = "<group>"; };
 		C4CB31B12248F53F0014426C /* UCore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = UCore; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4CB31BD2248F5820014426C /* init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = init.c; sourceTree = "<group>"; };
 		C4CB31BE2248F5820014426C /* entry.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = entry.S; sourceTree = "<group>"; };
@@ -305,6 +315,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C403E688226FEE5C00B4A959 /* tools */ = {
+			isa = PBXGroup;
+			children = (
+				C403E689226FEE5C00B4A959 /* boot.ld */,
+				C403E68A226FEE5C00B4A959 /* mksfs.c */,
+				C403E68B226FEE5C00B4A959 /* vector.c */,
+				C403E68C226FEE5C00B4A959 /* user.ld */,
+				C403E68D226FEE5C00B4A959 /* function.mk */,
+				C403E68E226FEE5C00B4A959 /* gdbinit */,
+				C403E68F226FEE5C00B4A959 /* grade.sh */,
+				C403E690226FEE5C00B4A959 /* sign.c */,
+				C403E691226FEE5C00B4A959 /* kernel.ld */,
+				C403E692226FEE5C00B4A959 /* sign */,
+			);
+			name = tools;
+			path = ../tools;
+			sourceTree = "<group>";
+		};
 		C4CB31A82248F53F0014426C = {
 			isa = PBXGroup;
 			children = (
@@ -325,6 +353,7 @@
 		C4CB31B32248F53F0014426C /* UCore */ = {
 			isa = PBXGroup;
 			children = (
+				C403E688226FEE5C00B4A959 /* tools */,
 				C4CB324B2248F5830014426C /* boot */,
 				C4CB31BB2248F5820014426C /* kern */,
 				C4CB324F2248F5830014426C /* libs */,

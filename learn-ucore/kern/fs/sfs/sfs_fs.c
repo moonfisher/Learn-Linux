@@ -117,7 +117,8 @@ static void sfs_cleanup(struct fs *fs)
  */
 static int sfs_init_read(struct device *dev, uint32_t blkno, void *blk_buffer)
 {
-    struct iobuf __iob, *iob = iobuf_init(&__iob, blk_buffer, SFS_BLKSIZE, blkno * SFS_BLKSIZE);
+    struct iobuf __iob;
+    struct iobuf *iob = iobuf_init(&__iob, blk_buffer, SFS_BLKSIZE, blkno * SFS_BLKSIZE);
     return dev->d_io(dev, iob, 0);
 }
 
@@ -180,7 +181,6 @@ static int sfs_do_mount(struct device *dev, struct fs **fs_store)
         return -E_NO_MEM;
     }
     
-//    struct sfs_fs *sfs = fsop_info(fs, sfs);
     struct fs *__fs = fs;
     assert(__fs != NULL && (__fs->fs_type == fs_type_sfs_info));
     struct sfs_fs *sfs = &(__fs->fs_info.__sfs_info);
@@ -195,6 +195,10 @@ static int sfs_do_mount(struct device *dev, struct fs **fs_store)
     }
 
     /* load and check superblock */
+    /*
+     第 0 个块（4K）是超级块（superblock struct sfs_super），它包含了关于文件系统的
+     所有关键参数，当计算机被启动或文件系统被首次接触时，超级块的内容就会被装入内存。
+    */
     if ((ret = sfs_init_read(dev, SFS_BLKN_SUPER, sfs_buffer)) != 0)
     {
         goto failed_cleanup_sfs_buffer;

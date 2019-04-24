@@ -16,6 +16,8 @@ dd if=/dev/zero of=disk.img count=10000
 dd if=obj1/bootblock of=disk.img conv=notrunc
 dd if=bin/kernel of=disk.img seek=1 conv=notrunc
 
+# 下面2条指令启动 qemu 效果是一样的
 # qemu-system-i386 -S -s -parallel stdio -m 512M -hda bin/ucore.img -drive file=bin/swap.img -drive file=bin/sfs.img
+# qemu-system-i386 -S -s -parallel stdio -m 512M -drive file=bin/ucore.img -drive file=bin/swap.img -drive file=bin/sfs.img
 # gdb -q -tui -x tools/gdbinit
 

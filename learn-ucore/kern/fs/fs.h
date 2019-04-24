@@ -9,6 +9,21 @@
 #define SECTSIZE            512
 #define PAGE_NSECT          (PGSIZE / SECTSIZE)
 
+/*
+ 磁盘挂载顺序要和代码定义的保持一致，不然会访问出错
+ 
+ qemu 模拟启动时命令如下
+ qemu-system-i386 -S -s -parallel stdio -m 512M -drive file=bin/ucore.img -drive file=bin/swap.img -drive file=bin/sfs.img
+ 
+ 这里有连续 3 个 -drive 参数，分别代表第 1，2，3 个分区（索引 0，1，2）
+ 第 1 个分区是 ucore.img，这个是主分区，上面安装有操作系统引导程序 bootloader 和操作系统内核本身
+ 第 2 个分区是 swap.img，这个是交换分区，虚拟内存使用
+ 第 3 个分区是 sfs.img，Simple file system 文件系统，上面安装一些用户程序
+ 
+ 其中第 1 个 -drive 位置不能动，必须是第 1 个，否则加载不到内核，第 2，3 两个 -drive 可以调换位置
+ 但调换之后下面的宏定义也要对应修改才行
+*/
+#define UCORE_DEV_NO        0
 #define SWAP_DEV_NO         1
 #define DISK0_DEV_NO        2
 #define DISK1_DEV_NO        3

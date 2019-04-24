@@ -43,7 +43,7 @@ static int stdout_ioctl(struct device *dev, int op, void *data)
 
 static void stdout_device_init(struct device *dev)
 {
-    dev->d_blocks = 0;
+    dev->d_blocks = 0;  // stdout 不是磁盘，没有块
     dev->d_blocksize = 1;
     dev->d_open = stdout_open;
     dev->d_close = stdout_close;

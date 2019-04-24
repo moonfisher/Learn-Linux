@@ -58,15 +58,44 @@ static const struct {
 #define IO_CTRL(ideno)          (channels[(ideno) >> 1].ctrl)
 
 /*
- ide 0:      10000(sectors), 'QEMU HARDDISK'.
- ide 1:     262144(sectors), 'QEMU HARDDISK'.
- ide 2:     262144(sectors), 'QEMU HARDDISK'.
+ SECTSIZE   512
+ ide 0:      10000(sectors), 'QEMU HARDDISK'.   10000 * 512 = 5.1 M
+ ide 1:     262144(sectors), 'QEMU HARDDISK'.   262144 * 512 = 134.2 M
+ ide 2:     262144(sectors), 'QEMU HARDDISK'.   262144 * 512 = 134.2 M
+*/
+/*
+ {
+    {
+        valid = 0x1,
+        sets = 0x74004021,
+        size = 0x2710,
+        model = {"QEMU HARDDISK"}
+    },
+    {
+        valid = 0x1,
+        sets = 0x74004021,
+        size = 0x40000,
+        model = {"QEMU HARDDISK"}
+    },
+    {
+        valid = 0x1,
+        sets = 0x74004021,
+        size = 0x40000,
+        model = {"QEMU HARDDISK"}
+    },
+    {
+        valid = 0x0,
+        sets = 0x0,
+        size = 0x0,
+        model = {0x0}
+    }
+ }
 */
 static struct ide_device
 {
     unsigned char valid;        // 0 or 1 (If Device Really Exists)
     unsigned int sets;          // Commend Sets Supported
-    unsigned int size;          // Size in Sectors
+    unsigned int size;          // Size in Sectors 扇区数
     unsigned char model[41];    // Model in String
 } ide_devices[MAX_IDE];
 
@@ -75,7 +104,8 @@ static int ide_wait_ready(unsigned short iobase, bool check_error)
     int r;
     while ((r = inb(iobase + ISA_STATUS)) & IDE_BSY)
         /* nothing */;
-    if (check_error && (r & (IDE_DF | IDE_ERR)) != 0) {
+    if (check_error && (r & (IDE_DF | IDE_ERR)) != 0)
+    {
         return -1;
     }
     return 0;
@@ -167,6 +197,13 @@ size_t ide_device_size(unsigned short ideno)
     return 0;
 }
 
+/*
+ 从设备上读取数据
+ ideno  设备号
+ secno  起始扇区号
+ dst    读取数据到什么地址
+ nsecs  要读取的扇区数
+*/
 int ide_read_secs(unsigned short ideno, uint32_t secno, void *dst, size_t nsecs)
 {
     assert(nsecs <= MAX_NSECS && VALID_IDE(ideno));
@@ -184,6 +221,8 @@ int ide_read_secs(unsigned short ideno, uint32_t secno, void *dst, size_t nsecs)
     outb(iobase + ISA_SDH, 0xE0 | ((ideno & 1) << 4) | ((secno >> 24) & 0xF));
     outb(iobase + ISA_COMMAND, IDE_CMD_READ);
 
+    // 这里是 cpu 去循环从设备读取数据，一个一个扇区读出，读完一个扇区还要检测硬盘是否 ready
+    // 受设备速度限制，读取性能很低，优化方式是 DMA
     int ret = 0;
     for (; nsecs > 0; nsecs --, dst += SECTSIZE)
     {
@@ -198,6 +237,13 @@ out:
     return ret;
 }
 
+/*
+ 写入数据到设备上
+ ideno  设备号
+ secno  起始扇区号
+ src    待写入的数据来源
+ nsecs  要写入的扇区数
+ */
 int ide_write_secs(unsigned short ideno, uint32_t secno, const void *src, size_t nsecs)
 {
     assert(nsecs <= MAX_NSECS && VALID_IDE(ideno));
@@ -215,6 +261,8 @@ int ide_write_secs(unsigned short ideno, uint32_t secno, const void *src, size_t
     outb(iobase + ISA_SDH, 0xE0 | ((ideno & 1) << 4) | ((secno >> 24) & 0xF));
     outb(iobase + ISA_COMMAND, IDE_CMD_WRITE);
 
+    // 这里是 cpu 去循环写入到设备，一个一个扇区写入，写完一个扇区还要检测硬盘是否 ready
+    // 受设备速度限制，写入性能很低，优化方式是 DMA
     int ret = 0;
     for (; nsecs > 0; nsecs --, src += SECTSIZE)
     {

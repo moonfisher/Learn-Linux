@@ -32,17 +32,24 @@ struct iobuf;   // kernel or userspace I/O buffer (iobuf.h)
  * filesystem should have been discarded/released.
  *
  */
+/*
+ 抽象文件系统结构，fs_type 指明了具体是什么文件系统
+*/
 struct fs
 {
+    // 具体的文件系统
     union
     {
         struct sfs_fs __sfs_info;                   
-    } fs_info;  // 具体的文件系统                      // filesystem-specific data
+    } fs_info;                                      // filesystem-specific data
+    
+    // 文件系统类型
     enum
     {
         fs_type_sfs_info,
-    } fs_type;  // 文件系统类型                       // filesystem type
-    // 访问文件系统的函数指针
+    } fs_type;                                      // filesystem type
+    
+    // 访问文件系统的通用函数指针
     int (*fs_sync)(struct fs *fs);                  // Flush all dirty buffers to disk
     struct inode *(*fs_get_root)(struct fs *fs);    // Return root inode of filesystem.
     int (*fs_unmount)(struct fs *fs);               // Attempt unmount of filesystem.

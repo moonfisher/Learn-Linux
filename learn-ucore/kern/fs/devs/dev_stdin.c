@@ -111,7 +111,7 @@ static int stdin_ioctl(struct device *dev, int op, void *data)
 
 static void stdin_device_init(struct device *dev)
 {
-    dev->d_blocks = 0;
+    dev->d_blocks = 0;  // stdin 不是磁盘，没有块
     dev->d_blocksize = 1;
     dev->d_open = stdin_open;
     dev->d_close = stdin_close;

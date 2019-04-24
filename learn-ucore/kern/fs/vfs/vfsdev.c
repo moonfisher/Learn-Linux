@@ -15,9 +15,11 @@
 // 挂载在 vdev_list 下的虚拟设备
 typedef struct
 {
+    // 虚拟设备名字
     const char *devname;
+    // 虚拟设备对应的外设结构
     struct inode *devnode;
-    // 上面 device, 挂载在此虚拟文件系统（VFS）下面具体文件系统(sfs_fs)下属的 dev 节点
+    // 虚拟设备对应的文件系统
     struct fs *fs;
     // 设备可挂载，可安装文件系统
     bool mountable;
@@ -156,8 +158,8 @@ static bool check_devname_conflict(const char *devname)
 * for direct access.
 */
 /*
- 添加设备到虚拟文件设备列表里，devname 设备名字是不重复的
- 如果设置了“mountable”，则设备将被视为预期的设备在其上安装文件系统，并创建原始设备直接访问。
+ 添加设备到虚拟文件设备列表里，devname 设备名字是不重复的，这里设备名字是唯一标识
+ 如果设置了 “mountable”，则设备将被视为预期的设备在其上安装文件系统，并创建原始设备直接访问。
 */
 static int vfs_do_add(const char *devname, struct inode *devnode, struct fs *fs, bool mountable)
 {
@@ -257,6 +259,8 @@ int vfs_mount(const char *devname, int (*mountfunc)(struct device *dev, struct f
     int ret;
     lock_vdev_list();
     vfs_dev_t *vdev;
+    
+    // 根据设备名字在虚拟设备链表上先找到对应的设备
     if ((ret = find_mount(devname, &vdev)) != 0)
     {
         goto out;

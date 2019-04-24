@@ -10,10 +10,11 @@
 #include "error.h"
 #include "assert.h"
 
-#define DISK0_BLKSIZE                   PGSIZE
+#define DISK0_BLKSIZE                   PGSIZE  // 4096
 #define DISK0_BUFSIZE                   (4 * DISK0_BLKSIZE)
-#define DISK0_BLK_NSECT                 (DISK0_BLKSIZE / SECTSIZE)
+#define DISK0_BLK_NSECT                 (DISK0_BLKSIZE / SECTSIZE)  // 8
 
+// 磁盘缓冲区，大小 4 个 block，16k
 static char *disk0_buffer;
 static semaphore_t disk0_sem;
 
@@ -37,6 +38,11 @@ static int disk0_close(struct device *dev)
     return 0;
 }
 
+/*
+ 从设备上读取数据
+ blkno  起始 block 号
+ nblks  要读取的 block 数
+ */
 static void disk0_read_blks_nolock(uint32_t blkno, uint32_t nblks)
 {
     int ret;
@@ -48,6 +54,11 @@ static void disk0_read_blks_nolock(uint32_t blkno, uint32_t nblks)
     }
 }
 
+/*
+ 写入数据到设备上
+ blkno  起始 block 号
+ nblks  要写入 block 数
+ */
 static void disk0_write_blks_nolock(uint32_t blkno, uint32_t nblks)
 {
     int ret;
@@ -90,6 +101,7 @@ static int disk0_io(struct device *dev, struct iobuf *iob, bool write)
         size_t copied, alen = DISK0_BUFSIZE;
         if (write)
         {
+            // 写入数据到设备之前，先把数据写入到缓冲区
             iobuf_move(iob, disk0_buffer, alen, 0, &copied);
             assert(copied != 0 && copied <= resid && copied % DISK0_BLKSIZE == 0);
             nblks = copied / DISK0_BLKSIZE;
@@ -102,6 +114,7 @@ static int disk0_io(struct device *dev, struct iobuf *iob, bool write)
                 alen = resid;
             }
             nblks = alen / DISK0_BLKSIZE;
+            // 从设备读取数据，会先读到缓冲区，再从缓冲区拷贝到目的地址
             disk0_read_blks_nolock(blkno, nblks);
             iobuf_move(iob, disk0_buffer, alen, 1, &copied);
             assert(copied == alen && copied % DISK0_BLKSIZE == 0);
@@ -121,12 +134,16 @@ static int disk0_ioctl(struct device *dev, int op, void *data)
 static void disk0_device_init(struct device *dev)
 {
     static_assert(DISK0_BLKSIZE % SECTSIZE == 0);
+    
     if (!ide_device_valid(DISK0_DEV_NO))
     {
         panic("disk0 device isn't available.\n");
     }
-    dev->d_blocks = ide_device_size(DISK0_DEV_NO) / DISK0_BLK_NSECT;
-    dev->d_blocksize = DISK0_BLKSIZE;
+    
+    // 设备块数 = 磁盘扇区总数 / (块大小 / 扇区大小) = (磁盘扇区总数 * 扇区大小) / 块大小
+    // block = 262144 / (4096 / 512) = 32768 = 0x8000
+    dev->d_blocks = ide_device_size(DISK0_DEV_NO) / DISK0_BLK_NSECT;    // 0x8000
+    dev->d_blocksize = DISK0_BLKSIZE;   // 每一块大小 4k，和内存分页一样大
     dev->d_open = disk0_open;
     dev->d_close = disk0_close;
     dev->d_io = disk0_io;
@@ -134,6 +151,8 @@ static void disk0_device_init(struct device *dev)
     sem_init(&(disk0_sem), 1);
 
     static_assert(DISK0_BUFSIZE % DISK0_BLKSIZE == 0);
+    
+    // 磁盘缓冲区，大小 4 个 block，16k
     if ((disk0_buffer = kmalloc(DISK0_BUFSIZE)) == NULL)
     {
         panic("disk0 alloc buffer failed.\n");

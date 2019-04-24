@@ -121,7 +121,7 @@ static int sfs_create_inode(struct sfs_fs *sfs, struct sfs_disk_inode *din, uint
     struct inode *node;
     if ((node = __alloc_inode(inode_type_sfs_inode_info)) != NULL)
     {
-        vop_init(node, sfs_get_ops(din->type), info2fs(sfs, sfs));
+        inode_init(node, sfs_get_ops(din->type), info2fs(sfs, sfs));
         struct sfs_inode *sin = sfs_vop_info(node);
         sin->din = din;
         sin->ino = ino;
@@ -1007,7 +1007,7 @@ static int sfs_reclaim(struct inode *node)
         }
     }
     kfree(sin->din);
-    vop_kill(node);
+    inode_kill(node);
     return 0;
 
 failed_unlock:
