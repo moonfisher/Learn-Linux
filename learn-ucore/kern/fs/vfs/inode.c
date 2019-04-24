@@ -99,7 +99,10 @@ int inode_open_dec(struct inode *node)
     open_count = node->open_count;
     if (open_count == 0)
     {
-        if ((ret = vop_close(node)) != 0)
+        assert(node != NULL && node->in_ops != NULL && node->in_ops->vop_close != NULL);
+        inode_check(node, "close");
+
+        if ((ret = node->in_ops->vop_close(node)) != 0)
         {
             cprintf("vfs: warning: vop_close: %e.\n", ret);
         }
