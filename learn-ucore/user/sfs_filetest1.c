@@ -25,11 +25,11 @@ static struct stat *safe_fstat(int fd)
 	return stat;
 }
 
-//static void safe_read(int fd, void *data, size_t len)
-//{
-//    int ret = read(fd, data, len);
-//    assert(ret == len);
-//}
+static int safe_read(int fd, void *data, size_t len)
+{
+    int ret = read(fd, data, len);
+    return ret;
+}
 
 /*
  通用文件访问接口层的处理流程
@@ -81,9 +81,15 @@ static struct stat *safe_fstat(int fd)
 */
 int main(void)
 {
+    char buffer[1024] = {0};
+    
 	int fd1 = safe_open("sfs_filetest1", O_RDONLY);
 	struct stat *stat = safe_fstat(fd1);
 	assert(stat->st_size >= 0 && stat->st_blocks >= 0);
+    
+    int ret = safe_read(fd1, buffer, sizeof(buffer) - 1);
+    printf("sfs_filetest1 length = %d, read %s.\n", ret, buffer);
+    
 	printf("sfs_filetest1 pass.\n");
 	return 0;
 }

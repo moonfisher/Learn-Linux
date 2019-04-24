@@ -56,6 +56,8 @@
  * On-disk superblock
  */
 /*
+ ucore 使用的 sfs.img 文件是在 mksfs 里创建的
+ 
  文件系统通常保存在磁盘上，disk0 代表磁盘，用来存放一个 SFS 文件系统。磁盘的使用是以扇区为单位的，
  但是在文件系统中，一般按数据块来使用磁盘，在 sfs 中，我们以4k（8 个 sector，和 page 大小相等）为一个数据块
 

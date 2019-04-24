@@ -175,6 +175,7 @@ static int sfs_do_mount(struct device *dev, struct fs **fs_store)
     }
 
     /* allocate fs structure */
+    // 开始构造 fs 相关数据结构
     struct fs *fs;
     if ((fs = __alloc_fs(fs_type_sfs_info)) == NULL)
     {

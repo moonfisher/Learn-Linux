@@ -9,6 +9,7 @@
  * get_device- Common code to pull the device name, if any, off the front of a
  *             path and choose the inode to begin the name lookup relative to.
  */
+// 根据文件名获取对应的 inode
 static int get_device(char *path, char **subpath, struct inode **node_store)
 {
     int i, slash = -1, colon = -1;
@@ -39,6 +40,7 @@ static int get_device(char *path, char **subpath, struct inode **node_store)
         /* device:/path - skip slash, treat as device:path */
         while (path[++ colon] == '/');
         *subpath = path + colon;
+        // 由于初始化时已将 disk0 的 vfs_dev_t 结构添加到 vdev_list 中，这里遍历链表即可找到对应的 inode
         return vfs_get_root(path, node_store);
     }
 

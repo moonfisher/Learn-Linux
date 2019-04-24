@@ -256,7 +256,10 @@ int file_read(int fd, void *base, size_t len, size_t *copied_store)
     fd_array_acquire(file);
 
     struct iobuf __iob, *iob = iobuf_init(&__iob, base, len, file->pos);
-    ret = vop_read(file->node, iob);
+    
+    assert(file->node != NULL && file->node->in_ops != NULL && file->node->in_ops->vop_open != NULL);
+    inode_check(file->node, "read");
+    ret = file->node->in_ops->vop_read(file->node, iob);
 
     size_t copied = iobuf_used(iob);
     if (file->status == FD_OPENED)

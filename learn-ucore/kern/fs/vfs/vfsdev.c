@@ -90,7 +90,7 @@ int vfs_get_root(const char *devname, struct inode **node_store)
                     struct inode *found = NULL;
                     if (vdev->fs != NULL)
                     {
-                        found = fsop_get_root(vdev->fs);
+                        found = vdev->fs->fs_get_root(vdev->fs);
                     }
                     else if (!vdev->mountable)
                     {

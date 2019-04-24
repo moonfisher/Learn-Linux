@@ -27,6 +27,14 @@ struct iobuf;
  * need to worry about it.
  */
 /*
+ 操作系统读取硬盘的时候，不会一个个扇区地读取，这样效率太低，而是一次性连续读取多个扇区，
+ 即一次性读取一个"块"（block）。这种由多个扇区组成的"块"，是文件存取的最小单位。"块"的大小，
+ 最常见的是 4KB，即连续八个 sector组成一个 block。
+ 
+ 文件数据都储存在"块"中，那么还必须找到一个地方储存文件的元信息，比如文件的创建者、文件的创建日期、
+ 文件的大小等等。这种储存文件元信息的区域就叫做 inode，中文译名为"索引节点"。
+ 每一个文件都有对应的 inode，里面包含了与该文件有关的一些信息。
+ 
  inode 代表的是一个抽象意义的节点，根据 in_info 和 in_type 的值的不同，它既可以表示文件也可以表示设备，
  open_count 表示一个文件被进程打开的次数，当 open_count = 0 时我们可以在 kernel 移除这个 inode 结点。
  这个 inode 是系统管理文件用的，因此用户层的程序不需要关心这个数据结构。
@@ -210,9 +218,7 @@ void inode_check(struct inode *node, const char *opstr);
         __node->in_ops->vop_##sym;                                                                  \
      })
 
-#define vop_open(node, open_flags)                                  (__vop_op(node, open)(node, open_flags))
 #define vop_close(node)                                             (__vop_op(node, close)(node))
-#define vop_read(node, iob)                                         (__vop_op(node, read)(node, iob))
 #define vop_write(node, iob)                                        (__vop_op(node, write)(node, iob))
 #define vop_fstat(node, stat)                                       (__vop_op(node, fstat)(node, stat))
 #define vop_fsync(node)                                             (__vop_op(node, fsync)(node))
@@ -223,7 +229,6 @@ void inode_check(struct inode *node, const char *opstr);
 #define vop_gettype(node, type_store)                               (__vop_op(node, gettype)(node, type_store))
 #define vop_tryseek(node, pos)                                      (__vop_op(node, tryseek)(node, pos))
 #define vop_truncate(node, len)                                     (__vop_op(node, truncate)(node, len))
-#define vop_create(node, name, excl, node_store)                    (__vop_op(node, create)(node, name, excl, node_store))
 #define vop_lookup(node, path, node_store)                          (__vop_op(node, lookup)(node, path, node_store))
 
 static inline int inode_ref_count(struct inode *node)

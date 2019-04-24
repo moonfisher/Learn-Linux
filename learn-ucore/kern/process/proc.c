@@ -1189,7 +1189,7 @@ static int user_main(void *arg)
 static int init_main(void *arg)
 {
     int ret = 0;
-    // initproc 只分配了文件系统资源，但没有关联实际的文件系统
+    // initproc 分配了文件系统资源和文件系统, 设置当前目录对应的 inode 为 disk0
     if ((ret = vfs_set_bootfs("disk0:")) != 0)
     {
         panic("set boot fs failed: %e.\n", ret);

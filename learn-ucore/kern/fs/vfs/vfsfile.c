@@ -47,7 +47,10 @@ int vfs_open(char *path, uint32_t open_flags, struct inode **node_store)
             {
                 return ret;
             }
-            ret = vop_create(dir, name, excl, &node);
+            
+            assert(dir != NULL && dir->in_ops != NULL && dir->in_ops->vop_open != NULL);
+            inode_check(dir, "create");
+            ret = dir->in_ops->vop_create(dir, name, excl, &node);
         }
         else
             return ret;
@@ -58,7 +61,9 @@ int vfs_open(char *path, uint32_t open_flags, struct inode **node_store)
     }
     assert(node != NULL);
     
-    if ((ret = vop_open(node, open_flags)) != 0)
+    assert(node != NULL && node->in_ops != NULL && node->in_ops->vop_open != NULL);
+    inode_check(node, "open");
+    if ((ret = node->in_ops->vop_open(node, open_flags)) != 0)
     {
         inode_ref_dec(node);
         return ret;
